@@ -1,8 +1,6 @@
 package com.dgomesdev.taskslist.data
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.dgomesdev.taskslist.domain.TaskEntity
 
@@ -11,7 +9,7 @@ abstract class TaskDatabase : RoomDatabase() {
 
     abstract fun taskDao(): TaskDao
 
-    companion object {
+    /*companion object {
         @Volatile
         private var INSTANCE: TaskDatabase? = null
         fun getDatabase(context: Context): TaskDatabase {
@@ -25,5 +23,6 @@ abstract class TaskDatabase : RoomDatabase() {
                 instance
             }
         }
-    }
+    }*/
 }
+

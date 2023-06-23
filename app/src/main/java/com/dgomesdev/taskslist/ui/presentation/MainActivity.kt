@@ -5,12 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
-import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.ui.theme.TasksListTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val tasksViewModel: TaskViewModel by viewModels { TaskViewModel.Factory }
+    private val tasksViewModel: TaskViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

@@ -2,8 +2,11 @@ package com.dgomesdev.taskslist.data
 
 import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.domain.TaskRepository
+import javax.inject.Inject
 
-class TaskRepositoryImpl(private val taskDao: TaskDao) : TaskRepository {
+class TaskRepositoryImpl @Inject constructor(
+    private val taskDao: TaskDao
+) : TaskRepository {
 
     override suspend fun getTasks() = taskDao.getTasks()
 

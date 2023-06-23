@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -67,12 +68,15 @@ dependencies {
 
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
-    implementation("androidx.room:room-runtime:2.5.1")
+    implementation("androidx.room:room-runtime:2.5.2")
     implementation("androidx.navigation:navigation-runtime-ktx:2.6.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    //annotationProcessor("androidx.room:room-compiler:2.5.1")
-    ksp("androidx.room:room-compiler:2.5.1")
-    implementation("androidx.room:room-ktx:2.5.1")
+
+    kapt("androidx.room:room-compiler:2.5.2")
+    implementation("androidx.room:room-ktx:2.5.2")
+
+    implementation("com.google.dagger:hilt-android:2.46.1")
+    kapt("com.google.dagger:hilt-compiler:2.46.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
