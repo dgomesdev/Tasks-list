@@ -27,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.TaskEntity
 
 @Composable
@@ -108,12 +110,12 @@ fun Task(
             IconButton(onClick = { expanded = !expanded }) {
                 Icon(
                     imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = if (expanded) "show less"
-                    else "show more"
+                    contentDescription = if (expanded) stringResource(R.string.show_less)
+                    else stringResource(R.string.show_more)
                 )
             }
             IconButton(onClick = { expandedMenu = true }) {
-                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Task options")
+                Icon(imageVector = Icons.Default.MoreVert, contentDescription = stringResource(R.string.task_options))
                 TaskOptions(
                     expandedMenu = expandedMenu,
                     onExpandChange = { expandedMenu = it},
@@ -139,8 +141,11 @@ fun TaskOptions(
     onMarkAsDone: () -> Unit
 ) {
     DropdownMenu(expanded = expandedMenu, onDismissRequest = { onExpandChange(false) }) {
-        DropdownMenuItem(text = { Text(if (isTaskDone) "Unmark as done" else "Mark as done")}, onClick = { onMarkAsDone() ; onExpandChange(false) })
-        DropdownMenuItem(text = { Text("Edit task") }, onClick = { goToScreen("Edit task screen/${task.id}") ; onExpandChange(false) })
-        DropdownMenuItem(text = { Text("Delete task") }, onClick = { deleteTask(task) ; onExpandChange(false) } )
+        DropdownMenuItem(text = { Text(if (isTaskDone) stringResource(R.string.unmark_as_done) else stringResource(
+            R.string.mark_as_done
+        )
+        )}, onClick = { onMarkAsDone() ; onExpandChange(false) })
+        DropdownMenuItem(text = { Text(stringResource(R.string.edit_task)) }, onClick = { goToScreen("Edit task screen/${task.id}") ; onExpandChange(false) })
+        DropdownMenuItem(text = { Text(stringResource(R.string.delete_task)) }, onClick = { deleteTask(task) ; onExpandChange(false) } )
     }
 }

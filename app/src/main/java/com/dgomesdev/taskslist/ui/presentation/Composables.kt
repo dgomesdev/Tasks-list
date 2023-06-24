@@ -20,9 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.TaskEntity
 
 typealias AddTask = (task: TaskEntity) -> Unit
@@ -80,7 +82,7 @@ fun NewTaskButton(
     ) {
         Icon(
             imageVector = Icons.Default.Add,
-            contentDescription = "Add new task button"
+            contentDescription = stringResource(R.string.add_new_task_button)
         )
     }
 }
@@ -90,7 +92,7 @@ fun NewTaskButton(
 fun AppBar() {
     val context = LocalContext.current
     TopAppBar(
-        title = { Text("Tasks list") },
+        title = { Text(stringResource(R.string.tasks_list)) },
         actions = {
             IconButton(onClick = {
                 Toast.makeText(
@@ -101,7 +103,7 @@ fun AppBar() {
             }) {
                 Icon(
                     imageVector = Icons.Filled.Info,
-                    contentDescription = "Localized description"
+                    contentDescription = "Developed by Dgomes Dev"
                 )
             }
         })

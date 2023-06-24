@@ -18,9 +18,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.TaskEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +44,7 @@ fun AddTaskScreen(
             TextField(
                 value = taskNameText,
                 onValueChange = { taskNameText = it },
-                label = { Text("Task's name") },
+                label = { Text(stringResource(R.string.task_s_name)) },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
@@ -50,7 +52,7 @@ fun AddTaskScreen(
             TextField(
                 value = taskDescriptionText,
                 onValueChange = { taskDescriptionText = it },
-                label = { Text("Task's description") },
+                label = { Text(stringResource(R.string.task_s_description)) },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
@@ -60,13 +62,13 @@ fun AddTaskScreen(
                 modifier = Modifier.padding(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray, contentColor = Color.Red)
                 ) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
             Button(
                 onClick = { addTask(task); refreshList() ; goToScreen("Main screen") },
                 modifier = Modifier.padding(8.dp)
             ) {
-                Text("Add task")
+                Text(stringResource(R.string.add_task))
             }
         }
     }
