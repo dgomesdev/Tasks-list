@@ -1,7 +1,11 @@
 package com.dgomesdev.taskslist
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.dgomesdev.taskslist.data.local.TaskDatabase
+import com.dgomesdev.taskslist.data.repository.TaskRepositoryImpl
 
-@HiltAndroidApp
-class TasksApplication : Application()
+class TasksApplication : Application() {
+
+    private val tasksDatabase by lazy { TaskDatabase.getDatabase(this) }
+    val tasksRepository by lazy { TaskRepositoryImpl(tasksDatabase.taskDao()) }
+}

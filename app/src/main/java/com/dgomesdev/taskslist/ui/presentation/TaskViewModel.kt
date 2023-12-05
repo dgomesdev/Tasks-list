@@ -1,18 +1,21 @@
 package com.dgomesdev.taskslist.ui.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.dgomesdev.taskslist.data.TaskRepositoryImpl
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.dgomesdev.taskslist.TasksApplication
+import com.dgomesdev.taskslist.data.repository.TaskRepositoryImpl
 import com.dgomesdev.taskslist.domain.TaskEntity
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class TaskViewModel @Inject constructor(
+class TaskViewModel(
     private val taskRepository: TaskRepositoryImpl
 ) : ViewModel() {
 
@@ -42,6 +45,14 @@ class TaskViewModel @Inject constructor(
         taskRepository.deleteTask(task)
     }
 
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val taskRepository = (this[APPLICATION_KEY] as TasksApplication).tasksRepository
+                TaskViewModel(taskRepository = taskRepository)
+            }
+        }
+    }
 }
 
 data class TaskUiState(

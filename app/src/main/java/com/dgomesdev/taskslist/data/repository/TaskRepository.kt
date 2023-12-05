@@ -1,5 +1,6 @@
-package com.dgomesdev.taskslist.domain
+package com.dgomesdev.taskslist.data.repository
 
+import com.dgomesdev.taskslist.domain.TaskEntity
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {

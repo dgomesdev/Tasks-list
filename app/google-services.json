@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "551510742289",
+    "project_id": "tasks-list-8b1fc",
+    "storage_bucket": "tasks-list-8b1fc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:551510742289:android:247c730d3865e8da3da8b0",
+        "android_client_info": {
+          "package_name": "com.dgomesdev.taskslist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJhsMmY7N4-k06IZeXQ395qOewoAp2Q0U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-package com.dgomesdev.taskslist.data
+package com.dgomesdev.taskslist.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete
