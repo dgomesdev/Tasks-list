@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
-import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.ui.theme.TasksListTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,14 +14,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val state = tasksViewModel.uiState.collectAsState().value
+            val isEndDateValid = tasksViewModel.dateValidationState.value
             TasksListTheme {
-                // A surface container using the 'background' color from the theme
                 TaskApp(
                     tasks = state.tasks,
                     addTask = tasksViewModel::addTask,
                     editTask = tasksViewModel::editTask,
                     deleteTask = tasksViewModel::deleteTask,
-                    refreshTaskList = tasksViewModel::getTaskList
+                    refreshTaskList = tasksViewModel::getTaskList,
+                    validateEndDate = tasksViewModel::validateEndDate,
+                    isEndDateValid = isEndDateValid
                 )
             }
         }

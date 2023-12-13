@@ -16,3 +16,6 @@ val DoneColor = Color(0xFF3DDC84)
 val ToDoColor = Color.Yellow
 val AlmostLateColor = Color(0xFFFF9800)
 val LateColor = Color.Red
+
+val ActivePriorityButtonColor = Color(0xFF3F51B5)
+val DisabledPriorityButtonColor = Color(0xFF282828)

@@ -25,18 +25,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dgomesdev.taskslist.domain.Priority
 import com.dgomesdev.taskslist.domain.Status
 import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.ui.presentation.DeleteTask
-import com.dgomesdev.taskslist.ui.presentation.ScreenNavigation
-import com.dgomesdev.taskslist.ui.presentation.TaskOptions
+import com.dgomesdev.taskslist.ui.routes.ScreenNavigation
 import com.dgomesdev.taskslist.ui.theme.AlmostLateColor
 import com.dgomesdev.taskslist.ui.theme.DoneColor
 import com.dgomesdev.taskslist.ui.theme.LateColor
@@ -62,10 +59,6 @@ fun TaskCard(
         Status.DONE -> "Done"
         Status.ALMOST_LATE -> "Almost late"
         Status.LATE -> "Late"
-    }
-    val priority = when (task.priority) {
-        Priority.NORMAL -> "Normal"
-        Priority.HIGH -> "High"
     }
     Card(
         modifier = Modifier
@@ -100,10 +93,9 @@ fun TaskCard(
                 )
             ) {
                 Text(
-                    text = if (task.priority == Priority.HIGH) "!" else "",
-                    modifier = Modifier.fillMaxWidth(),
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
+                    text = "${task.priority}",
+                    modifier = Modifier.fillMaxWidth().padding(4.dp),
+                    fontSize = 24.sp,
                     textAlign = TextAlign.Center
                     )
             }
@@ -113,7 +105,8 @@ fun TaskCard(
                     .padding(8.dp)
                     .weight(0.65f),
                 style = TextStyle(
-                    textDecoration = if (isTaskDone) TextDecoration.LineThrough
+                    textDecoration =
+                    if (isTaskDone) TextDecoration.LineThrough
                     else TextDecoration.None
                 )
             )
@@ -154,7 +147,7 @@ fun TaskCard(
                     Modifier.weight(0.5f)
                 )
                 Text(
-                    "Priority: $priority",
+                    "Priority level: ${task.priority}",
                     Modifier.weight(0.5f),
                     textAlign = TextAlign.End
                 )
@@ -202,7 +195,7 @@ private fun TaskCardPreview() {
             Status.ALMOST_LATE,
             "09/07/21",
             "",
-            Priority.HIGH
+            2
         ),
         {},
         {},
