@@ -24,7 +24,8 @@ import com.dgomesdev.taskslist.utils.getDate
 fun DateSetter(
     modifier: Modifier,
     labelTest: String,
-    selectedDate: (String) -> Unit
+    selectedDate: (String) -> Unit,
+    isEndDateValid: Boolean
 ) {
 
     var isDatePickerDialogShown by remember { mutableStateOf(false) }
@@ -63,9 +64,10 @@ fun DateSetter(
                     focusManager.clearFocus(force = true)
                 }
             },
+        readOnly = true,
         label = {
             Text(labelTest)
         },
-        readOnly = true
+        isError = !isEndDateValid
     )
 }

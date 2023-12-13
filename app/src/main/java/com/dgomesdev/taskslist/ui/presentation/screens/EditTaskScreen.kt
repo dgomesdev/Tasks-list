@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -25,16 +26,14 @@ import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.ui.composables.DateSetter
 import com.dgomesdev.taskslist.ui.composables.PrioritySetter
 import com.dgomesdev.taskslist.ui.presentation.EditTask
-import com.dgomesdev.taskslist.ui.presentation.ValidateEndDate
 import com.dgomesdev.taskslist.ui.routes.ScreenNavigation
+import com.dgomesdev.taskslist.utils.validateEndDate
 
 @Composable
 fun EditTaskScreen(
     editTask: EditTask,
     task: TaskEntity,
-    goToScreen: ScreenNavigation,
-    validateEndDate: ValidateEndDate,
-    isEndDateValid: Boolean,
+    goToScreen: ScreenNavigation
 ) {
     var taskNameText by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(task.name))
@@ -45,6 +44,8 @@ fun EditTaskScreen(
     var taskStartDate by rememberSaveable { mutableStateOf(task.startDate) }
     var taskEndDate by rememberSaveable { mutableStateOf(task.endDate) }
     var taskPriority by rememberSaveable { mutableIntStateOf(task.priority) }
+
+    var isEndDateValid by remember { mutableStateOf(true) }
 
     Surface {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -67,16 +68,16 @@ fun EditTaskScreen(
             Row(Modifier.padding(8.dp)) {
                 DateSetter(
                     Modifier.weight(0.5f),
-                    taskStartDate ?: "Set the start date"
-                ) {
-                    taskStartDate = it
-                }
+                    "$taskStartDate",
+                    selectedDate = { taskStartDate = it },
+                    isEndDateValid = isEndDateValid
+                )
                 DateSetter(
                     Modifier.weight(0.5f),
-                    taskEndDate ?: "Set the end date",
-                ) {
-                    taskEndDate = it
-                }
+                    "$taskEndDate",
+                    selectedDate = { taskEndDate = it },
+                    isEndDateValid = isEndDateValid
+                )
             }
             PrioritySetter { taskPriority = it }
             Button(
@@ -92,7 +93,7 @@ fun EditTaskScreen(
             }
             Button(
                 onClick = {
-                    validateEndDate(taskStartDate, taskEndDate)
+                    isEndDateValid = validateEndDate(taskStartDate, taskEndDate)
                     if (isEndDateValid) {
                         editTask(
                             task.copy(
@@ -126,8 +127,6 @@ private fun EditTaskPreview() {
             startDate = null,
             endDate = null
         ),
-        goToScreen = {},
-        validateEndDate = { _, _ -> },
-        isEndDateValid = true
+        goToScreen = {}
     )
 }

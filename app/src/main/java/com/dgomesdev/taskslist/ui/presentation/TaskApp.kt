@@ -20,7 +20,6 @@ typealias AddTask = (task: TaskEntity) -> Unit
 typealias EditTask = (task: TaskEntity) -> Unit
 typealias DeleteTask = (task: TaskEntity) -> Unit
 typealias RefreshList = () -> Unit
-typealias ValidateEndDate = (String?, String?) -> Unit
 
 @Composable
 fun TaskApp(
@@ -28,9 +27,7 @@ fun TaskApp(
     addTask: AddTask,
     editTask: EditTask,
     deleteTask: DeleteTask,
-    refreshTaskList: RefreshList,
-    validateEndDate: ValidateEndDate,
-    isEndDateValid: Boolean
+    refreshTaskList: RefreshList
 ) {
     val navController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -57,9 +54,7 @@ fun TaskApp(
             addTask = addTask,
             editTask = editTask,
             deleteTask = deleteTask,
-            refreshList = refreshTaskList,
-            validateEndDate = validateEndDate,
-            isEndDateValid = isEndDateValid
+            refreshList = refreshTaskList
         )
     }
 }

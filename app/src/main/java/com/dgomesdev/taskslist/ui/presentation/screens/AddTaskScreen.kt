@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -22,19 +23,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.ui.composables.DateSetter
+import com.dgomesdev.taskslist.ui.composables.ErrorDialog
 import com.dgomesdev.taskslist.ui.composables.PrioritySetter
 import com.dgomesdev.taskslist.ui.presentation.AddTask
 import com.dgomesdev.taskslist.ui.presentation.RefreshList
-import com.dgomesdev.taskslist.ui.presentation.ValidateEndDate
 import com.dgomesdev.taskslist.ui.routes.ScreenNavigation
+import com.dgomesdev.taskslist.utils.validateEndDate
+import com.dgomesdev.taskslist.utils.validateTaskName
 
 @Composable
 fun AddTaskScreen(
     addTask: AddTask,
     refreshList: RefreshList,
-    goToScreen: ScreenNavigation,
-    validateEndDate: ValidateEndDate,
-    isEndDateValid: Boolean,
+    goToScreen: ScreenNavigation
 ) {
     var taskName by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -46,6 +47,13 @@ fun AddTaskScreen(
     var taskEndDate by rememberSaveable { mutableStateOf<String?>(null) }
     var taskPriority by rememberSaveable { mutableIntStateOf(1) }
 
+    var isTaskNameValid by remember { mutableStateOf(true) }
+    var isEndDateValid by remember { mutableStateOf(true) }
+    var error by rememberSaveable { mutableStateOf("") }
+    var isErrorDialogOpen by remember {
+        mutableStateOf(false)
+    }
+
     val task = TaskEntity(
         name = taskName.text,
         description = taskDescription.text,
@@ -55,6 +63,12 @@ fun AddTaskScreen(
     )
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        if (isErrorDialogOpen) {
+            ErrorDialog(
+                error = error,
+                onDismissRequest = { isErrorDialogOpen = false }
+            )
+        }
         TextField(
             value = taskName,
             onValueChange = { taskName = it },
@@ -74,16 +88,16 @@ fun AddTaskScreen(
         Row(Modifier.padding(8.dp)) {
             DateSetter(
                 Modifier.weight(0.5f),
-                "Set the start date"
-            ) {
-                taskStartDate = it
-            }
+                "Set the start date",
+                selectedDate = { taskStartDate = it },
+                isEndDateValid = isEndDateValid
+            )
             DateSetter(
                 Modifier.weight(0.5f),
                 "Set the end date",
-            ) {
-                taskEndDate = it
-            }
+                selectedDate = { taskEndDate = it },
+                isEndDateValid = isEndDateValid
+            )
         }
         PrioritySetter { taskPriority = it }
         Button(
@@ -98,11 +112,19 @@ fun AddTaskScreen(
         }
         Button(
             onClick = {
-                validateEndDate(taskStartDate, taskEndDate)
-                if (isEndDateValid) {
+                isTaskNameValid = validateTaskName(taskName.text)
+                isEndDateValid = validateEndDate(taskStartDate, taskEndDate)
+                if (isEndDateValid && isTaskNameValid) {
                     addTask(task)
                     refreshList()
                     goToScreen("Main screen")
+                } else {
+                    error = if (!isTaskNameValid) {
+                        "Task name cannot be blank"
+                    } else {
+                        "Start date cannot be after end date"
+                    }
+                    isErrorDialogOpen = true
                 }
             },
             modifier = Modifier.padding(8.dp)
@@ -118,8 +140,6 @@ private fun AddTaskPreview() {
     AddTaskScreen(
         addTask = {},
         refreshList = {},
-        goToScreen = {},
-        validateEndDate = { _, _ -> },
-        isEndDateValid = true
+        goToScreen = {}
     )
 }

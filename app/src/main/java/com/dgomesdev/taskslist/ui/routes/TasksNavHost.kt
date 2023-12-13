@@ -9,13 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.ui.presentation.AddTask
-import com.dgomesdev.taskslist.ui.presentation.screens.AddTaskScreen
 import com.dgomesdev.taskslist.ui.presentation.DeleteTask
 import com.dgomesdev.taskslist.ui.presentation.EditTask
+import com.dgomesdev.taskslist.ui.presentation.RefreshList
+import com.dgomesdev.taskslist.ui.presentation.screens.AddTaskScreen
 import com.dgomesdev.taskslist.ui.presentation.screens.EditTaskScreen
 import com.dgomesdev.taskslist.ui.presentation.screens.MainScreen
-import com.dgomesdev.taskslist.ui.presentation.RefreshList
-import com.dgomesdev.taskslist.ui.presentation.ValidateEndDate
 
 typealias ScreenNavigation = (String) -> Unit
 @Composable
@@ -26,8 +25,6 @@ fun TasksNavHost(
     editTask: EditTask,
     deleteTask: DeleteTask,
     refreshList: RefreshList,
-    validateEndDate: ValidateEndDate,
-    isEndDateValid: Boolean,
     modifier: Modifier
 ) {
     NavHost(
@@ -47,9 +44,7 @@ fun TasksNavHost(
             AddTaskScreen(
                 addTask = addTask,
                 refreshList = refreshList,
-                goToScreen = { navController.navigate(it) },
-                validateEndDate = validateEndDate,
-                isEndDateValid = isEndDateValid
+                goToScreen = { navController.navigate(it) }
             )
         }
         composable(
@@ -62,9 +57,7 @@ fun TasksNavHost(
             EditTaskScreen(
                 editTask = editTask,
                 task = taskToBeEdited!!,
-                goToScreen = { navController.navigate(it) },
-                validateEndDate = validateEndDate,
-                isEndDateValid = isEndDateValid
+                goToScreen = { navController.navigate(it) }
             )
         }
     }

@@ -14,16 +14,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val state = tasksViewModel.uiState.collectAsState().value
-            val isEndDateValid = tasksViewModel.dateValidationState.value
             TasksListTheme {
                 TaskApp(
                     tasks = state.tasks,
                     addTask = tasksViewModel::addTask,
                     editTask = tasksViewModel::editTask,
                     deleteTask = tasksViewModel::deleteTask,
-                    refreshTaskList = tasksViewModel::getTaskList,
-                    validateEndDate = tasksViewModel::validateEndDate,
-                    isEndDateValid = isEndDateValid
+                    refreshTaskList = tasksViewModel::getTaskList
                 )
             }
         }
