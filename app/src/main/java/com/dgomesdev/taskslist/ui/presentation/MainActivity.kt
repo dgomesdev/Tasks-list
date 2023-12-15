@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
+import com.dgomesdev.taskslist.ui.composables.TaskApp
 import com.dgomesdev.taskslist.ui.theme.TasksListTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     addTask = tasksViewModel::addTask,
                     editTask = tasksViewModel::editTask,
                     deleteTask = tasksViewModel::deleteTask,
-                    refreshTaskList = tasksViewModel::getTaskList
+                    setStatus = tasksViewModel::editTask
                 )
             }
         }

@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dgomesdev.taskslist.domain.Status
 import com.dgomesdev.taskslist.domain.TaskEntity
-import com.dgomesdev.taskslist.ui.presentation.DeleteTask
 import com.dgomesdev.taskslist.ui.routes.ScreenNavigation
 import com.dgomesdev.taskslist.ui.theme.AlmostLateColor
 import com.dgomesdev.taskslist.ui.theme.DoneColor
@@ -44,6 +43,7 @@ fun TaskCard(
     task: TaskEntity,
     deleteTask: DeleteTask,
     goToScreen: ScreenNavigation,
+    setStatus: SetStatus
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -94,7 +94,9 @@ fun TaskCard(
             ) {
                 Text(
                     text = "${task.priority}",
-                    modifier = Modifier.fillMaxWidth().padding(4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
                     fontSize = 24.sp,
                     textAlign = TextAlign.Center
                     )
@@ -133,13 +135,22 @@ fun TaskCard(
                     task = task,
                     goToScreen = goToScreen,
                     isTaskDone = isTaskDone,
-                    onMarkAsDone = { isTaskDone = !isTaskDone }
+                    onMarkAsDone = {
+                        isTaskDone = !isTaskDone ;
+                        if (isTaskDone) {
+                            setStatus(task.copy(status = Status.DONE))
+                        } else {
+                            setStatus(task.copy(status = Status.TO_DO))
+                        }
+                    }
                 )
             }
         }
         if (expanded) {
             Row(
-                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -153,14 +164,16 @@ fun TaskCard(
                 )
             }
             Row(
-                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
+                if (task.startDate != null) Text(
                     "Start date: ${task.startDate}",
                     Modifier.weight(0.5f)
                 )
-                Text(
+                if (task.endDate != null) Text(
                     "End date: ${task.endDate}",
                     Modifier.weight(0.5f),
                     textAlign = TextAlign.End
@@ -169,7 +182,7 @@ fun TaskCard(
             Row(
                 Modifier.padding(8.dp)
             ) {
-                Text(
+                if (task.description.isNotBlank()) Text(
                     task.description,
                     Modifier.padding(8.dp),
                     textAlign = TextAlign.Justify
@@ -193,11 +206,12 @@ private fun TaskCardPreview() {
                     "fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in " +
                     "culpa qui officia deserunt mollit anim id est laborum.",
             Status.ALMOST_LATE,
+            null,
             "09/07/21",
-            "",
             2
         ),
         {},
         {},
+        {}
     )
 }

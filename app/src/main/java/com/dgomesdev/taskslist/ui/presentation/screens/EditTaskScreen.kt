@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.ui.composables.DateSetter
 import com.dgomesdev.taskslist.ui.composables.PrioritySetter
-import com.dgomesdev.taskslist.ui.presentation.EditTask
+import com.dgomesdev.taskslist.ui.composables.EditTask
 import com.dgomesdev.taskslist.ui.routes.ScreenNavigation
 import com.dgomesdev.taskslist.utils.validateEndDate
 

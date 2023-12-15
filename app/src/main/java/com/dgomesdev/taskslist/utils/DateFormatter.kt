@@ -2,7 +2,6 @@ package com.dgomesdev.taskslist.utils
 
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -19,6 +18,3 @@ fun Long.getDate(
 
 fun String.toDate(): LocalDate =
     LocalDate.parse(this, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-
-fun String.toTime(): LocalDateTime =
-    LocalDateTime.parse(this, DateTimeFormatter.ofPattern("HH:mm"))

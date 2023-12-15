@@ -1,4 +1,4 @@
-package com.dgomesdev.taskslist.ui.presentation
+package com.dgomesdev.taskslist.ui.composables
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -12,14 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dgomesdev.taskslist.domain.TaskEntity
-import com.dgomesdev.taskslist.ui.composables.NewTaskButton
-import com.dgomesdev.taskslist.ui.composables.TaskAppBar
 import com.dgomesdev.taskslist.ui.routes.TasksNavHost
 
-typealias AddTask = (task: TaskEntity) -> Unit
-typealias EditTask = (task: TaskEntity) -> Unit
-typealias DeleteTask = (task: TaskEntity) -> Unit
-typealias RefreshList = () -> Unit
+typealias AddTask = (TaskEntity) -> Unit
+typealias EditTask = (TaskEntity) -> Unit
+typealias SetStatus = (TaskEntity) -> Unit
+typealias DeleteTask = (TaskEntity) -> Unit
 
 @Composable
 fun TaskApp(
@@ -27,7 +25,7 @@ fun TaskApp(
     addTask: AddTask,
     editTask: EditTask,
     deleteTask: DeleteTask,
-    refreshTaskList: RefreshList
+    setStatus: SetStatus
 ) {
     val navController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -54,7 +52,7 @@ fun TaskApp(
             addTask = addTask,
             editTask = editTask,
             deleteTask = deleteTask,
-            refreshList = refreshTaskList
+            setStatus = setStatus
         )
     }
 }

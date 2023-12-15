@@ -22,11 +22,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.domain.TaskEntity
+import com.dgomesdev.taskslist.ui.composables.AddTask
 import com.dgomesdev.taskslist.ui.composables.DateSetter
 import com.dgomesdev.taskslist.ui.composables.ErrorDialog
 import com.dgomesdev.taskslist.ui.composables.PrioritySetter
-import com.dgomesdev.taskslist.ui.presentation.AddTask
-import com.dgomesdev.taskslist.ui.presentation.RefreshList
 import com.dgomesdev.taskslist.ui.routes.ScreenNavigation
 import com.dgomesdev.taskslist.utils.validateEndDate
 import com.dgomesdev.taskslist.utils.validateTaskName
@@ -34,7 +33,6 @@ import com.dgomesdev.taskslist.utils.validateTaskName
 @Composable
 fun AddTaskScreen(
     addTask: AddTask,
-    refreshList: RefreshList,
     goToScreen: ScreenNavigation
 ) {
     var taskName by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -72,6 +70,7 @@ fun AddTaskScreen(
         TextField(
             value = taskName,
             onValueChange = { taskName = it },
+            isError = !isTaskNameValid,
             label = { Text("Task's name") },
             modifier = Modifier
                 .padding(16.dp)
@@ -116,7 +115,6 @@ fun AddTaskScreen(
                 isEndDateValid = validateEndDate(taskStartDate, taskEndDate)
                 if (isEndDateValid && isTaskNameValid) {
                     addTask(task)
-                    refreshList()
                     goToScreen("Main screen")
                 } else {
                     error = if (!isTaskNameValid) {
@@ -139,7 +137,6 @@ fun AddTaskScreen(
 private fun AddTaskPreview() {
     AddTaskScreen(
         addTask = {},
-        refreshList = {},
         goToScreen = {}
     )
 }

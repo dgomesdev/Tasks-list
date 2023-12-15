@@ -5,7 +5,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.dgomesdev.taskslist.domain.TaskEntity
-import com.dgomesdev.taskslist.ui.presentation.DeleteTask
 import com.dgomesdev.taskslist.ui.routes.ScreenNavigation
 
 @Composable

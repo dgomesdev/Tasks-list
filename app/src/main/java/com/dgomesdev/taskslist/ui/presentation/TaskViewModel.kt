@@ -28,41 +28,32 @@ class TaskViewModel(
         getTaskList()
     }
 
-    fun getTaskList() = viewModelScope.launch {
+    private fun getTaskList() = viewModelScope.launch {
         taskRepository.getTasks()
             .catch {}
             .collect { tasks ->
-                _uiState.value = TaskUiState(tasks = tasks.verifyTaskStatus())
+                tasks.verifyTaskStatus()
+                _uiState.value = TaskUiState(tasks = tasks)
             }
     }
 
-    private fun List<TaskEntity>.verifyTaskStatus(): List<TaskEntity> {
-        val verifiedTasks = mutableListOf<TaskEntity>()
-        if (this == emptyList<TaskEntity>()) return emptyList()
+    private fun List<TaskEntity>.verifyTaskStatus() {
         val today = LocalDate.now()
         for (task in this) {
-            val taskEndDate = task.endDate?.toDate()
-            when {
-                taskEndDate == null -> verifiedTasks.add(task.copy(status = Status.TO_DO))
-                today.isBefore(taskEndDate.plusDays(1)) &&
-                        today.isAfter(taskEndDate.minusDays(1)) ->
-                    verifiedTasks.add(
-                        task.copy(
-                            status = Status.ALMOST_LATE
-                        )
-                    )
+            if (task.isTaskDone) editTask(task.copy(status = Status.DONE))
+            else {
+                val deadline = task.endDate?.toDate()
+                val dayBeforeDeadline = deadline?.minusDays(1)
+                when {
+                    deadline == null -> editTask(task.copy(status = Status.TO_DO))
+                    today.isEqual(deadline) || today.isEqual(dayBeforeDeadline) ->
+                        editTask(task.copy(status = Status.ALMOST_LATE))
 
-                today.isAfter(task.endDate.toDate()) ->
-                    verifiedTasks.add(
-                        task.copy(
-                            status = Status.LATE
-                        )
-                    )
-
-                else -> verifiedTasks.add(task.copy(status = Status.TO_DO))
+                    today.isAfter(deadline) -> editTask(task.copy(status = Status.LATE))
+                    else -> editTask(task.copy(status = Status.TO_DO))
+                }
             }
         }
-        return verifiedTasks
     }
 
     fun addTask(task: TaskEntity) = viewModelScope.launch {

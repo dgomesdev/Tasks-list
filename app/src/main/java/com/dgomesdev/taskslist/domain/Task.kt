@@ -13,5 +13,6 @@ data class Task(
     val status: Status = Status.TO_DO,
     val startDate: String?,
     val endDate: String?,
-    val priority: Int
+    val priority: Int,
+    val isTaskDone: Boolean = false
     )

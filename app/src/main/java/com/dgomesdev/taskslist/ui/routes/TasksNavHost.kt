@@ -8,10 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.dgomesdev.taskslist.domain.TaskEntity
-import com.dgomesdev.taskslist.ui.presentation.AddTask
-import com.dgomesdev.taskslist.ui.presentation.DeleteTask
-import com.dgomesdev.taskslist.ui.presentation.EditTask
-import com.dgomesdev.taskslist.ui.presentation.RefreshList
+import com.dgomesdev.taskslist.ui.composables.AddTask
+import com.dgomesdev.taskslist.ui.composables.DeleteTask
+import com.dgomesdev.taskslist.ui.composables.EditTask
+import com.dgomesdev.taskslist.ui.composables.SetStatus
 import com.dgomesdev.taskslist.ui.presentation.screens.AddTaskScreen
 import com.dgomesdev.taskslist.ui.presentation.screens.EditTaskScreen
 import com.dgomesdev.taskslist.ui.presentation.screens.MainScreen
@@ -24,7 +24,7 @@ fun TasksNavHost(
     addTask: AddTask,
     editTask: EditTask,
     deleteTask: DeleteTask,
-    refreshList: RefreshList,
+    setStatus: SetStatus,
     modifier: Modifier
 ) {
     NavHost(
@@ -37,13 +37,13 @@ fun TasksNavHost(
                 tasks = tasks,
                 deleteTask = deleteTask,
                 screenNavigation = { navController.navigate(it) },
-                modifier = modifier
+                modifier = modifier,
+                setStatus = setStatus
             )
         }
         composable(route = "Add task screen") {
             AddTaskScreen(
                 addTask = addTask,
-                refreshList = refreshList,
                 goToScreen = { navController.navigate(it) }
             )
         }
