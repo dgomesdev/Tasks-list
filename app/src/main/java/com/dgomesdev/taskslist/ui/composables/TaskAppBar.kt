@@ -10,13 +10,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.dgomesdev.taskslist.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskAppBar() {
     val context = LocalContext.current
     TopAppBar(
-        title = { Text("Tasks list") },
+        title = { Text(stringResource(R.string.app_name)) },
         actions = {
             IconButton(onClick = {
                 Toast.makeText(
@@ -27,7 +29,7 @@ fun TaskAppBar() {
             }) {
                 Icon(
                     imageVector = Icons.Filled.Info,
-                    contentDescription = "Localized description"
+                    contentDescription = "Developer info icon button"
                 )
             }
         })

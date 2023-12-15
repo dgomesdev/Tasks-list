@@ -14,10 +14,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val state = tasksViewModel.uiState.collectAsState().value
+            val tasks = tasksViewModel.uiState.collectAsState().value
             TasksListTheme {
                 TaskApp(
-                    tasks = state.tasks,
+                    tasks = tasks,
                     addTask = tasksViewModel::addTask,
                     editTask = tasksViewModel::editTask,
                     deleteTask = tasksViewModel::deleteTask

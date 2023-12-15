@@ -1,3 +1,24 @@
 <resources>
-    <string name="app_name">Tasks list</string>
+    <string name="app_name">Mini kanban</string>
+    <string name="unmark_as_done">Unmark as "done"</string>
+    <string name="mark_as_done">Mark as "done"</string>
+    <string name="edit_task">Edit task</string>
+    <string name="delete_task">Delete task</string>
+    <string name="show_less">show less</string>
+    <string name="show_more">show more</string>
+    <string name="task_options">Options</string>
+    <string name="add_new_task_button">Button to add a new task</string>
+    <string name="tasks_list">Tasks list</string>
+    <string name="task_s_name">Task name</string>
+    <string name="task_s_description">Task description</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_task">Add task</string>
+    <string name="confirm_edition">Confirm edition</string>
+    <string name="to_do">Confirm edition</string>
+    <string name="almost_late">Confirm edition</string>
+    <string name="late">Confirm edition</string>
+    <string name="done">Confirm edition</string>
+    <string name="start_date">Confirm edition</string>
+    <string name="end_date">Confirm edition</string>
+    <string name="priority_level">Confirm edition</string>
 </resources>

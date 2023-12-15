@@ -22,7 +22,6 @@ fun MainScreen(
     ) {
         TaskList(
             taskList = tasks,
-            modifier = modifier,
             deleteTask = deleteTask,
             screenNavigation = screenNavigation,
             setStatus = setStatus

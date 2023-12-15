@@ -1,7 +1,9 @@
 package com.dgomesdev.taskslist.ui.routes
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -28,7 +30,7 @@ fun TasksNavHost(
     NavHost(
         navController = navController,
         startDestination = "Main screen",
-        modifier = modifier
+        modifier = modifier.padding(8.dp)
     ) {
         composable(route = "Main screen") {
             MainScreen(

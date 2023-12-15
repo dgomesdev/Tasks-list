@@ -20,16 +20,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.Status
 import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.ui.routes.ScreenNavigation
@@ -52,10 +53,10 @@ fun TaskCard(
         mutableStateOf(false)
     }
     val status = when (task.status) {
-        Status.TO_DO -> "To do"
-        Status.DONE -> "Done"
-        Status.ALMOST_LATE -> "Almost late"
-        Status.LATE -> "Late"
+        Status.TO_DO -> stringResource(R.string.to_do)
+        Status.DONE -> stringResource(R.string.done)
+        Status.ALMOST_LATE -> stringResource(R.string.almost_late)
+        Status.LATE -> stringResource(R.string.late)
     }
     Card(
         modifier = Modifier
@@ -81,11 +82,11 @@ fun TaskCard(
                     .weight(0.15f)
                     .padding(8.dp),
                 colors = CardDefaults.cardColors(
-                    when (status) {
-                        "Done" -> DoneColor
-                        "Almost late" -> AlmostLateColor
-                        "Late" -> LateColor
-                        else -> ToDoColor
+                    when (task.status) {
+                        Status.DONE -> DoneColor
+                        Status.ALMOST_LATE -> AlmostLateColor
+                        Status.LATE -> LateColor
+                        Status.TO_DO -> ToDoColor
                     }
                 )
             ) {
@@ -116,15 +117,18 @@ fun TaskCard(
                 Icon(
                     imageVector = if (expanded) Icons.Filled.KeyboardArrowUp
                     else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = if (expanded) "show less"
-                    else "show more"
+                    contentDescription = if (expanded) stringResource(R.string.show_less)
+                    else stringResource(R.string.show_more)
                 )
             }
             IconButton(
                 onClick = { expandedMenu = true },
                 Modifier.weight(0.1f)
             ) {
-                Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Task options")
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = stringResource(R.string.task_options)
+                )
                 TaskOptions(
                     expandedMenu = expandedMenu,
                     onExpandChange = { expandedMenu = it },
@@ -150,7 +154,7 @@ fun TaskCard(
                     Modifier.weight(0.5f)
                 )
                 Text(
-                    "Priority level: ${task.priority}",
+                    stringResource(R.string.priority_level) + ": ${task.priority}",
                     Modifier.weight(0.5f),
                     textAlign = TextAlign.End
                 )
@@ -162,11 +166,11 @@ fun TaskCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (task.startDate != null) Text(
-                    "Start date: ${task.startDate}",
+                    stringResource(R.string.start_date) + ": ${task.startDate}",
                     Modifier.weight(0.5f)
                 )
                 if (task.endDate != null) Text(
-                    "End date: ${task.endDate}",
+                    stringResource(R.string.end_date) + ": ${task.endDate}",
                     Modifier.weight(0.5f),
                     textAlign = TextAlign.End
                 )
@@ -174,11 +178,13 @@ fun TaskCard(
             Row(
                 Modifier.padding(8.dp)
             ) {
-                if (task.description.isNotBlank()) Text(
-                    task.description,
-                    Modifier.padding(8.dp),
-                    textAlign = TextAlign.Justify
+                if (task.description.isNotBlank()) {
+                    Text(
+                        task.description,
+                        Modifier.padding(8.dp),
+                        textAlign = TextAlign.Justify
                     )
+                }
             }
         }
     }

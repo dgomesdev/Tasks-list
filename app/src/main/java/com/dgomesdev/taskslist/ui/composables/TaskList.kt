@@ -10,7 +10,6 @@ import com.dgomesdev.taskslist.ui.routes.ScreenNavigation
 @Composable
 fun TaskList(
     taskList: List<TaskEntity>,
-    modifier: Modifier,
     deleteTask: DeleteTask,
     screenNavigation: ScreenNavigation,
     setStatus: EditTask

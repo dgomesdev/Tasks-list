@@ -13,6 +13,13 @@
     <string name="task_s_name">Nome da tarefa</string>
     <string name="task_s_description">Descrição da tarefa</string>
     <string name="cancel">Cancelar</string>
-    <string name="add_task">Lista de tarefas</string>
+    <string name="add_task">Adicionar tarefa</string>
     <string name="confirm_edition">Confirmar edição</string>
+    <string name="to_do">A fazer</string>
+    <string name="almost_late">Quase em atraso</string>
+    <string name="late">Em atraso</string>
+    <string name="done">Feito</string>
+    <string name="start_date">Data de início</string>
+    <string name="end_date">Data de fim</string>
+    <string name="priority_level">Nível de prioridade</string>
 </resources>

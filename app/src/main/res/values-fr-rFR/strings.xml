@@ -15,4 +15,11 @@
     <string name="cancel">Annuler</string>
     <string name="add_task">Ajouter tâche</string>
     <string name="confirm_edition">Confirmer la modification</string>
+    <string name="to_do">A faire</string>
+    <string name="almost_late">Presque en retard</string>
+    <string name="late">En retard</string>
+    <string name="done">Fait</string>
+    <string name="start_date">Date de début</string>
+    <string name="end_date">Date de fin</string>
+    <string name="priority_level">Niveau de priorité</string>
 </resources>

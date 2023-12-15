@@ -21,8 +21,8 @@ class TaskViewModel(
     private val taskRepository: TaskRepositoryImpl,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(TaskUiState(loading = true))
-    val uiState: StateFlow<TaskUiState> = _uiState
+    private val _uiState = MutableStateFlow(emptyList<TaskEntity>())
+    val uiState: StateFlow<List<TaskEntity>> = _uiState
 
     init {
         getTaskList()
@@ -33,7 +33,7 @@ class TaskViewModel(
             .catch {}
             .collect { tasks ->
                 tasks.verifyTaskStatus()
-                _uiState.value = TaskUiState(tasks = tasks)
+                _uiState.value = tasks
             }
     }
 
@@ -77,8 +77,3 @@ class TaskViewModel(
         }
     }
 }
-
-data class TaskUiState(
-    val tasks: List<TaskEntity> = emptyList(),
-    val loading: Boolean = false,
-)
