@@ -11,7 +11,6 @@ import com.dgomesdev.taskslist.domain.TaskEntity
 import com.dgomesdev.taskslist.ui.composables.AddTask
 import com.dgomesdev.taskslist.ui.composables.DeleteTask
 import com.dgomesdev.taskslist.ui.composables.EditTask
-import com.dgomesdev.taskslist.ui.composables.SetStatus
 import com.dgomesdev.taskslist.ui.presentation.screens.AddTaskScreen
 import com.dgomesdev.taskslist.ui.presentation.screens.EditTaskScreen
 import com.dgomesdev.taskslist.ui.presentation.screens.MainScreen
@@ -24,7 +23,6 @@ fun TasksNavHost(
     addTask: AddTask,
     editTask: EditTask,
     deleteTask: DeleteTask,
-    setStatus: SetStatus,
     modifier: Modifier
 ) {
     NavHost(
@@ -38,7 +36,7 @@ fun TasksNavHost(
                 deleteTask = deleteTask,
                 screenNavigation = { navController.navigate(it) },
                 modifier = modifier,
-                setStatus = setStatus
+                setStatus = editTask
             )
         }
         composable(route = "Add task screen") {

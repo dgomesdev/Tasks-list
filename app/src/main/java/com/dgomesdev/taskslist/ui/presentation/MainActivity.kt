@@ -20,8 +20,7 @@ class MainActivity : ComponentActivity() {
                     tasks = state.tasks,
                     addTask = tasksViewModel::addTask,
                     editTask = tasksViewModel::editTask,
-                    deleteTask = tasksViewModel::deleteTask,
-                    setStatus = tasksViewModel::editTask
+                    deleteTask = tasksViewModel::deleteTask
                 )
             }
         }

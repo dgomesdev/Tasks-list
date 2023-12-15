@@ -16,7 +16,6 @@ import com.dgomesdev.taskslist.ui.routes.TasksNavHost
 
 typealias AddTask = (TaskEntity) -> Unit
 typealias EditTask = (TaskEntity) -> Unit
-typealias SetStatus = (TaskEntity) -> Unit
 typealias DeleteTask = (TaskEntity) -> Unit
 
 @Composable
@@ -25,7 +24,6 @@ fun TaskApp(
     addTask: AddTask,
     editTask: EditTask,
     deleteTask: DeleteTask,
-    setStatus: SetStatus
 ) {
     val navController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -51,8 +49,7 @@ fun TaskApp(
             tasks = tasks,
             addTask = addTask,
             editTask = editTask,
-            deleteTask = deleteTask,
-            setStatus = setStatus
+            deleteTask = deleteTask
         )
     }
 }

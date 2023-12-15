@@ -13,7 +13,7 @@ fun TaskList(
     modifier: Modifier,
     deleteTask: DeleteTask,
     screenNavigation: ScreenNavigation,
-    setStatus: SetStatus
+    setStatus: EditTask
 ) {
     LazyColumn {
         items(taskList) { task ->

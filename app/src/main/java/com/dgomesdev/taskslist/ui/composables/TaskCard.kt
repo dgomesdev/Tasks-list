@@ -43,15 +43,12 @@ fun TaskCard(
     task: TaskEntity,
     deleteTask: DeleteTask,
     goToScreen: ScreenNavigation,
-    setStatus: SetStatus
+    setStatus: EditTask
 ) {
     var expanded by remember {
         mutableStateOf(false)
     }
     var expandedMenu by remember {
-        mutableStateOf(false)
-    }
-    var isTaskDone by rememberSaveable {
         mutableStateOf(false)
     }
     val status = when (task.status) {
@@ -108,7 +105,7 @@ fun TaskCard(
                     .weight(0.65f),
                 style = TextStyle(
                     textDecoration =
-                    if (isTaskDone) TextDecoration.LineThrough
+                    if (task.isTaskDone) TextDecoration.LineThrough
                     else TextDecoration.None
                 )
             )
@@ -134,14 +131,9 @@ fun TaskCard(
                     deleteTask = deleteTask,
                     task = task,
                     goToScreen = goToScreen,
-                    isTaskDone = isTaskDone,
+                    isTaskDone = task.isTaskDone,
                     onMarkAsDone = {
-                        isTaskDone = !isTaskDone ;
-                        if (isTaskDone) {
-                            setStatus(task.copy(status = Status.DONE))
-                        } else {
-                            setStatus(task.copy(status = Status.TO_DO))
-                        }
+                        setStatus(task.copy(isTaskDone = !task.isTaskDone))
                     }
                 )
             }
