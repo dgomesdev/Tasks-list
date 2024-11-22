@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Lista de tarefas</string>
+    <string name="app_name">Mini Kanban</string>
     <string name="unmark_as_done">Desmarcar como "feito"</string>
     <string name="mark_as_done">Marcar como "feito"</string>
     <string name="edit_task">Editar tarefa</string>
