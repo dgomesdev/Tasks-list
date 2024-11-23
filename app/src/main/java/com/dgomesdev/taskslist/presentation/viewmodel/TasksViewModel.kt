@@ -1,5 +1,6 @@
 package com.dgomesdev.taskslist.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dgomesdev.taskslist.domain.model.Task
@@ -14,6 +15,7 @@ import com.dgomesdev.taskslist.domain.usecase.user.AuthUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.DeleteUserUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.GetUserUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.UpdateUserUseCase
+import com.dgomesdev.taskslist.infra.SecurePreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,13 +30,15 @@ class TasksViewModel(
     private val authUseCase: AuthUseCase,
     private val getUserUseCase: GetUserUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
-    private val deleteUserUseCase: DeleteUserUseCase
+    private val deleteUserUseCase: DeleteUserUseCase,
+    private val securePreferences: SecurePreferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
     init {
+        checkUserLoggedIn()
         _uiState.update { currentState ->
             currentState.copy(
                 onTaskChange = { taskAction, task ->
@@ -47,16 +51,26 @@ class TasksViewModel(
         }
     }
 
+    private fun checkUserLoggedIn() {
+        _uiState.update { currentState ->
+            currentState.copy(isLoggedIn = securePreferences.isTokenValid())
+        }
+    }
+
     private fun handleTaskAction(action: TaskAction, task: Task) {
+        Log.d("TASKVIEWMODEL", "Task: $task")
+        Log.d("TASKVIEWMODEL", "TaskAction: $action")
         when (action) {
             TaskAction.SAVE -> executeTask { saveTaskUseCase(task) }
-            TaskAction.GET -> executeTask { getTaskUseCase(task.taskId!!, _uiState.value.user!!) }
+            TaskAction.GET -> executeTask { getTaskUseCase(task) }
             TaskAction.UPDATE -> executeTask { updateTaskUseCase(task) }
             TaskAction.DELETE -> executeTask { deleteTaskUseCase(task.taskId!!) }
         }
     }
 
     private fun handleUserAction(action: UserAction, user: User) {
+        Log.d("TASKVIEWMODEL", "User: $user")
+        Log.d("TASKVIEWMODEL", "UserAction: $action")
         when (action) {
             UserAction.REGISTER, UserAction.LOGIN -> executeUser { authUseCase(action, user) }
             UserAction.GET -> executeUser { getUserUseCase(user.userId!!) }
@@ -68,12 +82,27 @@ class TasksViewModel(
     private fun <T> executeTask(taskAction: suspend () -> T) {
         viewModelScope.launch {
             runCatching {
-                _uiState.value = _uiState.value.copy(message = null)
+                _uiState.value = _uiState.value.copy(
+                    message = null,
+                    isLoading = true
+                )
                 taskAction()
             }.onSuccess { result ->
-                _uiState.value = _uiState.value.copy(task = result as? Task, message = "Success!")
+                _uiState.value = _uiState.value.copy(
+                    task = result as? Task,
+                    message = "Success!",
+                    isLoading = false
+                )
+                Log.d("TasksViewModel", "Task: ${_uiState.value.task}")
+                val user = _uiState.value.user
+                if (user != null) handleUserAction(UserAction.GET, user)
             }.onFailure { e ->
-                _uiState.value = _uiState.value.copy(message = "Error: ${e.message}")
+                _uiState.value =
+                    _uiState.value.copy(
+                        message = "Error: ${e.message}",
+                        isLoading = false
+                    )
+                Log.e("TasksViewModel", "Error: ${e.message}")
             }
         }
     }
@@ -81,12 +110,38 @@ class TasksViewModel(
     private fun <T> executeUser(userAction: suspend () -> T) {
         viewModelScope.launch {
             runCatching {
-                _uiState.value = _uiState.value.copy(message = null)
+                _uiState.value = _uiState.value.copy(
+                    message = null,
+                    isLoading = true
+                )
                 userAction()
             }.onSuccess { result ->
-                _uiState.value = _uiState.value.copy(user = result as? User, message = "Success!")
+                if (result is User) {
+                    _uiState.update {
+                        it.copy(
+                            user = result,
+                            isLoggedIn = securePreferences.isTokenValid(),
+                            message = "Success!",
+                            isLoading = false
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLoggedIn = false,
+                            message = "Account deleted successfully",
+                            isLoading = false
+                        )
+                    }
+                }
+                Log.d("TasksViewModel", "User: ${_uiState.value.user}")
             }.onFailure { e ->
-                _uiState.value = _uiState.value.copy(message = "Error: ${e.message}")
+                _uiState.value =
+                    _uiState.value.copy(
+                        message = "Error: ${e.message}",
+                        isLoading = false
+                    )
+                Log.e("TasksViewModel", "Error: ${e.message}")
             }
         }
     }
@@ -95,7 +150,9 @@ class TasksViewModel(
 data class AppUiState(
     val task: Task? = null,
     val user: User? = null,
-    val onTaskChange: (TaskAction, Task) -> Unit = {_ , _ ->},
-    val onUserChange: (UserAction, User) -> Unit = {_ , _ ->},
-    val message: String? = null
+    val onTaskChange: (TaskAction, Task) -> Unit = { _, _ -> },
+    val onUserChange: (UserAction, User) -> Unit = { _, _ -> },
+    val message: String? = null,
+    val isLoggedIn: Boolean = false,
+    val isLoading: Boolean = false
 )

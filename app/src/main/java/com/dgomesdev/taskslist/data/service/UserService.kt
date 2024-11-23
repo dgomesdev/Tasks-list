@@ -5,12 +5,11 @@ import com.dgomesdev.taskslist.data.dto.request.UserRequestDto
 import com.dgomesdev.taskslist.data.dto.response.AuthResponseDto
 import com.dgomesdev.taskslist.data.dto.response.MessageDto
 import com.dgomesdev.taskslist.data.dto.response.UserResponseDto
-import java.util.UUID
 
 interface UserService {
-    fun registerUser(user: AuthRequestDto): AuthResponseDto
-    fun loginUser(user: AuthRequestDto): AuthResponseDto
-    fun getUser(userId: UUID): UserResponseDto
-    fun updateUser(userId: UUID, user: UserRequestDto): UserResponseDto
-    fun deleteUser(userId: UUID): MessageDto
+    suspend fun registerUser(user: AuthRequestDto): Result<AuthResponseDto>
+    suspend fun loginUser(user: AuthRequestDto): Result<AuthResponseDto>
+    suspend fun getUser(userId: String): Result<UserResponseDto>
+    suspend fun updateUser(userId: String, user: UserRequestDto): Result<UserResponseDto>
+    suspend fun deleteUser(userId: String): Result<MessageDto>
 }

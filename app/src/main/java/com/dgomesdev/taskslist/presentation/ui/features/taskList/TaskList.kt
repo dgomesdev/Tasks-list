@@ -186,9 +186,9 @@ fun TaskCard(
 private fun TaskListPreview() {
     TaskList(
         taskList = listOf(
-            Task(UUID.randomUUID(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
-            Task(UUID.randomUUID(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
-            Task(UUID.randomUUID(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
+            Task(UUID.randomUUID().toString(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
+            Task(UUID.randomUUID().toString(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
+            Task(UUID.randomUUID().toString(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
         ),
         handleTaskAction = { _, _ -> },
         goToScreen = {},
@@ -202,7 +202,7 @@ private fun TaskListPreview() {
 @Composable
 private fun TaskCardPreview() {
     TaskCard(
-        task = Task(UUID.randomUUID(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
+        task = Task(UUID.randomUUID().toString(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
         goToScreen = {},
         handleTaskAction = {_,_ ->}
     )

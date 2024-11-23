@@ -5,12 +5,12 @@ import com.dgomesdev.taskslist.data.dto.request.UserRequestDto
 import com.dgomesdev.taskslist.data.dto.response.AuthResponseDto
 import com.dgomesdev.taskslist.data.dto.response.MessageDto
 import com.dgomesdev.taskslist.data.dto.response.UserResponseDto
-import java.util.UUID
+import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    suspend fun saveUser(user: AuthRequestDto): AuthResponseDto
-    suspend fun loginUser(user: AuthRequestDto): AuthResponseDto
-    suspend fun getUser(userId: UUID): UserResponseDto
-    suspend fun updateUser(userId: UUID, user: UserRequestDto): UserResponseDto
-    suspend fun deleteUser(userId: UUID): MessageDto
+    suspend fun saveUser(user: AuthRequestDto): Flow<AuthResponseDto>
+    suspend fun loginUser(user: AuthRequestDto): Flow<AuthResponseDto>
+    suspend fun getUser(userId: String): Flow<UserResponseDto>
+    suspend fun updateUser(userId: String, user: UserRequestDto): Flow<UserResponseDto>
+    suspend fun deleteUser(userId: String): Flow<MessageDto>
 }

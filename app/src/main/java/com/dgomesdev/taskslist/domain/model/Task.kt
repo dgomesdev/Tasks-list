@@ -1,10 +1,11 @@
 package com.dgomesdev.taskslist.domain.model
 
 import com.dgomesdev.taskslist.data.dto.response.TaskResponseDto
-import java.util.UUID
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Task(
-    val taskId: UUID?,
+    val taskId: String?,
     val title: String,
     val description: String,
     val priority: Priority,

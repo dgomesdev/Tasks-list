@@ -1,10 +1,11 @@
 package com.dgomesdev.taskslist.domain.model
 
 import com.dgomesdev.taskslist.data.dto.response.UserResponseDto
-import java.util.UUID
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class User(
-    val userId: UUID? = null,
+    val userId: String? = null,
     val username: String,
     val password: String,
     val tasks: List<Task> = emptyList(),

@@ -3,11 +3,10 @@ package com.dgomesdev.taskslist.data.service
 import com.dgomesdev.taskslist.data.dto.request.TaskRequestDto
 import com.dgomesdev.taskslist.data.dto.response.MessageDto
 import com.dgomesdev.taskslist.data.dto.response.TaskResponseDto
-import java.util.UUID
 
 interface TaskService {
-    fun saveTask(task: TaskRequestDto): TaskResponseDto
-    fun getTask(taskId: UUID): TaskResponseDto
-    fun updateTask(taskId: UUID, task: TaskRequestDto): TaskResponseDto
-    fun deleteTask(taskId: UUID): MessageDto
+    suspend fun saveTask(task: TaskRequestDto): Result<TaskResponseDto>
+    suspend fun getTask(taskId: String): Result<TaskResponseDto>
+    suspend fun updateTask(taskId: String, task: TaskRequestDto): Result<TaskResponseDto>
+    suspend fun deleteTask(taskId: String): Result<MessageDto>
 }

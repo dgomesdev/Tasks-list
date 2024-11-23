@@ -3,6 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21" // this version matches your Kotlin version
+
 }
 
 android {
@@ -51,6 +54,10 @@ android {
     }
 }
 
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+}
+
 dependencies {
 
     implementation("androidx.core:core-ktx:1.15.0")
@@ -77,6 +84,17 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
 
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
+
+    implementation("io.ktor:ktor-client-core:3.0.1")
+    implementation("io.ktor:ktor-client-android:3.0.1")
+    implementation("io.ktor:ktor-client-content-negotiation:3.0.1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
+    implementation("io.ktor:ktor-client-logging:3.0.1")
+    implementation("io.ktor:ktor-client-auth:3.0.1")
+    implementation("org.slf4j:slf4j-android:1.7.36")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.insert-koin:koin-test-junit4")

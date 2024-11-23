@@ -7,21 +7,22 @@ import com.dgomesdev.taskslist.data.dto.response.MessageDto
 import com.dgomesdev.taskslist.data.dto.response.UserResponseDto
 import com.dgomesdev.taskslist.data.service.UserService
 import com.dgomesdev.taskslist.domain.repository.UserRepository
-import java.util.UUID
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class UserRepositoryImpl(private val userService: UserService): UserRepository {
-    override suspend fun saveUser(user: AuthRequestDto): AuthResponseDto =
-        userService.registerUser(user)
+    override suspend fun saveUser(user: AuthRequestDto): Flow<AuthResponseDto> =
+        flow { emit(userService.registerUser(user).getOrElse { error(it.message ?: "Error while registering user") }) }
 
-    override suspend fun loginUser(user: AuthRequestDto): AuthResponseDto =
-        userService.loginUser(user)
+    override suspend fun loginUser(user: AuthRequestDto): Flow<AuthResponseDto> =
+        flow { emit(userService.loginUser(user).getOrElse { error(it.message ?: "Error while logging in user") }) }
 
-    override suspend fun getUser(userId: UUID): UserResponseDto =
-        userService.getUser(userId)
+    override suspend fun getUser(userId: String): Flow<UserResponseDto> =
+        flow { emit(userService.getUser(userId).getOrElse { error(it.message ?: "Error while getting user") }) }
 
-    override suspend fun updateUser(userId: UUID, user: UserRequestDto): UserResponseDto =
-        userService.updateUser(userId, user)
+    override suspend fun updateUser(userId: String, user: UserRequestDto): Flow<UserResponseDto> =
+        flow { emit(userService.updateUser(userId, user).getOrElse { error(it.message ?: "Error while updating user") }) }
 
-    override suspend fun deleteUser(userId: UUID): MessageDto =
-        userService.deleteUser(userId)
+    override suspend fun deleteUser(userId: String): Flow<MessageDto> =
+        flow { emit(userService.deleteUser(userId).getOrElse { error(it.message ?: "Error while deleting user") }) }
 }

@@ -1,9 +1,9 @@
 package com.dgomesdev.taskslist.domain.usecase.task
 
 import com.dgomesdev.taskslist.domain.repository.TaskRepository
-import java.util.UUID
+import kotlinx.coroutines.flow.single
 
 class DeleteTaskUseCase(private val taskRepository: TaskRepository) {
-    suspend operator fun invoke(taskId: UUID): String =
-        taskRepository.deleteTask(taskId).message
+    suspend operator fun invoke(taskId: String): String =
+        taskRepository.deleteTask(taskId).single().message
 }

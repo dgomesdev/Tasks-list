@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import org.json.JSONObject
+import java.util.Date
 
 class SecurePreferences(context: Context){
     private var masterKey: MasterKey = MasterKey.Builder(context)
@@ -25,4 +27,25 @@ class SecurePreferences(context: Context){
     }
 
     fun getToken(): String? = sharedPreferences.getString("token", null)
+
+    fun isTokenValid(): Boolean {
+        val token = getToken()
+        return try {
+            val parts = token?.split(".")
+            if (parts?.size == 3) {
+                val payload = String(android.util.Base64.decode(parts[1], android.util.Base64.URL_SAFE))
+                val expiry = JSONObject(payload).optLong("exp") * 1000 // JWT `exp` is in seconds
+                val currentTime = Date().time
+                currentTime < expiry
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun deleteToken() {
+        editor.remove("token").apply()
+    }
 }
