@@ -17,6 +17,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +38,9 @@ import com.dgomesdev.taskslist.domain.model.Status
 import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
+import com.dgomesdev.taskslist.presentation.ui.app.NewTaskButton
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
+import com.dgomesdev.taskslist.presentation.ui.app.TaskAppBar
 import com.dgomesdev.taskslist.presentation.ui.theme.AlmostLateColor
 import com.dgomesdev.taskslist.presentation.ui.theme.DoneColor
 import com.dgomesdev.taskslist.presentation.ui.theme.ToDoColor
@@ -51,23 +54,34 @@ fun TaskList(
     onChooseTask: ChooseTask,
     modifier: Modifier = Modifier
 ) {
-    if (taskList != null) {
-        LazyColumn {
-            items(taskList) { task ->
-                TaskCard(
-                    task = task,
-                    handleTaskAction = handleTaskAction,
-                    goToScreen = goToScreen,
-                    onChooseTask = onChooseTask
-                )
-            }
+    Scaffold(
+        topBar = { TaskAppBar( ) },
+        floatingActionButton = {
+            NewTaskButton(
+                goToScreen = goToScreen
+            )
         }
-    } else {
-        Box(
-            modifier = modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("No tasks")
+    ) { padding ->
+        if (taskList != null) {
+            LazyColumn(
+                contentPadding = padding,
+            ) {
+                items(taskList) { task ->
+                    TaskCard(
+                        task = task,
+                        handleTaskAction = handleTaskAction,
+                        goToScreen = goToScreen,
+                        onChooseTask = onChooseTask
+                    )
+                }
+            }
+        } else {
+            Box(
+                modifier = modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("No tasks")
+            }
         }
     }
 }

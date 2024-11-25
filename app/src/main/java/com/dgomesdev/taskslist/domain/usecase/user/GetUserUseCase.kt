@@ -5,6 +5,10 @@ import com.dgomesdev.taskslist.domain.repository.UserRepository
 import kotlinx.coroutines.flow.single
 
 class GetUserUseCase(private val userRepository: UserRepository) {
-    suspend operator fun invoke(userId: String): User =
-        User.fromApi(userRepository.getUser(userId).single())
+    suspend operator fun invoke(userId: String): User? =
+        try {
+            User.fromApi(userRepository.getUser(userId).single())
+        } catch (_: Exception) {
+            null
+        }
 }
