@@ -16,13 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.dgomesdev.taskslist.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskAppBar(
-    onOpenDrawer: () -> Unit = {}
+    onOpenDrawer: () -> Unit
 ) {
     val context = LocalContext.current
     TopAppBar(
@@ -52,10 +51,4 @@ fun TaskAppBar(
                 )
             }
         })
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun AppBarPreview() {
-    TaskAppBar()
 }

@@ -16,6 +16,7 @@ import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
+import kotlinx.coroutines.launch
 
 @Composable
 fun TaskNavigationDrawer(
@@ -35,12 +36,12 @@ fun TaskNavigationDrawer(
                 NavigationDrawerItem(
                     label = { Text(text = "Edit profile") },
                     selected = false,
-                    onClick = { goToScreen("UserDetails") }
+                    onClick = { goToScreen("UserDetails"); scope.launch { drawerState.apply { close() } } }
                 )
                 NavigationDrawerItem(
                     label = { Text(text = "Change language") },
                     selected = false,
-                    onClick = { TODO() }
+                    onClick = { scope.launch { drawerState.apply { close() } } }
                 )
             }
         }
@@ -49,7 +50,8 @@ fun TaskNavigationDrawer(
             taskList = taskList,
             handleTaskAction = handleTaskAction,
             goToScreen = goToScreen,
-            onChooseTask = onChooseTask
+            onChooseTask = onChooseTask,
+            onOpenDrawer = { scope.launch { drawerState.apply { open() } } }
         )
     }
 }

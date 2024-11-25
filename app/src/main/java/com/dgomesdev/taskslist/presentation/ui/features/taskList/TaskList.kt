@@ -52,10 +52,11 @@ fun TaskList(
     handleTaskAction: HandleTaskAction,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
+    onOpenDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
-        topBar = { TaskAppBar( ) },
+        topBar = { TaskAppBar(onOpenDrawer = onOpenDrawer) },
         floatingActionButton = {
             NewTaskButton(
                 goToScreen = goToScreen
@@ -198,23 +199,6 @@ fun TaskCard(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun TaskListPreview() {
-    TaskList(
-        taskList = listOf(
-            Task(UUID.randomUUID().toString(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
-            Task(UUID.randomUUID().toString(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
-            Task(UUID.randomUUID().toString(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
-        ),
-        handleTaskAction = { _, _ -> },
-        goToScreen = {},
-        onChooseTask = {}
-    )
-
-
 }
 
 @Preview
