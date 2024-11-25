@@ -55,6 +55,9 @@ class TasksViewModel(
         _uiState.update { currentState ->
             currentState.copy(isLoggedIn = securePreferences.isTokenValid())
         }
+        if (_uiState.value.isLoggedIn) {
+            handleUserAction(UserAction.GET, securePreferences.getUserFromToken()!!)
+        }
     }
 
     private fun handleTaskAction(action: TaskAction, task: Task) {
@@ -87,15 +90,8 @@ class TasksViewModel(
                     isLoading = true
                 )
                 taskAction()
-            }.onSuccess { result ->
-                _uiState.value = _uiState.value.copy(
-                    task = result as? Task,
-                    message = "Success!",
-                    isLoading = false
-                )
-                Log.d("TasksViewModel", "Task: ${_uiState.value.task}")
-                val user = _uiState.value.user
-                if (user != null) handleUserAction(UserAction.GET, user)
+            }.onSuccess {
+                handleUserAction(UserAction.GET, _uiState.value.user!!)
             }.onFailure { e ->
                 _uiState.value =
                     _uiState.value.copy(
@@ -148,7 +144,6 @@ class TasksViewModel(
 }
 
 data class AppUiState(
-    val task: Task? = null,
     val user: User? = null,
     val onTaskChange: (TaskAction, Task) -> Unit = { _, _ -> },
     val onUserChange: (UserAction, User) -> Unit = { _, _ -> },

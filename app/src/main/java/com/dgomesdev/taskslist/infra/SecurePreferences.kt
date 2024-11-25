@@ -2,12 +2,14 @@ package com.dgomesdev.taskslist.infra
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.dgomesdev.taskslist.domain.model.User
 import org.json.JSONObject
 import java.util.Date
 
-class SecurePreferences(context: Context){
+class SecurePreferences(context: Context) {
     private var masterKey: MasterKey = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
@@ -28,20 +30,38 @@ class SecurePreferences(context: Context){
 
     fun getToken(): String? = sharedPreferences.getString("token", null)
 
-    fun isTokenValid(): Boolean {
-        val token = getToken()
+    private fun getTokenPayload(): String {
         return try {
+            val token = getToken()
             val parts = token?.split(".")
-            if (parts?.size == 3) {
-                val payload = String(android.util.Base64.decode(parts[1], android.util.Base64.URL_SAFE))
-                val expiry = JSONObject(payload).optLong("exp") * 1000 // JWT `exp` is in seconds
-                val currentTime = Date().time
-                currentTime < expiry
-            } else {
-                false
-            }
+            String(android.util.Base64.decode(parts?.get(1), android.util.Base64.URL_SAFE))
         } catch (e: Exception) {
+            Log.e("SecurePreferences", "Error getting token payload: ${e.message}")
+            ""
+        }
+    }
+
+    fun isTokenValid(): Boolean {
+        return try {
+            val payload = getTokenPayload()
+            val expiry = JSONObject(payload).optLong("exp") * 1000 // JWT `exp` is in seconds
+            val currentTime = Date().time
+            currentTime < expiry
+        } catch (e: Exception) {
+            Log.e("SecurePreferences", "Error validating token: ${e.message}")
             false
+        }
+    }
+
+    fun getUserFromToken(): User? {
+        return try {
+            val payload = getTokenPayload()
+            val userId = JSONObject(payload).optString("userId")
+            val username = JSONObject(payload).optString("username")
+            User(userId = userId, username = username)
+        } catch (e: Exception) {
+            Log.e("SecurePreferences", "Error getting user ID: ${e.message}")
+            null
         }
     }
 

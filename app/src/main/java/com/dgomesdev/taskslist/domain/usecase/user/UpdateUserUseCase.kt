@@ -10,7 +10,7 @@ class UpdateUserUseCase(private val userRepository: UserRepository) {
         User.fromApi(
             userRepository.updateUser(
                 user.userId!!,
-                UserRequestDto(user)
+                UserRequestDto.create(user)
             ).single()
         )
 }

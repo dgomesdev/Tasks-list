@@ -16,8 +16,8 @@ class AuthUseCase(
         Log.w("AuthUseCase", "User: $user")
         Log.w("AuthUseCase", "UserAction: $userAction")
         val response = when (userAction) {
-            UserAction.REGISTER -> userRepository.saveUser(AuthRequestDto(user)).single()
-            UserAction.LOGIN -> userRepository.loginUser(AuthRequestDto(user)).single()
+            UserAction.REGISTER -> userRepository.saveUser(AuthRequestDto.create(user)).single()
+            UserAction.LOGIN -> userRepository.loginUser(AuthRequestDto.create(user)).single()
             else -> throw Exception("Invalid user action")
         }
         securePreferences.saveToken(response.token)

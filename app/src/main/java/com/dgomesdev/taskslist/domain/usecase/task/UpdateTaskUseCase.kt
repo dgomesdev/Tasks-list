@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.single
 
 class UpdateTaskUseCase(private val taskRepository: TaskRepository) {
     suspend operator fun invoke(task: Task): Task =
-        Task.fromApi(taskRepository.updateTask(task.taskId!!, TaskRequestDto(task)).single())
+        Task.fromApi(taskRepository.updateTask(task.taskId!!, TaskRequestDto.create(task)).single())
 }

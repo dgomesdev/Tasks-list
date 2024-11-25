@@ -35,6 +35,7 @@ import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Priority
 import com.dgomesdev.taskslist.domain.model.Status
 import com.dgomesdev.taskslist.domain.model.Task
+import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import com.dgomesdev.taskslist.presentation.ui.theme.AlmostLateColor
@@ -47,7 +48,8 @@ fun TaskList(
     taskList: List<Task>?,
     handleTaskAction: HandleTaskAction,
     goToScreen: ScreenNavigation,
-    modifier: Modifier
+    onChooseTask: ChooseTask,
+    modifier: Modifier = Modifier
 ) {
     if (taskList != null) {
         LazyColumn {
@@ -55,7 +57,8 @@ fun TaskList(
                 TaskCard(
                     task = task,
                     handleTaskAction = handleTaskAction,
-                    goToScreen = goToScreen
+                    goToScreen = goToScreen,
+                    onChooseTask = onChooseTask
                 )
             }
         }
@@ -73,7 +76,8 @@ fun TaskList(
 fun TaskCard(
     task: Task,
     goToScreen: ScreenNavigation,
-    handleTaskAction: HandleTaskAction
+    handleTaskAction: HandleTaskAction,
+    onChooseTask: ChooseTask = {}
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -146,7 +150,8 @@ fun TaskCard(
             TaskOptions(
                     handleTaskAction = handleTaskAction,
                     task = task,
-                    goToScreen = goToScreen
+                    goToScreen = goToScreen,
+                    onChooseTask = onChooseTask
             )
         }
         if (expanded) {
@@ -192,7 +197,7 @@ private fun TaskListPreview() {
         ),
         handleTaskAction = { _, _ -> },
         goToScreen = {},
-        modifier = Modifier
+        onChooseTask = {}
     )
 
 

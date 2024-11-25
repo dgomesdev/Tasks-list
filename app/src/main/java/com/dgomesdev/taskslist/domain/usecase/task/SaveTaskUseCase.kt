@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.single
 
 class SaveTaskUseCase(private val taskRepository: TaskRepository) {
     suspend operator fun invoke(task: Task): Task =
-        Task.fromApi(taskRepository.saveTask(TaskRequestDto(task)).single())
+        Task.fromApi(taskRepository.saveTask(TaskRequestDto.create(task)).single())
 
 }

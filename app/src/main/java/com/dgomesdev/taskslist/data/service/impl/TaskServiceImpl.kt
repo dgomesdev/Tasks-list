@@ -52,6 +52,7 @@ class TaskServiceImpl(
             try {
                 val errorResponse = response.body<MessageDto>()
                 Log.e("Save task error", "Error: ${errorResponse.message}")
+                Log.e("Save task error", "Exception: ${e.message}")
                 Result.failure(Exception(errorResponse.message))
             } catch (innerException: Exception) {
                 val rawResponse = response.bodyAsText()
@@ -68,7 +69,7 @@ class TaskServiceImpl(
             url {
                 protocol = URLProtocol.HTTPS
                 host = apiUrl
-                path("/tasks/", taskId) // Dynamic path parameter
+                path("/tasks", taskId) // Dynamic path parameter
             }
             bearerAuth(token)
         }
@@ -80,6 +81,7 @@ class TaskServiceImpl(
             try {
                 val errorResponse = response.body<MessageDto>()
                 Log.e("Get task error", "Error: ${errorResponse.message}")
+                Log.e("Save task error", "Exception: ${e.message}")
                 Result.failure(Exception(errorResponse.message))
             } catch (innerException: Exception) {
                 Log.e("Get task error", "Unexpected error: ${innerException.message}")
@@ -94,7 +96,7 @@ class TaskServiceImpl(
             url {
                 protocol = URLProtocol.HTTPS
                 host = apiUrl
-                path("/tasks/", taskId) // Dynamic path parameter
+                path("/tasks", taskId) // Dynamic path parameter
             }
             bearerAuth(token)
             contentType(ContentType.Application.Json)
@@ -108,6 +110,7 @@ class TaskServiceImpl(
             try {
                 val errorResponse = response.body<MessageDto>()
                 Log.e("Update task error", "Error: ${errorResponse.message}")
+                Log.e("Save task error", "Exception: ${e.message}")
                 Result.failure(Exception(errorResponse.message))
             } catch (innerException: Exception) {
                 Log.e("Update task error", "Unexpected error: ${innerException.message}")
@@ -122,7 +125,7 @@ class TaskServiceImpl(
             url {
                 protocol = URLProtocol.HTTPS
                 host = apiUrl
-                path("/tasks/", taskId) // Dynamic path parameter
+                path("/tasks", taskId) // Dynamic path parameter
             }
             bearerAuth(token)
         }
@@ -134,6 +137,7 @@ class TaskServiceImpl(
             try {
                 val errorResponse = response.body<MessageDto>()
                 Log.e("Delete task error", "Error: ${errorResponse.message}")
+                Log.e("Save task error", "Exception: ${e.message}")
                 Result.failure(Exception(errorResponse.message))
             } catch (innerException: Exception) {
                 Log.e("Delete task error", "Unexpected error: ${innerException.message}")

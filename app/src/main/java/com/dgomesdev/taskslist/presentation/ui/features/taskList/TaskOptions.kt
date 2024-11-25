@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.domain.model.TaskAction
+import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 
@@ -23,7 +24,8 @@ import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 fun TaskOptions(
     handleTaskAction: HandleTaskAction,
     task: Task,
-    goToScreen: ScreenNavigation
+    goToScreen: ScreenNavigation,
+    onChooseTask: ChooseTask
 ) {
     var expandedMenu by remember { mutableStateOf(false) }
 
@@ -37,7 +39,7 @@ fun TaskOptions(
         DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.edit_task)) },
-                onClick = { handleTaskAction(TaskAction.GET, task); goToScreen("TaskDetails"); expandedMenu = false }
+                onClick = { onChooseTask(task) ; goToScreen("TaskDetails"); expandedMenu = false }
             )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete_task)) },

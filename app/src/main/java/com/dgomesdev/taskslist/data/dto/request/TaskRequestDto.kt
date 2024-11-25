@@ -5,10 +5,16 @@ import com.dgomesdev.taskslist.domain.model.Status
 import com.dgomesdev.taskslist.domain.model.Task
 import kotlinx.serialization.Serializable
 
+@ConsistentCopyVisibility
 @Serializable
-data class TaskRequestDto(val task: Task) {
-    val title: String = task.title
-    val description: String = task.description
-    val priority: Priority = task.priority
-    val status: Status = task.status
+data class TaskRequestDto private constructor(
+    val title: String,
+    val description: String,
+    val priority: Priority,
+    val status: Status,
+) {
+    companion object {
+        fun create(task: Task) =
+            TaskRequestDto(task.title, task.description, task.priority, task.status)
+    }
 }
