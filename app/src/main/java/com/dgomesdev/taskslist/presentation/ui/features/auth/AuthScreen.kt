@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,72 +29,71 @@ import com.dgomesdev.taskslist.presentation.ui.app.HandleUserAction
 
 @Composable
 fun AuthScreen(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     handleUserAction: HandleUserAction
     ) {
     var isNewUser by rememberSaveable { mutableStateOf(true) }
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
-    Column(
+    Surface(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = if (isNewUser) "Sign In" else "Log In",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = modifier.height(16.dp))
-
-        // Username Input
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            modifier = modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = modifier.height(8.dp))
-
-        // Password Input
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = modifier.height(16.dp))
-
-        // Authentication Button
-        Button(
-            onClick = {
-                val user = User(username = username, password = password)
-                handleUserAction(
-                    if (isNewUser) UserAction.REGISTER else UserAction.LOGIN,
-                    user
-                )
-            },
-            modifier = modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = if (isNewUser) "Sign In" else "Log In")
-        }
-
-        Spacer(modifier = modifier.height(8.dp))
-
-        // Toggle between Sign In and Log In
-        TextButton(onClick = { isNewUser = !isNewUser }) {
             Text(
-                text = if (isNewUser) "Already have an account? Log In" else "Don't have an account? Sign In"
+                text = if (isNewUser) "Sign In" else "Log In",
+                style = MaterialTheme.typography.headlineMedium
             )
-        }
 
-        Spacer(modifier = modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Username Input
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Username") }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Password") },
+                visualTransformation = PasswordVisualTransformation()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    val user = User(username = username, password = password)
+                    handleUserAction(
+                        if (isNewUser) UserAction.REGISTER else UserAction.LOGIN,
+                        user
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = if (isNewUser) "Sign In" else "Log In")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(onClick = { isNewUser = !isNewUser }) {
+                Text(
+                    text = if (isNewUser) "Already have an account? Log In" else "Don't have an account? Sign In"
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 
@@ -101,6 +101,7 @@ fun AuthScreen(
 @Composable
 private fun AuthPreview() {
     AuthScreen(
+        Modifier.fillMaxSize(),
         handleUserAction = { _, _ -> }
     )
 }

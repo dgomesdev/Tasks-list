@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     uiState: AppUiState,
     handleTaskAction: HandleTaskAction,
     goToScreen: ScreenNavigation,
@@ -29,9 +29,10 @@ fun MainScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
+        drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Text("Task list app", modifier = modifier.padding(16.dp))
+                Text("Task list app", modifier = Modifier.padding(16.dp))
                 HorizontalDivider()
                 NavigationDrawerItem(
                     label = { Text(text = "Edit profile") },
@@ -52,11 +53,12 @@ fun MainScreen(
         }
     ) {
         TaskList(
+            modifier = modifier,
             uiState = uiState,
             handleTaskAction = handleTaskAction,
             goToScreen = goToScreen,
             onChooseTask = onChooseTask,
-            onOpenDrawer = { scope.launch { drawerState.apply { open() } } }
+            onOpenDrawer = { scope.launch { drawerState.open() } }
         )
     }
 }

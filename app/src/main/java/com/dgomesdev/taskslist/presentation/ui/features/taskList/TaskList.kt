@@ -54,18 +54,19 @@ import java.util.UUID
 
 @Composable
 fun TaskList(
+    modifier: Modifier,
     uiState: AppUiState,
     handleTaskAction: HandleTaskAction,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
-    onOpenDrawer: () -> Unit,
-    modifier: Modifier = Modifier
+    onOpenDrawer: () -> Unit
 ) {
     val taskList = uiState.user?.tasks
     val message = uiState.message
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
+        modifier = modifier,
         topBar = { TaskAppBar(onOpenDrawer = onOpenDrawer) },
         floatingActionButton = {
             NewTaskButton(
@@ -96,7 +97,7 @@ fun TaskList(
             }
         } else {
             Box(
-                modifier = modifier.fillMaxWidth().padding(padding),
+                modifier = modifier.padding(padding),
                 contentAlignment = Alignment.Center
             ) {
                 Text("No tasks")

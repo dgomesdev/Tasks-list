@@ -42,7 +42,8 @@ class TasksViewModel(
             currentState.copy(
                 onTaskChange = ::handleTaskAction,
                 onUserChange = ::handleUserAction,
-                onLogout = ::logout
+                onLogout = ::logout,
+                onRefreshMessage = ::refreshMessage
             )
         }
     }
@@ -104,6 +105,12 @@ class TasksViewModel(
             it.copy(user = null)
         }
     }
+
+    private fun refreshMessage() {
+        _uiState.update {
+            it.copy(message = null)
+        }
+    }
 }
 
 data class AppUiState(
@@ -111,6 +118,7 @@ data class AppUiState(
     val onTaskChange: (TaskAction, Task) -> Unit = { _, _ -> },
     val onUserChange: (UserAction, User) -> Unit = { _, _ -> },
     val onLogout: () -> Unit = {},
+    val onRefreshMessage: () -> Unit = {},
     val message: String? = null,
     val isLoading: Boolean = false
 )

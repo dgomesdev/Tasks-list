@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,72 +36,76 @@ import com.dgomesdev.taskslist.presentation.ui.app.HandleUserAction
 
 @Composable
 fun UserDetailsScreen(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     user: User,
-    handleUserAction: HandleUserAction
+    handleUserAction: HandleUserAction,
+    backToMainScreen: () -> Unit = {}
 ) {
     var username by rememberSaveable { mutableStateOf(user.username) }
-    var password by rememberSaveable { mutableStateOf("") } // Password remains empty for security
+    var password by rememberSaveable { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
     var isUpdating by remember { mutableStateOf(false) }
     var updatedUser = user.copy(username = username, password = password)
 
-    Column(
+    Surface(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Update User Info",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Update User Info",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                IconButton(onClick = { showPassword = !showPassword }) {
-                    Icon(
-                        imageVector = if (showPassword) Icons.Default.Face else Icons.Default.Lock,
-                        contentDescription = if (showPassword) "Hide Password" else "Show Password"
-                    )
-                }
-            }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (isUpdating) {
-            CircularProgressIndicator()
-        } else {
-            Button(
-                onClick = {
-                    if (username.isNotBlank()) updatedUser = user.copy(username = username)
-                    if (password.isNotBlank()) updatedUser = user.copy(password = password)
-                    isUpdating = true
-                    handleUserAction(UserAction.UPDATE, updatedUser)
-                    isUpdating = false // This would be updated based on API response
-                },
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") },
+                singleLine = true,
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Update")
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { showPassword = !showPassword }) {
+                        Icon(
+                            imageVector = if (showPassword) Icons.Default.Face else Icons.Default.Lock,
+                            contentDescription = if (showPassword) "Hide Password" else "Show Password"
+                        )
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (isUpdating) {
+                CircularProgressIndicator()
+            } else {
+                Button(
+                    onClick = {
+                        if (username.isNotBlank()) updatedUser = user.copy(username = username)
+                        if (password.isNotBlank()) updatedUser = user.copy(password = password)
+                        isUpdating = true
+                        handleUserAction(UserAction.UPDATE, updatedUser)
+                        isUpdating = false
+                        backToMainScreen()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Update")
+                }
             }
         }
     }
@@ -110,6 +115,7 @@ fun UserDetailsScreen(
 @Composable
 private fun UpdatePreview() {
     UserDetailsScreen(
+        modifier = Modifier.fillMaxSize(),
         user = User(username = "test", password = "test"),
         handleUserAction = { _, _ -> }
     )

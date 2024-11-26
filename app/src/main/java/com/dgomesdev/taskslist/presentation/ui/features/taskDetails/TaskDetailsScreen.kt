@@ -3,6 +3,7 @@ package com.dgomesdev.taskslist.presentation.ui.features.taskDetails
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -26,14 +27,14 @@ import com.dgomesdev.taskslist.domain.model.Status
 import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.domain.model.TaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
-import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import java.util.UUID
 
 @Composable
 fun TaskDetailsScreen(
-    handleTaskAction: HandleTaskAction,
+    modifier: Modifier,
     task: Task?,
-    goToScreen: ScreenNavigation
+    handleTaskAction: HandleTaskAction,
+    backToMainScreen: () -> Unit = {}
 ) {
     var taskTitle by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(task?.title ?: ""))
@@ -51,8 +52,10 @@ fun TaskDetailsScreen(
         mutableStateOf(task?.status ?: Status.TO_BE_DONE)
     }
 
-    Surface {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Surface(
+        modifier = modifier
+    ) {
+        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             TextField(
                 value = taskTitle,
                 onValueChange = { taskTitle = it },
@@ -70,7 +73,9 @@ fun TaskDetailsScreen(
                     .fillMaxWidth()
             )
             Row(
-                Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 PrioritySetter(
@@ -83,7 +88,7 @@ fun TaskDetailsScreen(
                 )
             }
             Button(
-                onClick = { goToScreen("TaskList") },
+                onClick = { backToMainScreen() },
                 modifier = Modifier.padding(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.LightGray,
@@ -104,7 +109,7 @@ fun TaskDetailsScreen(
                             taskStatus
                         )
                     )
-                    goToScreen("TaskList")
+                    backToMainScreen()
                 },
                 modifier = Modifier.padding(8.dp)
             ) {
@@ -118,8 +123,15 @@ fun TaskDetailsScreen(
 @Composable
 private fun TaskListPreview() {
     TaskDetailsScreen(
-        handleTaskAction = {_, _ ->},
-        task = Task(UUID.randomUUID().toString(), "Task title", "Task description", Priority.LOW, Status.IN_PROGRESS),
-        goToScreen = {}
+        modifier = Modifier.fillMaxSize(),
+        handleTaskAction = { _, _ -> },
+        task = Task(
+            UUID.randomUUID().toString(),
+            "Task title",
+            "Task description",
+            Priority.LOW,
+            Status.IN_PROGRESS
+        ),
+        backToMainScreen = {}
     )
 }
