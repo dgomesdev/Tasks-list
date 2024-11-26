@@ -156,8 +156,8 @@ class UserServiceImpl(
             bearerAuth(token)
         }
         return try {
-            val deleteResponse = response.body<MessageDto>()
-            Log.i("Delete user success", "$deleteResponse")
+            val deleteResponse = MessageDto("Account deleted successfully!")
+            Log.i("Delete user success", deleteResponse.message)
             Result.success(deleteResponse)
         } catch (e: Exception) {
             try {

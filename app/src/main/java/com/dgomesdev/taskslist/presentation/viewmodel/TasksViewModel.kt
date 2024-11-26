@@ -40,27 +40,25 @@ class TasksViewModel(
         if (loggedUser != null) handleUserAction(UserAction.GET, loggedUser)
         _uiState.update { currentState ->
             currentState.copy(
-                user = loggedUser,
                 onTaskChange = ::handleTaskAction,
-                onUserChange = ::handleUserAction
+                onUserChange = ::handleUserAction,
+                onLogout = ::logout
             )
         }
     }
 
     private fun handleTaskAction(action: TaskAction, task: Task) {
-        Log.d("TASKVIEWMODEL", "Task: $task")
-        Log.d("TASKVIEWMODEL", "TaskAction: $action")
+        Log.d("TASKVIEWMODEL", "Task: $task, Action: $action")
         val userId = _uiState.value.user?.userId ?: error("No user logged in")
         when (action) {
             TaskAction.SAVE -> execute { saveTaskUseCase(task, userId) }
             TaskAction.UPDATE -> execute { updateTaskUseCase(task, userId) }
-            TaskAction.DELETE -> execute { deleteTaskUseCase(task.taskId!!) }
+            TaskAction.DELETE -> execute { deleteTaskUseCase(task.taskId!!, userId) }
         }
     }
 
     private fun handleUserAction(action: UserAction, user: User) {
-        Log.d("TASKVIEWMODEL", "User: $user")
-        Log.d("TASKVIEWMODEL", "UserAction: $action")
+        Log.d("TASKVIEWMODEL", "User: $user, Action: $action")
         when (action) {
             UserAction.REGISTER, UserAction.LOGIN -> execute { authUseCase(action, user) }
             UserAction.GET -> execute { getUserUseCase(user.userId!!) }
@@ -69,41 +67,41 @@ class TasksViewModel(
         }
     }
 
-    private fun <T> execute(action: suspend () -> T) {
+    private fun execute(action: suspend () -> Pair<User?, String>) {
         viewModelScope.launch {
             runCatching {
-                _uiState.value = _uiState.value.copy(
-                    message = null,
-                    isLoading = true
-                )
+                _uiState.update {
+                    it.copy(
+                        message = null,
+                        isLoading = true
+                    )
+                }
                 action()
             }.onSuccess { result ->
-                if (result is User) {
-                    _uiState.update {
-                        it.copy(
-                            user = result,
-                            message = "Success!",
-                            isLoading = false
-                        )
-                    }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            user = null,
-                            message = "Account deleted successfully",
-                            isLoading = false
-                        )
-                    }
+                val (user, message) = result
+                _uiState.update {
+                    it.copy(
+                        user = user,
+                        message = message,
+                        isLoading = false
+                    )
                 }
                 Log.d("TasksViewModel", "User: ${_uiState.value.user}")
             }.onFailure { e ->
-                _uiState.value =
-                    _uiState.value.copy(
+                _uiState.update {
+                    it.copy(
                         message = "Error: ${e.message}",
                         isLoading = false
                     )
+                }
                 Log.e("TasksViewModel", "Error: ${e.message}")
             }
+        }
+    }
+
+    private fun logout() {
+        _uiState.update {
+            it.copy(user = null)
         }
     }
 }
@@ -112,6 +110,7 @@ data class AppUiState(
     val user: User? = null,
     val onTaskChange: (TaskAction, Task) -> Unit = { _, _ -> },
     val onUserChange: (UserAction, User) -> Unit = { _, _ -> },
+    val onLogout: () -> Unit = {},
     val message: String? = null,
     val isLoading: Boolean = false
 )

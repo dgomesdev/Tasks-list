@@ -18,11 +18,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,25 +48,39 @@ import com.dgomesdev.taskslist.presentation.ui.app.TaskAppBar
 import com.dgomesdev.taskslist.presentation.ui.theme.AlmostLateColor
 import com.dgomesdev.taskslist.presentation.ui.theme.DoneColor
 import com.dgomesdev.taskslist.presentation.ui.theme.ToDoColor
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 @Composable
 fun TaskList(
-    taskList: List<Task>?,
+    uiState: AppUiState,
     handleTaskAction: HandleTaskAction,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
     onOpenDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val taskList = uiState.user?.tasks
+    val message = uiState.message
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         topBar = { TaskAppBar(onOpenDrawer = onOpenDrawer) },
         floatingActionButton = {
             NewTaskButton(
                 goToScreen = goToScreen
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
+        LaunchedEffect(message) {
+            if (message != null) {
+                scope.launch {
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+        }
         if (taskList != null) {
             LazyColumn(
                 contentPadding = padding,
@@ -78,7 +96,7 @@ fun TaskList(
             }
         } else {
             Box(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxWidth().padding(padding),
                 contentAlignment = Alignment.Center
             ) {
                 Text("No tasks")
@@ -143,7 +161,7 @@ fun TaskCard(
                     color = Color.Black,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center
-                    )
+                )
             }
             Text(
                 text = task.title,
@@ -163,10 +181,10 @@ fun TaskCard(
                 )
             }
             TaskOptions(
-                    handleTaskAction = handleTaskAction,
-                    task = task,
-                    goToScreen = goToScreen,
-                    onChooseTask = onChooseTask
+                handleTaskAction = handleTaskAction,
+                task = task,
+                goToScreen = goToScreen,
+                onChooseTask = onChooseTask
             )
         }
         if (expanded) {
@@ -205,8 +223,14 @@ fun TaskCard(
 @Composable
 private fun TaskCardPreview() {
     TaskCard(
-        task = Task(UUID.randomUUID().toString(), "title", "description", Priority.LOW, Status.TO_BE_DONE),
+        task = Task(
+            UUID.randomUUID().toString(),
+            "title",
+            "description",
+            Priority.LOW,
+            Status.TO_BE_DONE
+        ),
         goToScreen = {},
-        handleTaskAction = {_,_ ->}
+        handleTaskAction = { _, _ -> }
     )
 }

@@ -6,11 +6,14 @@ import com.dgomesdev.taskslist.domain.repository.UserRepository
 import kotlinx.coroutines.flow.single
 
 class UpdateUserUseCase(private val userRepository: UserRepository) {
-    suspend operator fun invoke(user: User): User =
-        User.fromApi(
-            userRepository.updateUser(
-                user.userId!!,
-                UserRequestDto.create(user)
-            ).single()
+    suspend operator fun invoke(user: User): Pair<User?, String> =
+        Pair(
+            User.fromApi(
+                userRepository.updateUser(
+                    user.userId!!,
+                    UserRequestDto.create(user)
+                ).single()
+            ),
+            "User updated successfully"
         )
 }

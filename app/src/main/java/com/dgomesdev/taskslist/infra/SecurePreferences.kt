@@ -7,7 +7,6 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.dgomesdev.taskslist.domain.model.User
 import org.json.JSONObject
-import java.util.Date
 
 class SecurePreferences(context: Context) {
     private var masterKey: MasterKey = MasterKey.Builder(context)
@@ -41,18 +40,6 @@ class SecurePreferences(context: Context) {
         }
     }
 
-    fun isTokenValid(): Boolean {
-        return try {
-            val payload = getTokenPayload()
-            val expiry = JSONObject(payload).optLong("exp") * 1000 // JWT `exp` is in seconds
-            val currentTime = Date().time
-            currentTime < expiry
-        } catch (e: Exception) {
-            Log.e("SecurePreferences", "Error validating token: ${e.message}")
-            false
-        }
-    }
-
     fun getUserFromToken(): User? {
         return try {
             val payload = getTokenPayload()
@@ -60,7 +47,7 @@ class SecurePreferences(context: Context) {
             val username = JSONObject(payload).optString("username")
             User(userId = userId, username = username)
         } catch (e: Exception) {
-            Log.e("SecurePreferences", "Error getting user ID: ${e.message}")
+            Log.e("SecurePreferences", "Error getting userId: ${e.message}")
             null
         }
     }

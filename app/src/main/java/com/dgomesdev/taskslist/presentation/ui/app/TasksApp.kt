@@ -17,7 +17,7 @@ import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.domain.model.UserAction
 import com.dgomesdev.taskslist.presentation.ui.features.auth.AuthScreen
 import com.dgomesdev.taskslist.presentation.ui.features.taskDetails.TaskDetailsScreen
-import com.dgomesdev.taskslist.presentation.ui.features.taskList.TaskNavigationDrawer
+import com.dgomesdev.taskslist.presentation.ui.features.taskList.MainScreen
 import com.dgomesdev.taskslist.presentation.ui.features.userDetails.UserDetailsScreen
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 
@@ -45,8 +45,8 @@ fun TasksApp(
         modifier = modifier.padding(8.dp)
     ) {
         composable(route = "TaskList") {
-            TaskNavigationDrawer(
-                taskList = uiState.user?.tasks,
+            MainScreen(
+                uiState = uiState,
                 handleTaskAction = uiState.onTaskChange,
                 goToScreen = {
                     navController.navigate(it)

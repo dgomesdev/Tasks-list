@@ -12,16 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import kotlinx.coroutines.launch
 
 @Composable
-fun TaskNavigationDrawer(
+fun MainScreen(
     modifier: Modifier = Modifier,
-    taskList: List<Task>?,
+    uiState: AppUiState,
     handleTaskAction: HandleTaskAction,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask
@@ -36,18 +36,23 @@ fun TaskNavigationDrawer(
                 NavigationDrawerItem(
                     label = { Text(text = "Edit profile") },
                     selected = false,
-                    onClick = { goToScreen("UserDetails"); scope.launch { drawerState.apply { close() } } }
+                    onClick = { goToScreen("UserDetails"); scope.launch { drawerState.close() } }
                 )
                 NavigationDrawerItem(
                     label = { Text(text = "Change language") },
                     selected = false,
-                    onClick = { scope.launch { drawerState.apply { close() } } }
+                    onClick = { scope.launch { drawerState.close() } }
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = "Logout") },
+                    selected = false,
+                    onClick = { uiState.onLogout() ; scope.launch { drawerState.close() } }
                 )
             }
         }
     ) {
         TaskList(
-            taskList = taskList,
+            uiState = uiState,
             handleTaskAction = handleTaskAction,
             goToScreen = goToScreen,
             onChooseTask = onChooseTask,

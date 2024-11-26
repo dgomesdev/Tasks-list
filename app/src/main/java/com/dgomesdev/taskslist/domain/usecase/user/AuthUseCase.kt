@@ -12,7 +12,7 @@ class AuthUseCase(
     private val userRepository: UserRepository,
     private val securePreferences: SecurePreferences
 ) {
-    suspend operator fun invoke(userAction: UserAction, user: User): User {
+    suspend operator fun invoke(userAction: UserAction, user: User): Pair<User?, String> {
         Log.w("AuthUseCase", "User: $user")
         Log.w("AuthUseCase", "UserAction: $userAction")
         val response = when (userAction) {
@@ -22,6 +22,6 @@ class AuthUseCase(
         }
         securePreferences.saveToken(response.token)
         Log.d("AuthUseCase", "Response: $response")
-        return User.fromApi(response.user)
+        return Pair(User.fromApi(response.user), "User authenticated successfully")
     }
 }

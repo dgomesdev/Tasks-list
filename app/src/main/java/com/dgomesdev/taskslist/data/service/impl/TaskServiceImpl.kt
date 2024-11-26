@@ -130,8 +130,8 @@ class TaskServiceImpl(
             bearerAuth(token)
         }
         return try {
-            val deleteResponse = response.body<MessageDto>()
-            Log.i("Delete task success", "$deleteResponse")
+            val deleteResponse = MessageDto("Task deleted successfully!")
+            Log.i("Delete task success", deleteResponse.message)
             Result.success(deleteResponse)
         } catch (e: Exception) {
             try {
