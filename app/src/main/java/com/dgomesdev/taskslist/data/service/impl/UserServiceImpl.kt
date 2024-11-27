@@ -24,7 +24,7 @@ import io.ktor.http.contentType
 import io.ktor.http.path
 
 class UserServiceImpl(
-    context: Context,
+    private val context: Context,
     private val securePreferences: SecurePreferences,
     private val http: HttpClient
 ) : UserService {
@@ -156,7 +156,7 @@ class UserServiceImpl(
             bearerAuth(token)
         }
         return try {
-            val deleteResponse = MessageDto("Account deleted successfully!")
+            val deleteResponse = MessageDto(context.getString(R.string.account_deleted))
             Log.i("Delete user success", deleteResponse.message)
             Result.success(deleteResponse)
         } catch (e: Exception) {

@@ -36,19 +36,19 @@ fun PrioritySetter(
         Spacer(Modifier.width(8.dp))
         Icon(
             imageVector = Icons.Default.KeyboardArrowDown,
-            contentDescription = stringResource(R.string.task_options)
+            contentDescription = stringResource(R.string.options)
         )
         DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
             DropdownMenuItem(
-                text = { Text("Low") },
+                text = { Text(stringResource(R.string.low)) },
                 onClick = { setPriority(Priority.LOW); expandedMenu = false }
             )
             DropdownMenuItem(
-                text = { Text("Medium") },
+                text = { Text(stringResource(R.string.medium)) },
                 onClick = { setPriority(Priority.MEDIUM); expandedMenu = false }
             )
             DropdownMenuItem(
-                text = { Text("High") },
+                text = { Text(stringResource(R.string.high)) },
                 onClick = { setPriority(Priority.HIGH); expandedMenu = false }
             )
         }

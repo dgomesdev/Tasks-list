@@ -120,7 +120,7 @@ fun TaskCard(
     val status = when (task.status) {
         Status.TO_BE_DONE -> stringResource(R.string.to_do)
         Status.DONE -> stringResource(R.string.done)
-        Status.IN_PROGRESS -> stringResource(R.string.almost_late)
+        Status.IN_PROGRESS -> stringResource(R.string.in_progress)
     }
 
     Card(

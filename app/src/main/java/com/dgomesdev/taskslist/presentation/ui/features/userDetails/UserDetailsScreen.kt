@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,10 +27,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.domain.model.UserAction
 import com.dgomesdev.taskslist.presentation.ui.app.HandleUserAction
@@ -56,7 +60,7 @@ fun UserDetailsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Update User Info",
+                text = stringResource(R.string.edit_profile),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -64,7 +68,7 @@ fun UserDetailsScreen(
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = { Text("Username") },
+                label = { Text(stringResource(R.string.username)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -74,7 +78,7 @@ fun UserDetailsScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text(stringResource(R.string.password)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
@@ -82,7 +86,9 @@ fun UserDetailsScreen(
                     IconButton(onClick = { showPassword = !showPassword }) {
                         Icon(
                             imageVector = if (showPassword) Icons.Default.Face else Icons.Default.Lock,
-                            contentDescription = if (showPassword) "Hide Password" else "Show Password"
+                            contentDescription = if (showPassword) stringResource(R.string.hide_password) else stringResource(
+                                R.string.show_password
+                            )
                         )
                     }
                 }
@@ -94,6 +100,16 @@ fun UserDetailsScreen(
                 CircularProgressIndicator()
             } else {
                 Button(
+                    onClick = { backToMainScreen() },
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray,
+                        contentColor = Color.Red
+                    )
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+                Button(
                     onClick = {
                         if (username.isNotBlank()) updatedUser = user.copy(username = username)
                         if (password.isNotBlank()) updatedUser = user.copy(password = password)
@@ -102,9 +118,9 @@ fun UserDetailsScreen(
                         isUpdating = false
                         backToMainScreen()
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.padding(8.dp)
                 ) {
-                    Text(text = "Update")
+                    Text(text = stringResource(R.string.update))
                 }
             }
         }

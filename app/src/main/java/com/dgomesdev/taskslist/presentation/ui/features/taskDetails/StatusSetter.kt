@@ -36,19 +36,19 @@ fun StatusSetter(
         Spacer(Modifier.width(8.dp))
         Icon(
             imageVector = Icons.Default.KeyboardArrowDown,
-            contentDescription = stringResource(R.string.task_options)
+            contentDescription = stringResource(R.string.options)
         )
         DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
             DropdownMenuItem(
-                text = { Text("To do") },
+                text = { Text(stringResource(R.string.to_do)) },
                 onClick = { setStatus(Status.TO_BE_DONE); expandedMenu = false }
             )
             DropdownMenuItem(
-                text = { Text("In progress") },
+                text = { Text(stringResource(R.string.in_progress)) },
                 onClick = { setStatus(Status.IN_PROGRESS); expandedMenu = false }
             )
             DropdownMenuItem(
-                text = { Text("Done") },
+                text = { Text(stringResource(R.string.done)) },
                 onClick = { setStatus(Status.DONE); expandedMenu = false }
             )
         }

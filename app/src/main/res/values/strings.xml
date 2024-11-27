@@ -1,4 +1,47 @@
 <resources>
     <string name="app_name">Tasks list</string>
     <string name="api_url" translatable="false">to-do-list-api-c70d.onrender.com</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="log_in">Log In</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="already_have_an_account">Already have an account? Log In</string>
+    <string name="don_t_have_an_account">Don\'t have an account? Sign Up</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="hide_password">Hide Password</string>
+    <string name="show_password">Show Password</string>
+    <string name="update">Update</string>
+    <string name="task_title">Task title</string>
+    <string name="task_description">Task description</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="loading">Loading…</string>
+    <string name="options">Options</string>
+    <string name="low">Low</string>
+    <string name="medium">Medium</string>
+    <string name="high">High</string>
+    <string name="to_do">To do</string>
+    <string name="in_progress">In progress</string>
+    <string name="done">Done</string>
+    <string name="show_less">Show Less</string>
+    <string name="show_more">Show More</string>
+    <string name="priority_level">Priority level</string>
+    <string name="edit_task">Edit task</string>
+    <string name="delete_task">Delete task</string>
+    <string name="add_new_task">Add New task</string>
+    <string name="menu">Menu</string>
+    <string name="developed_by_dgomes_dev">Developed by Dgomes Dev</string>
+    <string name="developer_info">Developer info icon button</string>
+    <string name="change_language">Change language</string>
+    <string name="log_out">Log Out</string>
+    <string name="delete_account">Delete account</string>
+    <string name="too_long">Response may take a moment, please wait.</string>
+    <string name="task_saved">Task saved successfully</string>
+    <string name="task_updated">Task updated successfully</string>
+    <string name="hello">Hello %1$s!</string>
+    <string name="welcome">Welcome %1$s!</string>
+    <string name="user_not_authenticated">User not authenticated</string>
+    <string name="user_updated">User updated successfully</string>
+    <string name="task_deleted">Task deleted successfully!</string>
+    <string name="account_deleted">Account deleted successfully!</string>
 </resources>

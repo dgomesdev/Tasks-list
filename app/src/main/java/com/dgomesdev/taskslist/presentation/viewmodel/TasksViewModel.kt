@@ -49,7 +49,7 @@ class TasksViewModel(
     }
 
     private fun handleTaskAction(action: TaskAction, task: Task) {
-        Log.d("TASKVIEWMODEL", "Task: $task, Action: $action")
+        Log.d("ViewModel", "Task: $task, Action: $action")
         val userId = _uiState.value.user?.userId ?: error("No user logged in")
         when (action) {
             TaskAction.SAVE -> execute { saveTaskUseCase(task, userId) }
@@ -59,7 +59,7 @@ class TasksViewModel(
     }
 
     private fun handleUserAction(action: UserAction, user: User) {
-        Log.d("TASKVIEWMODEL", "User: $user, Action: $action")
+        Log.d("ViewModel", "User: $user, Action: $action")
         when (action) {
             UserAction.REGISTER, UserAction.LOGIN -> execute { authUseCase(action, user) }
             UserAction.GET -> execute { getUserUseCase(user.userId!!) }

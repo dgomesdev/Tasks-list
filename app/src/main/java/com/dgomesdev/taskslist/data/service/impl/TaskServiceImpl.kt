@@ -23,7 +23,7 @@ import io.ktor.http.contentType
 import io.ktor.http.path
 
 class TaskServiceImpl(
-    context: Context,
+    private val context: Context,
     private val securePreferences: SecurePreferences,
     private val http: HttpClient
 ) : TaskService {
@@ -130,7 +130,7 @@ class TaskServiceImpl(
             bearerAuth(token)
         }
         return try {
-            val deleteResponse = MessageDto("Task deleted successfully!")
+            val deleteResponse = MessageDto(context.getString(R.string.task_deleted))
             Log.i("Delete task success", deleteResponse.message)
             Result.success(deleteResponse)
         } catch (e: Exception) {

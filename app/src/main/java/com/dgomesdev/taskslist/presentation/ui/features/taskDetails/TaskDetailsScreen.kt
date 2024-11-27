@@ -19,9 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Priority
 import com.dgomesdev.taskslist.domain.model.Status
 import com.dgomesdev.taskslist.domain.model.Task
@@ -59,7 +61,7 @@ fun TaskDetailsScreen(
             TextField(
                 value = taskTitle,
                 onValueChange = { taskTitle = it },
-                label = { Text("Task's title") },
+                label = { Text(stringResource(R.string.task_title)) },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
@@ -67,7 +69,7 @@ fun TaskDetailsScreen(
             TextField(
                 value = taskDescription,
                 onValueChange = { taskDescription = it },
-                label = { Text("Task's description") },
+                label = { Text(stringResource(R.string.task_description)) },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
@@ -95,7 +97,7 @@ fun TaskDetailsScreen(
                     contentColor = Color.Red
                 )
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
             Button(
                 onClick = {
@@ -113,7 +115,7 @@ fun TaskDetailsScreen(
                 },
                 modifier = Modifier.padding(8.dp)
             ) {
-                Text("Confirm Edition")
+                Text(stringResource(R.string.confirm))
             }
         }
     }

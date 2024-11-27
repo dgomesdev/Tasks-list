@@ -34,7 +34,7 @@ fun TaskOptions(
     ) {
         Icon(
             imageVector = Icons.Default.MoreVert,
-            contentDescription = stringResource(R.string.task_options)
+            contentDescription = stringResource(R.string.options)
         )
         DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
             DropdownMenuItem(

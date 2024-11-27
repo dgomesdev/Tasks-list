@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lista de Tarefas</string>
+    <string name="sign_up">Cadastrar-se</string>
+    <string name="log_in">Entrar</string>
+    <string name="username">Nome de usuário</string>
+    <string name="password">Senha</string>
+    <string name="already_have_an_account">Já tem uma conta? Entre</string>
+    <string name="don_t_have_an_account">Não tem uma conta? Cadastre-se</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="hide_password">Ocultar Senha</string>
+    <string name="show_password">Mostrar Senha</string>
+    <string name="update">Atualizar</string>
+    <string name="task_title">Título da tarefa</string>
+    <string name="task_description">Descrição da tarefa</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="loading">Carregando…</string>
+    <string name="options">Opções</string>
+    <string name="low">Baixa</string>
+    <string name="medium">Média</string>
+    <string name="high">Alta</string>
+    <string name="to_do">A fazer</string>
+    <string name="in_progress">Em progresso</string>
+    <string name="done">Concluída</string>
+    <string name="show_less">Mostrar menos</string>
+    <string name="show_more">Mostrar mais</string>
+    <string name="priority_level">Nível de prioridade</string>
+    <string name="edit_task">Editar Tarefa</string>
+    <string name="delete_task">Excluir Tarefa</string>
+    <string name="add_new_task">Nova Tarefa</string>
+    <string name="menu">Menu</string>
+    <string name="developed_by_dgomes_dev">Desenvolvido por Dgomes Dev</string>
+    <string name="developer_info">Botão de informações do desenvolvedor</string>
+    <string name="change_language">Alterar idioma</string>
+    <string name="log_out">Sair</string>
+    <string name="delete_account">Excluir conta</string>
+    <string name="too_long">A resposta pode levar um momento, aguarde.</string>
+    <string name="task_saved">Tarefa salva com sucesso</string>
+    <string name="task_updated">Tarefa atualizada com sucesso</string>
+    <string name="hello">Olá %1$s!</string>
+    <string name="welcome">Bem-vindo(a) %1$s!</string>
+    <string name="user_not_authenticated">Usuário não autenticado.</string>
+    <string name="user_updated">Usuário atualizado com sucesso</string>
+    <string name="task_deleted">Tarefa excluída com sucesso!</string>
+    <string name="account_deleted">Conta excluída com sucesso!</string>
+</resources>

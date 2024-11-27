@@ -1,5 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Liste de tâches</string>
-
+    <string name="app_name">Liste des tâches</string>
+    <string name="sign_up">S\'inscrire</string>
+    <string name="log_in">Se connecter</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="password">Mot de passe</string>
+    <string name="already_have_an_account">Vous avez déjà un compte ? Connectez-vous</string>
+    <string name="don_t_have_an_account">Vous n\'avez pas de compte ? Inscrivez-vous</string>
+    <string name="edit_profile">Modifier le profil</string>
+    <string name="hide_password">Masquer le mot de passe</string>
+    <string name="show_password">Afficher le mot de passe</string>
+    <string name="update">Mettre à jour</string>
+    <string name="task_title">Titre de la tâche</string>
+    <string name="task_description">Description de la tâche</string>
+    <string name="cancel">Annuler</string>
+    <string name="confirm">Confirmer</string>
+    <string name="loading">Chargement…</string>
+    <string name="options">Options</string>
+    <string name="low">Faible</string>
+    <string name="medium">Moyen</string>
+    <string name="high">Élevé</string>
+    <string name="to_do">À faire</string>
+    <string name="in_progress">En cours</string>
+    <string name="done">Terminé</string>
+    <string name="show_less">Afficher moins</string>
+    <string name="show_more">Afficher plus</string>
+    <string name="priority_level">Niveau de priorité</string>
+    <string name="edit_task">Modifier la tâche</string>
+    <string name="delete_task">Supprimer la tâche</string>
+    <string name="add_new_task">Nouvelle tâche</string>
+    <string name="menu">Menu</string>
+    <string name="developed_by_dgomes_dev">Développé par Dgomes Dev</string>
+    <string name="developer_info">Bouton info développeur</string>
+    <string name="change_language">Changer de langue</string>
+    <string name="log_out">Se déconnecter</string>
+    <string name="delete_account">Supprimer le compte</string>
+    <string name="too_long">La réponse peut prendre un moment, veuillez patienter.</string>
+    <string name="task_saved">Tâche enregistrée avec succès</string>
+    <string name="task_updated">Tâche mise à jour avec succès</string>
+    <string name="hello">Bonjour %1$s !</string>
+    <string name="welcome">Bienvenue %1$s !</string>
+    <string name="user_not_authenticated">Utilisateur non authentifié.</string>
+    <string name="user_updated">Utilisateur mis à jour avec succès</string>
+    <string name="task_deleted">Tâche supprimée avec succès !</string>
+    <string name="account_deleted">Compte supprimé avec succès !</string>
 </resources>

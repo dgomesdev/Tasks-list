@@ -1,5 +1,7 @@
 package com.dgomesdev.taskslist.domain.usecase.task
 
+import android.content.Context
+import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.data.dto.request.TaskRequestDto
 import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.domain.model.User
@@ -9,10 +11,12 @@ import kotlinx.coroutines.flow.single
 
 class UpdateTaskUseCase(
     private val taskRepository: TaskRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val context: Context
 ) {
     suspend operator fun invoke(task: Task, userId: String): Pair<User?, String> {
         Task.fromApi(taskRepository.updateTask(task.taskId!!, TaskRequestDto.create(task)).single())
-        return Pair(User.fromApi(userRepository.getUser(userId).single()), "Task updated successfully")
+        return Pair(User.fromApi(userRepository.getUser(userId).single()),
+            context.getString(R.string.task_updated))
     }
 }

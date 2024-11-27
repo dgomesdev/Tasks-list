@@ -20,9 +20,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.domain.model.UserAction
 import com.dgomesdev.taskslist.presentation.ui.app.HandleUserAction
@@ -45,7 +47,7 @@ fun AuthScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = if (isNewUser) "Sign In" else "Log In",
+                text = if (isNewUser) stringResource(R.string.sign_up) else stringResource(R.string.log_in),
                 style = MaterialTheme.typography.headlineMedium
             )
 
@@ -56,7 +58,7 @@ fun AuthScreen(
                 value = username,
                 onValueChange = { username = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Username") }
+                label = { Text(stringResource(R.string.username)) }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -65,7 +67,7 @@ fun AuthScreen(
                 value = password,
                 onValueChange = { password = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Password") },
+                label = { Text(stringResource(R.string.password)) },
                 visualTransformation = PasswordVisualTransformation()
             )
 
@@ -81,14 +83,16 @@ fun AuthScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = if (isNewUser) "Sign In" else "Log In")
+                Text(text = if (isNewUser) stringResource(R.string.sign_up) else stringResource(R.string.log_in))
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             TextButton(onClick = { isNewUser = !isNewUser }) {
                 Text(
-                    text = if (isNewUser) "Already have an account? Log In" else "Don't have an account? Sign In"
+                    text = if (isNewUser) stringResource(R.string.already_have_an_account) else stringResource(
+                        R.string.don_t_have_an_account
+                    )
                 )
             }
 

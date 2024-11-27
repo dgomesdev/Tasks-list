@@ -33,7 +33,7 @@ fun TaskAppBar(
           IconButton(onClick = { onOpenDrawer() }) {
               Icon(
                   imageVector = Icons.Filled.Menu,
-                  contentDescription = "Navigation icon"
+                  contentDescription = stringResource(R.string.menu)
               )
           }
         },
@@ -41,13 +41,13 @@ fun TaskAppBar(
             IconButton(onClick = {
                 Toast.makeText(
                     context,
-                    "Developed by Dgomes Dev",
+                    context.getString(R.string.developed_by_dgomes_dev),
                     Toast.LENGTH_SHORT
                 ).show()
             }) {
                 Icon(
                     imageVector = Icons.Filled.Info,
-                    contentDescription = "Developer info icon button"
+                    contentDescription = stringResource(R.string.developer_info)
                 )
             }
         })

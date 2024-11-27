@@ -11,7 +11,9 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
@@ -35,19 +37,24 @@ fun MainScreen(
                 Text("Task list app", modifier = Modifier.padding(16.dp))
                 HorizontalDivider()
                 NavigationDrawerItem(
-                    label = { Text(text = "Edit profile") },
+                    label = { Text(stringResource(R.string.edit_profile)) },
                     selected = false,
                     onClick = { goToScreen("UserDetails"); scope.launch { drawerState.close() } }
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Change language") },
+                    label = { Text(text = stringResource(R.string.change_language)) },
                     selected = false,
                     onClick = { scope.launch { drawerState.close() } }
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Logout") },
+                    label = { Text(text = stringResource(R.string.log_out)) },
                     selected = false,
                     onClick = { uiState.onLogout() ; scope.launch { drawerState.close() } }
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = stringResource(R.string.delete_account)) },
+                    selected = false,
+                    onClick = { scope.launch { drawerState.close() } }
                 )
             }
         }
