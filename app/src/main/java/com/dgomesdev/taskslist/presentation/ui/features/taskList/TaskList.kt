@@ -3,13 +3,20 @@ package com.dgomesdev.taskslist.presentation.ui.features.taskList
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
@@ -20,7 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,23 +41,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Priority
 import com.dgomesdev.taskslist.domain.model.Status
 import com.dgomesdev.taskslist.domain.model.Task
+import com.dgomesdev.taskslist.domain.model.TaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.NewTaskButton
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import com.dgomesdev.taskslist.presentation.ui.app.TaskAppBar
-import com.dgomesdev.taskslist.presentation.ui.theme.AlmostLateColor
-import com.dgomesdev.taskslist.presentation.ui.theme.DoneColor
-import com.dgomesdev.taskslist.presentation.ui.theme.ToDoColor
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -56,23 +66,25 @@ import java.util.UUID
 fun TaskList(
     modifier: Modifier,
     uiState: AppUiState,
-    handleTaskAction: HandleTaskAction,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
     onOpenDrawer: () -> Unit
 ) {
+    val context = LocalContext.current
     val taskList = uiState.user?.tasks
     val message = uiState.message
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         modifier = modifier,
-        topBar = { TaskAppBar(onOpenDrawer = onOpenDrawer) },
-        floatingActionButton = {
-            NewTaskButton(
-                goToScreen = goToScreen
-            )
+        topBar = {
+            TaskAppBar(onOpenDrawer = onOpenDrawer, onShowInfo = {
+                scope.launch {
+                    snackbarHostState.showSnackbar(message = context.getString(R.string.developed_by_dgomes_dev))
+                }
+            })
         },
+        floatingActionButton = { NewTaskButton(goToScreen = goToScreen) },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         LaunchedEffect(message) {
@@ -86,13 +98,45 @@ fun TaskList(
             LazyColumn(
                 contentPadding = padding,
             ) {
-                items(taskList) { task ->
-                    TaskCard(
-                        task = task,
-                        handleTaskAction = handleTaskAction,
-                        goToScreen = goToScreen,
-                        onChooseTask = onChooseTask
-                    )
+                items(items = taskList, key = { task ->
+                    task.taskId!!
+                }) { task ->
+                    val swipeToDismissState = rememberSwipeToDismissBoxState()
+                    LaunchedEffect(swipeToDismissState.currentValue) {
+                        if (swipeToDismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+                            uiState.onTaskChange(
+                                TaskAction.DELETE,
+                                task
+                            )
+                        }
+                    }
+                    SwipeToDismissBox(
+                        state = swipeToDismissState,
+                        backgroundContent = {
+                            if (swipeToDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                                Card(Modifier.padding(vertical = 8.dp, horizontal = 8.dp)) {
+                                    Box(
+                                        modifier.background(Color.Red),
+                                        contentAlignment = Alignment.CenterEnd
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Delete,
+                                            contentDescription = stringResource(R.string.delete_task),
+                                            Modifier.padding(end = 16.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        enableDismissFromStartToEnd = false
+                    ) {
+                        TaskCard(
+                            task = task,
+                            handleTaskAction = uiState.onTaskChange,
+                            goToScreen = goToScreen,
+                            onChooseTask = onChooseTask
+                        )
+                    }
                 }
             }
         } else {
@@ -106,6 +150,7 @@ fun TaskList(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskCard(
     task: Task,
@@ -113,7 +158,14 @@ fun TaskCard(
     handleTaskAction: HandleTaskAction,
     onChooseTask: ChooseTask = {}
 ) {
+
+    val haptics = LocalHapticFeedback.current
+
     var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    var areOptionsExpanded by remember {
         mutableStateOf(false)
     }
 
@@ -123,14 +175,28 @@ fun TaskCard(
         Status.IN_PROGRESS -> stringResource(R.string.in_progress)
     }
 
+    val priority = when (task.priority) {
+        Priority.LOW -> stringResource(R.string.low)
+        Priority.MEDIUM -> stringResource(R.string.medium)
+        Priority.HIGH -> stringResource(R.string.high)
+    }
+
     Card(
         modifier = Modifier
-            .padding(vertical = 8.dp, horizontal = 8.dp)
+            .padding(8.dp)
             .animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
                     stiffness = Spring.StiffnessLow
                 )
+            )
+            .combinedClickable(
+                onClick = { expanded = !expanded },
+                onLongClick = {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    areOptionsExpanded = true
+                },
+                onClickLabel = stringResource(R.string.options)
             ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary
@@ -138,41 +204,54 @@ fun TaskCard(
     ) {
         Row(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(16.dp)
                 .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Card(
-                Modifier
-                    .weight(0.3f)
-                    .padding(8.dp),
-                colors = CardDefaults.cardColors(
-                    when (task.status) {
-                        Status.DONE -> DoneColor
-                        Status.IN_PROGRESS -> AlmostLateColor
-                        Status.TO_BE_DONE -> ToDoColor
-                    }
-                )
-            ) {
-                Text(
-                    text = "${task.priority}",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
             Text(
-                text = task.title,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .weight(0.7f)
+                text = task.title
             )
+            TaskOptions(
+                handleTaskAction = handleTaskAction,
+                task = task,
+                goToScreen = goToScreen,
+                onChooseTask = onChooseTask,
+                onOpenOptions = { areOptionsExpanded = !areOptionsExpanded },
+                areOptionsExpanded = areOptionsExpanded
+            )
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Status: $status"
+            )
+            Text(
+                stringResource(R.string.priority_level) + ": $priority",
+                textAlign = TextAlign.End
+            )
+        }
+        if (expanded) {
+            Row(
+                Modifier.padding(16.dp).fillMaxWidth()
+            ) {
+                if (task.description.isNotBlank()) {
+                    Text(
+                        task.description,
+                        textAlign = TextAlign.Justify
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             IconButton(
-                onClick = { expanded = !expanded },
-                Modifier.weight(0.1f)
+                onClick = { expanded = !expanded }
             ) {
                 Icon(
                     imageVector = if (expanded) Icons.Filled.KeyboardArrowUp
@@ -180,41 +259,6 @@ fun TaskCard(
                     contentDescription = if (expanded) stringResource(R.string.show_less)
                     else stringResource(R.string.show_more)
                 )
-            }
-            TaskOptions(
-                handleTaskAction = handleTaskAction,
-                task = task,
-                goToScreen = goToScreen,
-                onChooseTask = onChooseTask
-            )
-        }
-        if (expanded) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    "Status: $status",
-                    Modifier.weight(0.5f)
-                )
-                Text(
-                    stringResource(R.string.priority_level) + ": ${task.priority}",
-                    Modifier.weight(0.5f),
-                    textAlign = TextAlign.End
-                )
-            }
-            Row(
-                Modifier.padding(8.dp)
-            ) {
-                if (task.description.isNotBlank()) {
-                    Text(
-                        task.description,
-                        Modifier.padding(8.dp),
-                        textAlign = TextAlign.Justify
-                    )
-                }
             }
         }
     }

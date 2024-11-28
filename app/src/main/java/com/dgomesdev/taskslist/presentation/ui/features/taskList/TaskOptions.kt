@@ -8,10 +8,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Task
@@ -25,25 +21,25 @@ fun TaskOptions(
     handleTaskAction: HandleTaskAction,
     task: Task,
     goToScreen: ScreenNavigation,
-    onChooseTask: ChooseTask
+    onChooseTask: ChooseTask,
+    onOpenOptions: () -> Unit,
+    areOptionsExpanded: Boolean
 ) {
-    var expandedMenu by remember { mutableStateOf(false) }
-
     IconButton(
-        onClick = { expandedMenu = true }
+        onClick = { onOpenOptions() }
     ) {
         Icon(
             imageVector = Icons.Default.MoreVert,
             contentDescription = stringResource(R.string.options)
         )
-        DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
+        DropdownMenu(expanded = areOptionsExpanded, onDismissRequest = { onOpenOptions() }) {
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.edit_task)) },
-                onClick = { onChooseTask(task) ; goToScreen("TaskDetails"); expandedMenu = false }
+                onClick = { onChooseTask(task) ; goToScreen("TaskDetails"); onOpenOptions() }
             )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete_task)) },
-                onClick = { handleTaskAction(TaskAction.DELETE, task); expandedMenu = false }
+                onClick = { handleTaskAction(TaskAction.DELETE, task); onOpenOptions() }
             )
         }
     }

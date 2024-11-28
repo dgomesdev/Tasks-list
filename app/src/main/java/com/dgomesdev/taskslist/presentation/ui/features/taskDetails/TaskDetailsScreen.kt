@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,11 +54,12 @@ fun TaskDetailsScreen(
         mutableStateOf(task?.status ?: Status.TO_BE_DONE)
     }
 
-    Surface(
-        modifier = modifier
-    ) {
-        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-            TextField(
+    Surface(modifier) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
                 value = taskTitle,
                 onValueChange = { taskTitle = it },
                 label = { Text(stringResource(R.string.task_title)) },
@@ -66,7 +67,7 @@ fun TaskDetailsScreen(
                     .padding(16.dp)
                     .fillMaxWidth()
             )
-            TextField(
+            OutlinedTextField(
                 value = taskDescription,
                 onValueChange = { taskDescription = it },
                 label = { Text(stringResource(R.string.task_description)) },
@@ -81,10 +82,12 @@ fun TaskDetailsScreen(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 PrioritySetter(
+                    Modifier.weight(0.5f).padding(horizontal = 8.dp),
                     setPriority = { taskPriority = it },
                     priority = taskPriority
                 )
                 StatusSetter(
+                    Modifier.weight(0.5f).padding(horizontal = 8.dp),
                     setStatus = { taskStatus = it },
                     status = taskStatus
                 )

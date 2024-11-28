@@ -1,5 +1,6 @@
 package com.dgomesdev.taskslist.presentation.ui.features.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -7,7 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -20,8 +27,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
@@ -33,10 +42,11 @@ import com.dgomesdev.taskslist.presentation.ui.app.HandleUserAction
 fun AuthScreen(
     modifier: Modifier,
     handleUserAction: HandleUserAction
-    ) {
+) {
     var isNewUser by rememberSaveable { mutableStateOf(true) }
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var isPasswordShown by rememberSaveable { mutableStateOf(false) }
 
     Surface(
         modifier = modifier
@@ -46,6 +56,11 @@ fun AuthScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Image(
+                painter = painterResource(R.drawable.dgomesdev_logo),
+                contentDescription = stringResource(R.string.app_name)
+            )
+            Spacer(modifier = Modifier.height(100.dp))
             Text(
                 text = if (isNewUser) stringResource(R.string.sign_up) else stringResource(R.string.log_in),
                 style = MaterialTheme.typography.headlineMedium
@@ -53,12 +68,17 @@ fun AuthScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Username Input
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.username)) }
+                label = { Text(stringResource(R.string.username)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.AccountCircle,
+                        contentDescription = stringResource(R.string.username)
+                    )
+                }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -68,7 +88,22 @@ fun AuthScreen(
                 onValueChange = { password = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.password)) },
-                visualTransformation = PasswordVisualTransformation()
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Lock,
+                        contentDescription = stringResource(R.string.password)
+                    )
+                },
+                trailingIcon = {
+                    Icon(
+                        if (isPasswordShown) Icons.Default.VisibilityOff
+                        else Icons.Default.Visibility,
+                        contentDescription = stringResource(R.string.show_password)
+                    )
+                },
+                visualTransformation =
+                if (isPasswordShown) PasswordVisualTransformation()
+                else VisualTransformation.None
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -95,8 +130,6 @@ fun AuthScreen(
                     )
                 )
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

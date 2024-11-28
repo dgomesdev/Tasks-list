@@ -1,6 +1,5 @@
 package com.dgomesdev.taskslist.presentation.ui.app
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -14,16 +13,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dgomesdev.taskslist.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskAppBar(
-    onOpenDrawer: () -> Unit
+    onOpenDrawer: () -> Unit,
+    onShowInfo: () -> Unit
 ) {
-    val context = LocalContext.current
+
     TopAppBar(
         title = {
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -38,13 +37,7 @@ fun TaskAppBar(
           }
         },
         actions = {
-            IconButton(onClick = {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.developed_by_dgomes_dev),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }) {
+            IconButton(onClick = { onShowInfo() }) {
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.developer_info)

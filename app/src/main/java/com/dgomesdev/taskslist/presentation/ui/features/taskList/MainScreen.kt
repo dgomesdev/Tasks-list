@@ -1,5 +1,8 @@
 package com.dgomesdev.taskslist.presentation.ui.features.taskList
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
@@ -10,12 +13,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
-import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import kotlinx.coroutines.launch
@@ -24,7 +29,6 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     modifier: Modifier,
     uiState: AppUiState,
-    handleTaskAction: HandleTaskAction,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask
 ) {
@@ -34,7 +38,13 @@ fun MainScreen(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Text("Task list app", modifier = Modifier.padding(16.dp))
+                Column(modifier = Modifier.fillMaxWidth() ,horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(
+                        painter = painterResource(R.drawable.business_card),
+                        contentDescription = stringResource(R.string.app_name)
+                    )
+                    Text("Task list app", modifier = Modifier.padding(16.dp))
+                }
                 HorizontalDivider()
                 NavigationDrawerItem(
                     label = { Text(stringResource(R.string.edit_profile)) },
@@ -62,10 +72,20 @@ fun MainScreen(
         TaskList(
             modifier = modifier,
             uiState = uiState,
-            handleTaskAction = handleTaskAction,
             goToScreen = goToScreen,
             onChooseTask = onChooseTask,
             onOpenDrawer = { scope.launch { drawerState.open() } }
         )
     }
+}
+
+@Preview
+@Composable
+private fun MainPrev() {
+    MainScreen(
+        modifier = Modifier,
+        uiState = AppUiState(),
+        goToScreen = {},
+        onChooseTask = {}
+    )
 }

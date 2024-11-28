@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,17 +33,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
-import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.domain.model.UserAction
-import com.dgomesdev.taskslist.presentation.ui.app.HandleUserAction
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 
 @Composable
 fun UserDetailsScreen(
     modifier: Modifier,
-    user: User,
-    handleUserAction: HandleUserAction,
+    uiState: AppUiState,
     backToMainScreen: () -> Unit = {}
 ) {
+    val user = uiState.user!!
+
     var username by rememberSaveable { mutableStateOf(user.username) }
     var password by rememberSaveable { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
@@ -85,7 +84,7 @@ fun UserDetailsScreen(
                 trailingIcon = {
                     IconButton(onClick = { showPassword = !showPassword }) {
                         Icon(
-                            imageVector = if (showPassword) Icons.Default.Face else Icons.Default.Lock,
+                            imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.VisibilityOff,
                             contentDescription = if (showPassword) stringResource(R.string.hide_password) else stringResource(
                                 R.string.show_password
                             )
@@ -114,7 +113,7 @@ fun UserDetailsScreen(
                         if (username.isNotBlank()) updatedUser = user.copy(username = username)
                         if (password.isNotBlank()) updatedUser = user.copy(password = password)
                         isUpdating = true
-                        handleUserAction(UserAction.UPDATE, updatedUser)
+                        uiState.onUserChange(UserAction.UPDATE, updatedUser)
                         isUpdating = false
                         backToMainScreen()
                     },
@@ -132,7 +131,7 @@ fun UserDetailsScreen(
 private fun UpdatePreview() {
     UserDetailsScreen(
         modifier = Modifier.fillMaxSize(),
-        user = User(username = "test", password = "test"),
-        handleUserAction = { _, _ -> }
+        uiState = AppUiState(),
+        backToMainScreen = {},
     )
 }

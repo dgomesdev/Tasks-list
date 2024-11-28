@@ -1,5 +1,7 @@
 package com.dgomesdev.taskslist.presentation.ui.app
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,11 +43,24 @@ fun TasksApp(
         navController = navController,
         startDestination = startDestination,
     ) {
-        composable(route = "TaskList") {
+        composable(
+            route = "TaskList",
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(700)
+                )
+            }
+        ) {
             MainScreen(
                 modifier = modifier,
                 uiState = uiState,
-                handleTaskAction = uiState.onTaskChange,
                 goToScreen = {
                     navController.navigate(it)
                     uiState.onRefreshMessage()
@@ -53,7 +68,21 @@ fun TasksApp(
                 onChooseTask = { task = it }
             )
         }
-        composable(route = "TaskDetails") {
+        composable(
+            route = "TaskDetails",
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(700)
+                )
+            }
+        ) {
             TaskDetailsScreen(
                 modifier = modifier,
                 handleTaskAction = uiState.onTaskChange,
@@ -63,15 +92,44 @@ fun TasksApp(
                 }
             )
         }
-        composable(route = "UserDetails") {
+        composable(
+            route = "UserDetails",
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(700)
+                )
+            }
+        ) {
             UserDetailsScreen(
-                modifier,
-                uiState.user!!,
-                uiState.onUserChange,
-                backToMainScreen = { navController.popBackStack() }
+                modifier = modifier,
+                uiState = uiState,
+                backToMainScreen = {
+                    navController.popBackStack()
+                }
             )
         }
-        composable(route = "Auth") {
+        composable(
+            route = "Auth",
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(700)
+                )
+            }
+        ) {
             AuthScreen(
                 modifier,
                 uiState.onUserChange
