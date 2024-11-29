@@ -84,12 +84,12 @@ fun TaskDetailsScreen(
                 PrioritySetter(
                     Modifier.weight(0.5f).padding(horizontal = 8.dp),
                     setPriority = { taskPriority = it },
-                    priority = taskPriority
+                    currentPriority = taskPriority
                 )
                 StatusSetter(
                     Modifier.weight(0.5f).padding(horizontal = 8.dp),
                     setStatus = { taskStatus = it },
-                    status = taskStatus
+                    currentStatus = taskStatus
                 )
             }
             Button(

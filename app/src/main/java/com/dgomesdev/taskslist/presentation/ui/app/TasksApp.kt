@@ -13,8 +13,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.domain.model.TaskAction
-import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.domain.model.UserAction
 import com.dgomesdev.taskslist.presentation.ui.features.auth.AuthScreen
 import com.dgomesdev.taskslist.presentation.ui.features.taskDetails.TaskDetailsScreen
 import com.dgomesdev.taskslist.presentation.ui.features.taskList.MainScreen
@@ -22,7 +20,6 @@ import com.dgomesdev.taskslist.presentation.ui.features.userDetails.UserDetailsS
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 
 typealias HandleTaskAction = (TaskAction, Task) -> Unit
-typealias HandleUserAction = (UserAction, User) -> Unit
 typealias ScreenNavigation = (String) -> Unit
 typealias ChooseTask = (Task) -> Unit
 
@@ -132,7 +129,7 @@ fun TasksApp(
         ) {
             AuthScreen(
                 modifier,
-                uiState.onUserChange
+                uiState
             )
         }
     }

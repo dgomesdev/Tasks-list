@@ -26,15 +26,9 @@ import com.dgomesdev.taskslist.domain.model.Status
 fun StatusSetter(
     modifier: Modifier = Modifier,
     setStatus: (Status) -> Unit,
-    status: Status
+    currentStatus: Status
 ) {
     var expandedMenu by remember { mutableStateOf(false) }
-
-    var statusText = when (status) {
-        Status.TO_BE_DONE -> stringResource(R.string.to_do)
-        Status.IN_PROGRESS -> stringResource(R.string.in_progress)
-        Status.DONE  -> stringResource(R.string.done)
-    }
 
     Button(
         onClick = { expandedMenu = true },
@@ -45,25 +39,33 @@ fun StatusSetter(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(statusText)
-            DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.to_do)) },
-                    onClick = { setStatus(Status.TO_BE_DONE); expandedMenu = false }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.in_progress)) },
-                    onClick = { setStatus(Status.IN_PROGRESS); expandedMenu = false }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.done)) },
-                    onClick = { setStatus(Status.DONE); expandedMenu = false }
-                )
-            }
+            Text(
+                text = when (currentStatus) {
+                    Status.TO_BE_DONE -> stringResource(R.string.to_do)
+                    Status.IN_PROGRESS -> stringResource(R.string.in_progress)
+                    Status.DONE -> stringResource(R.string.done)
+                }
+            )
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = stringResource(R.string.options)
             )
+        }
+        DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
+            Status.entries.forEach{ status ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = when (status) {
+                                Status.TO_BE_DONE -> stringResource(R.string.to_do)
+                                Status.IN_PROGRESS -> stringResource(R.string.in_progress)
+                                Status.DONE -> stringResource(R.string.done)
+                            }
+                        )
+                    },
+                    onClick = { setStatus(Status.TO_BE_DONE); expandedMenu = false }
+                )
+            }
         }
     }
 }
@@ -71,5 +73,5 @@ fun StatusSetter(
 @Preview
 @Composable
 fun StatusSetterPreview() {
-    StatusSetter(setStatus = {}, status = Status.IN_PROGRESS)
+    StatusSetter(setStatus = {}, currentStatus = Status.IN_PROGRESS)
 }

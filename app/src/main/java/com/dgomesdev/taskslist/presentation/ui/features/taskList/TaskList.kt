@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +61,7 @@ import com.dgomesdev.taskslist.presentation.ui.app.NewTaskButton
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import com.dgomesdev.taskslist.presentation.ui.app.TaskAppBar
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
+import com.dgomesdev.taskslist.utils.SortOption
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -72,9 +75,11 @@ fun TaskList(
 ) {
     val context = LocalContext.current
     val taskList = uiState.user?.tasks
-    val message = uiState.message
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    var currentSortOption by rememberSaveable { mutableStateOf(SortOption.BY_TITLE) }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -87,55 +92,78 @@ fun TaskList(
         floatingActionButton = { NewTaskButton(goToScreen = goToScreen) },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-        LaunchedEffect(message) {
-            if (message != null) {
+        LaunchedEffect(uiState.message) {
+            if (uiState.message != null) {
                 scope.launch {
-                    snackbarHostState.showSnackbar(message)
+                    snackbarHostState.showSnackbar(uiState.message)
                 }
             }
         }
         if (taskList != null) {
-            LazyColumn(
-                contentPadding = padding,
-            ) {
-                items(items = taskList, key = { task ->
-                    task.taskId!!
-                }) { task ->
-                    val swipeToDismissState = rememberSwipeToDismissBoxState()
-                    LaunchedEffect(swipeToDismissState.currentValue) {
-                        if (swipeToDismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-                            uiState.onTaskChange(
-                                TaskAction.DELETE,
-                                task
-                            )
+            Column {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    SortingMenu(
+                        modifier = Modifier
+                            .weight(0.5f)
+                            .padding(horizontal = 8.dp),
+                        currentSortOption = currentSortOption,
+                        onSortOptionSelected = {
+                            currentSortOption = it
                         }
-                    }
-                    SwipeToDismissBox(
-                        state = swipeToDismissState,
-                        backgroundContent = {
-                            if (swipeToDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                                Card(Modifier.padding(vertical = 8.dp, horizontal = 8.dp)) {
-                                    Box(
-                                        modifier.background(Color.Red),
-                                        contentAlignment = Alignment.CenterEnd
-                                    ) {
-                                        Icon(
-                                            Icons.Default.Delete,
-                                            contentDescription = stringResource(R.string.delete_task),
-                                            Modifier.padding(end = 16.dp)
-                                        )
+                    )
+                    FilterMenu(
+                        modifier = Modifier
+                            .weight(0.5f)
+                            .padding(horizontal = 8.dp),
+                    )
+                }
+                LazyColumn(
+                    contentPadding = padding,
+                ) {
+                    items(items = taskList, key = { task ->
+                        task.taskId!!
+                    }) { task ->
+                        val swipeToDismissState = rememberSwipeToDismissBoxState()
+                        LaunchedEffect(swipeToDismissState.currentValue) {
+                            if (swipeToDismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+                                uiState.onTaskChange(
+                                    TaskAction.DELETE,
+                                    task
+                                )
+                            }
+                        }
+                        SwipeToDismissBox(
+                            state = swipeToDismissState,
+                            backgroundContent = {
+                                if (swipeToDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                                    Card(Modifier.padding(vertical = 8.dp, horizontal = 8.dp)) {
+                                        Box(
+                                            modifier.background(Color.Red),
+                                            contentAlignment = Alignment.CenterEnd
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Delete,
+                                                contentDescription = stringResource(R.string.delete_task),
+                                                Modifier.padding(end = 16.dp)
+                                            )
+                                        }
                                     }
                                 }
-                            }
-                        },
-                        enableDismissFromStartToEnd = false
-                    ) {
-                        TaskCard(
-                            task = task,
-                            handleTaskAction = uiState.onTaskChange,
-                            goToScreen = goToScreen,
-                            onChooseTask = onChooseTask
-                        )
+                            },
+                            enableDismissFromStartToEnd = false
+                        ) {
+                            TaskCard(
+                                task = task,
+                                handleTaskAction = uiState.onTaskChange,
+                                goToScreen = goToScreen,
+                                onChooseTask = onChooseTask
+                            )
+                        }
                     }
                 }
             }
@@ -238,7 +266,9 @@ fun TaskCard(
         }
         if (expanded) {
             Row(
-                Modifier.padding(16.dp).fillMaxWidth()
+                Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
             ) {
                 if (task.description.isNotBlank()) {
                     Text(

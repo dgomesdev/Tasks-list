@@ -44,4 +44,10 @@
     <string name="user_updated">User updated successfully</string>
     <string name="task_deleted">Task deleted successfully!</string>
     <string name="account_deleted">Account deleted successfully!</string>
+    <string name="sort_by">Sort by</string>
+    <string name="status">status</string>
+    <string name="filter">Filter</string>
+    <string name="priorities">priorities</string>
+    <string name="selected">selected</string>
+    <string name="statuses">statuses</string>
 </resources>

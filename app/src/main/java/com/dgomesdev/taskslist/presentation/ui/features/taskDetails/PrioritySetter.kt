@@ -26,17 +26,11 @@ import com.dgomesdev.taskslist.domain.model.Priority
 fun PrioritySetter(
     modifier: Modifier = Modifier,
     setPriority: (Priority) -> Unit,
-    priority: Priority
+    currentPriority: Priority
 ) {
     var expandedMenu by remember { mutableStateOf(false) }
 
-    var priorityText = when (priority) {
-        Priority.LOW -> stringResource(R.string.low)
-        Priority.MEDIUM -> stringResource(R.string.medium)
-        Priority.HIGH -> stringResource(R.string.high)
-    }
-
-    Button (
+    Button(
         onClick = { expandedMenu = true },
         modifier = modifier
     ) {
@@ -45,25 +39,33 @@ fun PrioritySetter(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(priorityText)
-            DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.low)) },
-                    onClick = { setPriority(Priority.LOW); expandedMenu = false }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.medium)) },
-                    onClick = { setPriority(Priority.MEDIUM); expandedMenu = false }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.high)) },
-                    onClick = { setPriority(Priority.HIGH); expandedMenu = false }
-                )
-            }
+            Text(
+                text = when (currentPriority) {
+                    Priority.LOW -> stringResource(R.string.low)
+                    Priority.MEDIUM -> stringResource(R.string.medium)
+                    Priority.HIGH -> stringResource(R.string.high)
+                }
+            )
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = stringResource(R.string.options)
             )
+        }
+        DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
+            Priority.entries.forEach { priority ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = when (priority) {
+                                Priority.LOW -> stringResource(R.string.low)
+                                Priority.MEDIUM -> stringResource(R.string.medium)
+                                Priority.HIGH -> stringResource(R.string.high)
+                            }
+                        )
+                    },
+                    onClick = { setPriority(priority); expandedMenu = false }
+                )
+            }
         }
     }
 }
@@ -71,5 +73,5 @@ fun PrioritySetter(
 @Preview
 @Composable
 fun PrioritySetterPreview() {
-    PrioritySetter(setPriority = {}, priority = Priority.LOW)
+    PrioritySetter(setPriority = {}, currentPriority = Priority.LOW)
 }
