@@ -26,7 +26,7 @@ typealias ChooseTask = (Task) -> Unit
 @Composable
 fun TasksApp(
     modifier: Modifier,
-    uiState: AppUiState,
+    uiState: AppUiState
 ) {
     val navController = rememberNavController()
     var task by rememberSaveable { mutableStateOf<Task?>(null) }

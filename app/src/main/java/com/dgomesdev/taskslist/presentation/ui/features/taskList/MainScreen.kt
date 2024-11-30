@@ -45,22 +45,21 @@ fun MainScreen(
                     )
                     Text("Task list app", modifier = Modifier.padding(16.dp))
                 }
+
                 HorizontalDivider()
+
                 NavigationDrawerItem(
                     label = { Text(stringResource(R.string.edit_profile)) },
                     selected = false,
                     onClick = { goToScreen("UserDetails"); scope.launch { drawerState.close() } }
                 )
-                NavigationDrawerItem(
-                    label = { Text(text = stringResource(R.string.change_language)) },
-                    selected = false,
-                    onClick = { scope.launch { drawerState.close() } }
-                )
+
                 NavigationDrawerItem(
                     label = { Text(text = stringResource(R.string.log_out)) },
                     selected = false,
                     onClick = { uiState.onLogout() ; scope.launch { drawerState.close() } }
                 )
+
                 NavigationDrawerItem(
                     label = { Text(text = stringResource(R.string.delete_account)) },
                     selected = false,

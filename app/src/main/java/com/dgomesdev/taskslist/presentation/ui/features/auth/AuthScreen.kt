@@ -62,10 +62,12 @@ fun AuthScreen(
         ) {
             Image(
                 painter = painterResource(R.drawable.dgomesdev_logo),
-                contentDescription = stringResource(R.string.app_name)
+                contentDescription = stringResource(R.string.app_name),
+                modifier = Modifier.padding(16.dp)
             )
             Text(
                 text = if (isNewUser) stringResource(R.string.sign_up) else stringResource(R.string.log_in),
+                modifier = Modifier.padding(16.dp),
                 style = MaterialTheme.typography.headlineMedium
             )
 
