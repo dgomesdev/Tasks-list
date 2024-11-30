@@ -11,7 +11,7 @@ data class TaskFilter(
 
 fun List<Task>.filterTasks(filter: TaskFilter): List<Task> {
     return this.filter { task ->
-        filter.priorities.isEmpty() || filter.priorities.contains(task.priority) &&
-                filter.statuses.isEmpty() || filter.statuses.contains(task.status)
+        (filter.priorities.isEmpty() || filter.priorities.contains(task.priority)) &&
+                (filter.statuses.isEmpty() || filter.statuses.contains(task.status))
     }
 }

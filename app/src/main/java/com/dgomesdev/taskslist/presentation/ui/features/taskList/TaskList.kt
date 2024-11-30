@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -55,6 +57,7 @@ import com.dgomesdev.taskslist.domain.model.Priority
 import com.dgomesdev.taskslist.domain.model.Status
 import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.domain.model.TaskAction
+import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.NewTaskButton
@@ -62,6 +65,9 @@ import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import com.dgomesdev.taskslist.presentation.ui.app.TaskAppBar
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import com.dgomesdev.taskslist.utils.SortOption
+import com.dgomesdev.taskslist.utils.TaskFilter
+import com.dgomesdev.taskslist.utils.filterTasks
+import com.dgomesdev.taskslist.utils.sortTasks
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -79,6 +85,11 @@ fun TaskList(
     val snackbarHostState = remember { SnackbarHostState() }
 
     var currentSortOption by rememberSaveable { mutableStateOf(SortOption.BY_TITLE) }
+    var selectedPriorities by rememberSaveable { mutableStateOf(listOf(Priority.LOW, Priority.MEDIUM, Priority.HIGH)) }
+    var selectedStatuses by rememberSaveable { mutableStateOf(listOf(Status.TO_BE_DONE, Status.IN_PROGRESS, Status.DONE)) }
+    val filteredAndSortedTasks = uiState.user?.tasks
+        ?.filterTasks(TaskFilter(selectedPriorities.toSet(), selectedStatuses.toSet()))
+        ?.sortTasks(currentSortOption)
 
     Scaffold(
         modifier = modifier,
@@ -100,18 +111,22 @@ fun TaskList(
             }
         }
         if (taskList != null) {
-            Column {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(padding),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     SortingMenu(
                         modifier = Modifier
                             .weight(0.5f)
-                            .padding(horizontal = 8.dp),
-                        currentSortOption = currentSortOption,
+                            .padding(8.dp),
                         onSortOptionSelected = {
                             currentSortOption = it
                         }
@@ -119,50 +134,59 @@ fun TaskList(
                     FilterMenu(
                         modifier = Modifier
                             .weight(0.5f)
-                            .padding(horizontal = 8.dp),
+                            .padding(8.dp),
+                        selectedPriorities = selectedPriorities,
+                        onPrioritiesChange = {
+                            selectedPriorities = it
+                        },
+                        selectedStatuses = selectedStatuses,
+                        onStatusesChange = {
+                            selectedStatuses = it
+                        }
                     )
                 }
-                LazyColumn(
-                    contentPadding = padding,
-                ) {
-                    items(items = taskList, key = { task ->
-                        task.taskId!!
-                    }) { task ->
-                        val swipeToDismissState = rememberSwipeToDismissBoxState()
-                        LaunchedEffect(swipeToDismissState.currentValue) {
-                            if (swipeToDismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-                                uiState.onTaskChange(
-                                    TaskAction.DELETE,
-                                    task
-                                )
+                HorizontalDivider()
+                LazyColumn(Modifier.padding(8.dp)) {
+                    filteredAndSortedTasks?.let { tasks ->
+                        items(items = tasks, key = { task ->
+                            task.taskId!!
+                        }) { task ->
+                            val swipeToDismissState = rememberSwipeToDismissBoxState()
+                            LaunchedEffect(swipeToDismissState.currentValue) {
+                                if (swipeToDismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+                                    uiState.onTaskChange(
+                                        TaskAction.DELETE,
+                                        task
+                                    )
+                                }
                             }
-                        }
-                        SwipeToDismissBox(
-                            state = swipeToDismissState,
-                            backgroundContent = {
-                                if (swipeToDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                                    Card(Modifier.padding(vertical = 8.dp, horizontal = 8.dp)) {
-                                        Box(
-                                            modifier.background(Color.Red),
-                                            contentAlignment = Alignment.CenterEnd
-                                        ) {
-                                            Icon(
-                                                Icons.Default.Delete,
-                                                contentDescription = stringResource(R.string.delete_task),
-                                                Modifier.padding(end = 16.dp)
-                                            )
+                            SwipeToDismissBox(
+                                state = swipeToDismissState,
+                                backgroundContent = {
+                                    if (swipeToDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+                                        Card(Modifier.padding(8.dp)) {
+                                            Box(
+                                                modifier.background(Color.Red),
+                                                contentAlignment = Alignment.CenterEnd
+                                            ) {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    contentDescription = stringResource(R.string.delete_task),
+                                                    Modifier.padding(end = 16.dp)
+                                                )
+                                            }
                                         }
                                     }
-                                }
-                            },
-                            enableDismissFromStartToEnd = false
-                        ) {
-                            TaskCard(
-                                task = task,
-                                handleTaskAction = uiState.onTaskChange,
-                                goToScreen = goToScreen,
-                                onChooseTask = onChooseTask
-                            )
+                                },
+                                enableDismissFromStartToEnd = false
+                            ) {
+                                TaskCard(
+                                    task = task,
+                                    handleTaskAction = uiState.onTaskChange,
+                                    goToScreen = goToScreen,
+                                    onChooseTask = onChooseTask
+                                )
+                            }
                         }
                     }
                 }
@@ -307,5 +331,30 @@ private fun TaskCardPreview() {
         ),
         goToScreen = {},
         handleTaskAction = { _, _ -> }
+    )
+}
+
+@Preview
+@Composable
+private fun ListPrev() {
+    TaskList(
+        modifier = Modifier.fillMaxSize(),
+        uiState = AppUiState(
+            user = User(
+                username = "Danilo",
+                tasks = listOf(
+                    Task(
+                        UUID.randomUUID().toString(),
+                        "title",
+                        "description",
+                        Priority.LOW,
+                        Status.TO_BE_DONE
+                    )
+                )
+            )
+        ),
+        goToScreen = {},
+        onChooseTask = {},
+        onOpenDrawer = {}
     )
 }

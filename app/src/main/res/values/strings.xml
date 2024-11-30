@@ -11,8 +11,8 @@
     <string name="hide_password">Hide Password</string>
     <string name="show_password">Show Password</string>
     <string name="update">Update</string>
-    <string name="task_title">Task title</string>
-    <string name="task_description">Task description</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="loading">Loading…</string>
@@ -45,9 +45,8 @@
     <string name="task_deleted">Task deleted successfully!</string>
     <string name="account_deleted">Account deleted successfully!</string>
     <string name="sort_by">Sort by</string>
-    <string name="status">status</string>
-    <string name="filter">Filter</string>
-    <string name="priorities">priorities</string>
-    <string name="selected">selected</string>
-    <string name="statuses">statuses</string>
+    <string name="status">Status</string>
+    <string name="filter_by">Filter by</string>
+    <string name="selected">Selected</string>
+    <string name="priority">Priority</string>
 </resources>

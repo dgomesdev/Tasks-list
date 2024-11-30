@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,10 +44,10 @@ fun FilterMenu(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = stringResource(R.string.filter))
+            Text(text = stringResource(R.string.filter_by))
             Icon(
                 imageVector = Icons.Default.FilterAlt,
-                contentDescription = stringResource(R.string.filter)
+                contentDescription = stringResource(R.string.filter_by)
             )
         }
 
@@ -55,11 +56,20 @@ fun FilterMenu(
             onDismissRequest = { expandedMenu = false }
         ) {
             // Priority Filters
-            Text(text = stringResource(R.string.priorities))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Text(text = stringResource(R.string.priority))
+            }
             Priority.entries.forEach { priority ->
                 val isSelected = priority in selectedPriorities
+                HorizontalDivider()
                 DropdownMenuItem(
-                    text = { Text(priority.name) },
+                    text = { Text(
+                        text = when (priority) {
+                            Priority.LOW -> stringResource(R.string.low)
+                            Priority.MEDIUM -> stringResource(R.string.medium)
+                            Priority.HIGH -> stringResource(R.string.high)
+                        }
+                    ) },
                     onClick = {
                         val updatedPriorities = if (isSelected) {
                             selectedPriorities - priority
@@ -80,11 +90,20 @@ fun FilterMenu(
             }
 
             // Status Filters
-            Text(text = stringResource(R.string.statuses))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Text(text = stringResource(R.string.status))
+            }
             Status.entries.forEach { status ->
                 val isSelected = status in selectedStatuses
+                HorizontalDivider()
                 DropdownMenuItem(
-                    text = { Text(status.name) },
+                    text = { Text(
+                        text = when (status) {
+                            Status.TO_BE_DONE -> stringResource(R.string.to_do)
+                            Status.IN_PROGRESS -> stringResource(R.string.in_progress)
+                            Status.DONE -> stringResource(R.string.done)
+                        }
+                    ) },
                     onClick = {
                         val updatedStatuses = if (isSelected) {
                             selectedStatuses - status

@@ -11,8 +11,8 @@
     <string name="hide_password">Masquer le mot de passe</string>
     <string name="show_password">Afficher le mot de passe</string>
     <string name="update">Mettre à jour</string>
-    <string name="task_title">Titre de la tâche</string>
-    <string name="task_description">Description de la tâche</string>
+    <string name="title">Titre</string>
+    <string name="description">Description</string>
     <string name="cancel">Annuler</string>
     <string name="confirm">Confirmer</string>
     <string name="loading">Chargement…</string>
@@ -44,4 +44,9 @@
     <string name="user_updated">Utilisateur mis à jour avec succès</string>
     <string name="task_deleted">Tâche supprimée avec succès !</string>
     <string name="account_deleted">Compte supprimé avec succès !</string>
+    <string name="sort_by">Trier par</string>
+    <string name="status">Etat actuel</string>
+    <string name="filter_by">Filter par</string>
+    <string name="selected">Selectionné</string>
+    <string name="priority">Priorité</string>
 </resources>

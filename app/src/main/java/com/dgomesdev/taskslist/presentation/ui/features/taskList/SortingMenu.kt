@@ -24,8 +24,7 @@ import com.dgomesdev.taskslist.utils.SortOption
 @Composable
 fun SortingMenu(
     modifier: Modifier,
-    onSortOptionSelected: (SortOption) -> Unit,
-    currentSortOption: SortOption
+    onSortOptionSelected: (SortOption) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -38,27 +37,7 @@ fun SortingMenu(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = when (currentSortOption) {
-                    SortOption.BY_TITLE -> {
-                        stringResource(R.string.sort_by) + stringResource(
-                            R.string.task_title
-                        )
-                    }
-
-                    SortOption.BY_PRIORITY -> {
-                        stringResource(R.string.sort_by) + stringResource(
-                            R.string.priority_level
-                        )
-                    }
-
-                    SortOption.BY_STATUS -> {
-                        stringResource(R.string.sort_by) + stringResource(
-                            R.string.status
-                        )
-                    }
-                }
-            )
+            Text(stringResource(R.string.sort_by))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Sort,
                 contentDescription = stringResource(R.string.sort_by)
@@ -71,8 +50,8 @@ fun SortingMenu(
                     text = {
                         Text(
                             text = when (option) {
-                                SortOption.BY_TITLE -> stringResource(R.string.task_title)
-                                SortOption.BY_PRIORITY -> stringResource(R.string.priority_level)
+                                SortOption.BY_TITLE -> stringResource(R.string.title)
+                                SortOption.BY_PRIORITY -> stringResource(R.string.priority)
                                 SortOption.BY_STATUS -> stringResource(R.string.status)
                             }
                         )

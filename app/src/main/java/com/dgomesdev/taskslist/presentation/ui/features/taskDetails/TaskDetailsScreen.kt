@@ -62,19 +62,21 @@ fun TaskDetailsScreen(
             OutlinedTextField(
                 value = taskTitle,
                 onValueChange = { taskTitle = it },
-                label = { Text(stringResource(R.string.task_title)) },
+                label = { Text(stringResource(R.string.title)) },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
             )
+
             OutlinedTextField(
                 value = taskDescription,
                 onValueChange = { taskDescription = it },
-                label = { Text(stringResource(R.string.task_description)) },
+                label = { Text(stringResource(R.string.description)) },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
             )
+
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -92,6 +94,7 @@ fun TaskDetailsScreen(
                     currentStatus = taskStatus
                 )
             }
+
             Button(
                 onClick = { backToMainScreen() },
                 modifier = Modifier.padding(8.dp),
@@ -102,6 +105,7 @@ fun TaskDetailsScreen(
             ) {
                 Text(stringResource(R.string.cancel))
             }
+
             Button(
                 onClick = {
                     handleTaskAction(
