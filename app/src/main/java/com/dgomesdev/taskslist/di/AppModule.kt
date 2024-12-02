@@ -12,6 +12,8 @@ import com.dgomesdev.taskslist.domain.repository.UserRepository
 import com.dgomesdev.taskslist.domain.usecase.task.DeleteTaskUseCase
 import com.dgomesdev.taskslist.domain.usecase.task.SaveTaskUseCase
 import com.dgomesdev.taskslist.domain.usecase.task.UpdateTaskUseCase
+import com.dgomesdev.taskslist.domain.usecase.token.DeleteTokenUseCase
+import com.dgomesdev.taskslist.domain.usecase.token.GetUserFromTokenUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.AuthUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.DeleteUserUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.GetUserUseCase
@@ -42,6 +44,10 @@ val appModule = module {
     singleOf(::GetUserUseCase)
     singleOf(::UpdateUserUseCase)
     singleOf(::DeleteUserUseCase)
+
+    // Use Cases - Token
+    singleOf(::GetUserFromTokenUseCase)
+    singleOf(::DeleteTokenUseCase)
 
     singleOf(::SecurePreferences)
     singleOf(::HttpClient)

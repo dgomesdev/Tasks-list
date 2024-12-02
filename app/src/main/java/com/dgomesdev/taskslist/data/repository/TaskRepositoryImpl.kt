@@ -10,14 +10,14 @@ import kotlinx.coroutines.flow.flow
 
 class TaskRepositoryImpl(private val taskService: TaskService) : TaskRepository {
     override suspend fun saveTask(task: TaskRequestDto): Flow<TaskResponseDto> =
-        flow { emit(taskService.saveTask(task).getOrElse { error(it.message ?: "Error while saving task") }) }
+        flow { emit(taskService.saveTask(task).getOrElse { error(it) }) }
 
     override suspend fun getTask(taskId: String): Flow<TaskResponseDto> =
-        flow { emit(taskService.getTask(taskId).getOrElse { error(it.message ?: "Error while getting task") }) }
+        flow { emit(taskService.getTask(taskId).getOrElse { error(it) }) }
 
     override suspend fun updateTask(taskId: String, task: TaskRequestDto): Flow<TaskResponseDto> =
-        flow { emit(taskService.updateTask(taskId, task).getOrElse { error(it.message ?: "Error while updating task") }) }
+        flow { emit(taskService.updateTask(taskId, task).getOrElse { error(it) }) }
 
     override suspend fun deleteTask(taskId: String): Flow<MessageDto> =
-        flow { emit(taskService.deleteTask(taskId).getOrElse { error(it.message ?: "Error while deleting task") }) }
+        flow { emit(taskService.deleteTask(taskId).getOrElse { error(it) }) }
 }

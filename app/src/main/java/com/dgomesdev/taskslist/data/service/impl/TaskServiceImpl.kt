@@ -32,8 +32,6 @@ class TaskServiceImpl(
 
     override suspend fun saveTask(task: TaskRequestDto): Result<TaskResponseDto> {
         val token = securePreferences.getToken() ?: error("No valid token")
-        Log.i("Save task", "Task: $task")
-        Log.i("Save task", "Token: $token")
         val response = http.client.post {
             url {
                 protocol = URLProtocol.HTTPS
@@ -50,8 +48,12 @@ class TaskServiceImpl(
             Result.success(taskResponse)
         } catch (e: Exception) {
             try {
-                val errorResponse = response.body<MessageDto>()
+                val errorResponse = MessageDto(
+                    response.body(),
+                    response.status.toString()
+                )
                 Log.e("Save task error", "Error: ${errorResponse.message}")
+                Log.e("Save task error", "Status: ${errorResponse.status}")
                 Log.e("Save task error", "Exception: ${e.message}")
                 Result.failure(Exception(errorResponse.message))
             } catch (innerException: Exception) {
@@ -79,8 +81,12 @@ class TaskServiceImpl(
             Result.success(taskResponse)
         } catch (e: Exception) {
             try {
-                val errorResponse = response.body<MessageDto>()
-                Log.e("Get task error", "Error: ${errorResponse.message}")
+                val errorResponse = MessageDto(
+                    response.body(),
+                    response.status.toString()
+                )
+                Log.e("Save task error", "Error: ${errorResponse.message}")
+                Log.e("Save task error", "Status: ${errorResponse.status}")
                 Log.e("Save task error", "Exception: ${e.message}")
                 Result.failure(Exception(errorResponse.message))
             } catch (innerException: Exception) {
@@ -108,8 +114,12 @@ class TaskServiceImpl(
             Result.success(taskResponse)
         } catch (e: Exception) {
             try {
-                val errorResponse = response.body<MessageDto>()
-                Log.e("Update task error", "Error: ${errorResponse.message}")
+                val errorResponse = MessageDto(
+                    response.body(),
+                    response.status.toString()
+                )
+                Log.e("Save task error", "Error: ${errorResponse.message}")
+                Log.e("Save task error", "Status: ${errorResponse.status}")
                 Log.e("Save task error", "Exception: ${e.message}")
                 Result.failure(Exception(errorResponse.message))
             } catch (innerException: Exception) {
@@ -130,13 +140,18 @@ class TaskServiceImpl(
             bearerAuth(token)
         }
         return try {
-            val deleteResponse = MessageDto(context.getString(R.string.task_deleted))
-            Log.i("Delete task success", deleteResponse.message)
+            val deleteResponse =
+                MessageDto(context.getString(R.string.task_deleted), response.status.toString())
+            Log.i("Delete task success", deleteResponse.message.toString())
             Result.success(deleteResponse)
         } catch (e: Exception) {
             try {
-                val errorResponse = response.body<MessageDto>()
-                Log.e("Delete task error", "Error: ${errorResponse.message}")
+                val errorResponse = MessageDto(
+                    response.body(),
+                    response.status.toString()
+                )
+                Log.e("Save task error", "Error: ${errorResponse.message}")
+                Log.e("Save task error", "Status: ${errorResponse.status}")
                 Log.e("Save task error", "Exception: ${e.message}")
                 Result.failure(Exception(errorResponse.message))
             } catch (innerException: Exception) {

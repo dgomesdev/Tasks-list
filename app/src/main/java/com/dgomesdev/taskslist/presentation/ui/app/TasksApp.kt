@@ -3,6 +3,7 @@ package com.dgomesdev.taskslist.presentation.ui.app
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -31,14 +32,14 @@ fun TasksApp(
     val navController = rememberNavController()
     var task by rememberSaveable { mutableStateOf<Task?>(null) }
 
-    val startDestination = when {
-        uiState.user != null -> "TaskList"
-        else -> "Auth"
+    LaunchedEffect(uiState.user) {
+        if (uiState.user == null) navController.navigate("Auth")
+        else navController.navigate("TaskList")
     }
 
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = "TaskList",
     ) {
         composable(
             route = "TaskList",

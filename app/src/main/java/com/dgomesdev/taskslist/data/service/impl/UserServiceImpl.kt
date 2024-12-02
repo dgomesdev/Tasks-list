@@ -49,10 +49,14 @@ class UserServiceImpl(
             Result.success(authResponse)
         } catch (e: Exception) {
             try {
-                val errorResponse = response.body<MessageDto>()
+                val errorResponse = MessageDto(
+                    response.body(),
+                    response.status.toString()
+                )
                 Log.e("Register user error", "Error: ${errorResponse.message}")
+                Log.e("Register user error", "Status: ${errorResponse.status}")
                 Log.e("Register user error", "Exception: ${e.message}")
-                Result.failure(Exception(errorResponse.message))
+                Result.failure(error(errorResponse))
             } catch (innerException: Exception) {
                 Log.e("Register user error", "Unexpected error: ${innerException.message}")
                 Result.failure(innerException)
@@ -77,10 +81,14 @@ class UserServiceImpl(
             Result.success(authResponse)
         } catch (e: Exception) {
             try {
-                val errorResponse = response.body<MessageDto>()
-                Log.e("Login user error", "Error: ${errorResponse.message}")
+                val errorResponse = MessageDto(
+                    response.body(),
+                    response.status.toString()
+                )
+                Log.e("Register user error", "Error: ${errorResponse.message}")
+                Log.e("Register user error", "Status: ${errorResponse.status}")
                 Log.e("Register user error", "Exception: ${e.message}")
-                Result.failure(Exception(errorResponse.message))
+                Result.failure(error(errorResponse))
             } catch (innerException: Exception) {
                 Log.e("Login user error", "Unexpected error: ${innerException.message}")
                 Result.failure(innerException)
@@ -94,7 +102,7 @@ class UserServiceImpl(
             url {
                 protocol = URLProtocol.HTTPS
                 host = apiUrl
-                path("/user", userId) // Dynamic path parameter
+                path("/user", userId)
             }
             bearerAuth(token)
         }
@@ -104,10 +112,14 @@ class UserServiceImpl(
             Result.success(userResponse)
         } catch (e: Exception) {
             try {
-                val errorResponse = response.body<MessageDto>()
-                Log.e("Get user error", "Error: ${errorResponse.message}")
+                val errorResponse = MessageDto(
+                    response.body(),
+                    response.status.toString()
+                )
+                Log.e("Register user error", "Error: ${errorResponse.message}")
+                Log.e("Register user error", "Status: ${errorResponse.status}")
                 Log.e("Register user error", "Exception: ${e.message}")
-                Result.failure(Exception(errorResponse.message))
+                Result.failure(error(errorResponse))
             } catch (innerException: Exception) {
                 Log.e("Get user error", "Unexpected error: ${innerException.message}")
                 Result.failure(innerException)
@@ -121,7 +133,7 @@ class UserServiceImpl(
             url {
                 protocol = URLProtocol.HTTPS
                 host = apiUrl
-                path("/user", userId) // Dynamic path parameter
+                path("/user", userId)
             }
             bearerAuth(token)
             contentType(ContentType.Application.Json)
@@ -134,10 +146,14 @@ class UserServiceImpl(
             Result.success(userResponse)
         } catch (e: Exception) {
             try {
-                val errorResponse = response.body<MessageDto>()
-                Log.e("Update user error", "Error: ${errorResponse.message}")
+                val errorResponse = MessageDto(
+                    response.body(),
+                    response.status.toString()
+                )
+                Log.e("Register user error", "Error: ${errorResponse.message}")
+                Log.e("Register user error", "Status: ${errorResponse.status}")
                 Log.e("Register user error", "Exception: ${e.message}")
-                Result.failure(Exception(errorResponse.message))
+                Result.failure(error(errorResponse))
             } catch (innerException: Exception) {
                 Log.e("Update user error", "Unexpected error: ${innerException.message}")
                 Result.failure(innerException)
@@ -151,20 +167,25 @@ class UserServiceImpl(
             url {
                 protocol = URLProtocol.HTTPS
                 host = apiUrl
-                path("/user", userId) // Dynamic path parameter
+                path("/user", userId)
             }
             bearerAuth(token)
         }
         return try {
-            val deleteResponse = MessageDto(context.getString(R.string.account_deleted))
-            Log.i("Delete user success", deleteResponse.message)
+            val deleteResponse =
+                MessageDto(context.getString(R.string.account_deleted), response.status.toString())
+            Log.i("Delete user success", deleteResponse.message.toString())
             Result.success(deleteResponse)
         } catch (e: Exception) {
             try {
-                val errorResponse = response.body<MessageDto>()
-                Log.e("Delete user error", "Error: ${errorResponse.message}")
+                val errorResponse = MessageDto(
+                    response.body(),
+                    response.status.toString()
+                )
+                Log.e("Register user error", "Error: ${errorResponse.message}")
+                Log.e("Register user error", "Status: ${errorResponse.status}")
                 Log.e("Register user error", "Exception: ${e.message}")
-                Result.failure(Exception(errorResponse.message))
+                Result.failure(error(errorResponse))
             } catch (innerException: Exception) {
                 Log.e("Delete user error", "Unexpected error: ${innerException.message}")
                 Result.failure(innerException)

@@ -19,12 +19,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,6 +47,7 @@ import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.domain.model.UserAction
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
+import kotlinx.coroutines.launch
 
 @Composable
 fun AuthScreen(
@@ -53,8 +59,19 @@ fun AuthScreen(
     var password by rememberSaveable { mutableStateOf("") }
     var isPasswordShown by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Surface {
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+        LaunchedEffect(uiState.message) {
+            if (uiState.message != null) {
+                if (uiState.message.toString().contains("status=406")) isNewUser = false
+                scope.launch {
+                    snackbarHostState.showSnackbar(uiState.message)
+                }
+            }
+        }
+
         Column(
             modifier = modifier.padding(16.dp),
             verticalArrangement = Arrangement.Center,

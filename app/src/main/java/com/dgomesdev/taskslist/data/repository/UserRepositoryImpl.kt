@@ -12,17 +12,17 @@ import kotlinx.coroutines.flow.flow
 
 class UserRepositoryImpl(private val userService: UserService): UserRepository {
     override suspend fun saveUser(user: AuthRequestDto): Flow<AuthResponseDto> =
-        flow { emit(userService.registerUser(user).getOrElse { error(it.message ?: "Error while registering user") }) }
+        flow { emit(userService.registerUser(user).getOrElse { error(it) }) }
 
     override suspend fun loginUser(user: AuthRequestDto): Flow<AuthResponseDto> =
-        flow { emit(userService.loginUser(user).getOrElse { error(it.message ?: "Error while logging in user") }) }
+        flow { emit(userService.loginUser(user).getOrElse { error(it) }) }
 
     override suspend fun getUser(userId: String): Flow<UserResponseDto> =
-        flow { emit(userService.getUser(userId).getOrElse { error(it.message ?: "Error while getting user") }) }
+        flow { emit(userService.getUser(userId).getOrElse { error(it) }) }
 
     override suspend fun updateUser(userId: String, user: UserRequestDto): Flow<UserResponseDto> =
-        flow { emit(userService.updateUser(userId, user).getOrElse { error(it.message ?: "Error while updating user") }) }
+        flow { emit(userService.updateUser(userId, user).getOrElse { error(it) }) }
 
     override suspend fun deleteUser(userId: String): Flow<MessageDto> =
-        flow { emit(userService.deleteUser(userId).getOrElse { error(it.message ?: "Error while deleting user") }) }
+        flow { emit(userService.deleteUser(userId).getOrElse { error(it) }) }
 }

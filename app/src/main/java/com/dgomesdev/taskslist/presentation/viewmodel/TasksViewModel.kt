@@ -10,11 +10,11 @@ import com.dgomesdev.taskslist.domain.model.UserAction
 import com.dgomesdev.taskslist.domain.usecase.task.DeleteTaskUseCase
 import com.dgomesdev.taskslist.domain.usecase.task.SaveTaskUseCase
 import com.dgomesdev.taskslist.domain.usecase.task.UpdateTaskUseCase
+import com.dgomesdev.taskslist.domain.usecase.token.GetUserFromTokenUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.AuthUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.DeleteUserUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.GetUserUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.UpdateUserUseCase
-import com.dgomesdev.taskslist.infra.SecurePreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,15 +29,13 @@ class TasksViewModel(
     private val getUserUseCase: GetUserUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val deleteUserUseCase: DeleteUserUseCase,
-    securePreferences: SecurePreferences
+    getUserFromTokenUseCase: GetUserFromTokenUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
     init {
-        val loggedUser = securePreferences.getUserFromToken()
-        if (loggedUser != null) handleUserAction(UserAction.GET, loggedUser)
         _uiState.update { currentState ->
             currentState.copy(
                 onTaskChange = ::handleTaskAction,
@@ -46,6 +44,8 @@ class TasksViewModel(
                 onRefreshMessage = ::refreshMessage
             )
         }
+        val user = getUserFromTokenUseCase()
+        if (user != null) handleUserAction(UserAction.GET, user)
     }
 
     private fun handleTaskAction(action: TaskAction, task: Task) {
@@ -95,7 +95,7 @@ class TasksViewModel(
                         isLoading = false
                     )
                 }
-                Log.e("TasksViewModel", "Error: ${e.message}")
+                Log.e("TasksViewModel", _uiState.value.message.toString())
             }
         }
     }
