@@ -63,7 +63,7 @@ fun StatusSetter(
                             }
                         )
                     },
-                    onClick = { setStatus(Status.TO_BE_DONE); expandedMenu = false }
+                    onClick = { setStatus(status); expandedMenu = false }
                 )
             }
         }

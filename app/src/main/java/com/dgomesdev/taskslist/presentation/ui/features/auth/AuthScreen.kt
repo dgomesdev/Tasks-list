@@ -65,7 +65,7 @@ fun AuthScreen(
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         LaunchedEffect(uiState.message) {
             if (uiState.message != null) {
-                if (uiState.message.toString().contains("status=406")) isNewUser = false
+                if (uiState.message.contains("status=406")) isNewUser = false
                 scope.launch {
                     snackbarHostState.showSnackbar(uiState.message)
                 }
