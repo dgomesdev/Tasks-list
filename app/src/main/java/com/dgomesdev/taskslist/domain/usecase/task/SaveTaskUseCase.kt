@@ -16,7 +16,9 @@ class SaveTaskUseCase(
 ) {
     suspend operator fun invoke(task: Task, userId: String): Pair<User?, String> {
         Task.fromApi(taskRepository.saveTask(TaskRequestDto.create(task)).single())
-        return Pair(User.fromApi(userRepository.getUser(userId).single()),
-            context.getString(R.string.task_saved))
+        return Pair(
+            User.fromApi(userRepository.getUser(userId).single()),
+            context.getString(R.string.task_saved)
+        )
     }
 }

@@ -95,6 +95,7 @@ class TasksViewModel(
                         isLoading = false
                     )
                 }
+                if (e.message.toString().contains("401") || e.message.toString().contains("403")) logout()
                 Log.e("TasksViewModel", _uiState.value.message.toString())
             }
         }

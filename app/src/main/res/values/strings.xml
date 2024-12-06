@@ -49,4 +49,9 @@
     <string name="filter_by">Filter by</string>
     <string name="selected">Selected</string>
     <string name="priority">Priority</string>
+    <string name="user_already_exists">User already exists. Please create a new one or log in</string>
+    <string name="fill_mandatory_fields">Please fill all the fields</string>
+    <string name="user_does_not_exist">User not found. Please create an account</string>
+    <string name="closed_session">Your session is closed. Please log in</string>
+    <string name="task_not_found">Task not found</string>
 </resources>

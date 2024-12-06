@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class UserResponseDto(
     val userId: String,
     val username: String,
-    val password: String?,
+    val password: String,
     val tasks: List<TaskResponseDto>
 )

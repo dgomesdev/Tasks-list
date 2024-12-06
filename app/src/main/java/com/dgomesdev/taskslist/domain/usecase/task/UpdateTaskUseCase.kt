@@ -16,7 +16,9 @@ class UpdateTaskUseCase(
 ) {
     suspend operator fun invoke(task: Task, userId: String): Pair<User?, String> {
         Task.fromApi(taskRepository.updateTask(task.taskId!!, TaskRequestDto.create(task)).single())
-        return Pair(User.fromApi(userRepository.getUser(userId).single()),
-            context.getString(R.string.task_updated))
+        return Pair(
+            User.fromApi(userRepository.getUser(userId).single()),
+            context.getString(R.string.task_updated)
+        )
     }
 }

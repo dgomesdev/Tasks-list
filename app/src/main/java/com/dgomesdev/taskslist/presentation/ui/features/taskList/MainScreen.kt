@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
+import com.dgomesdev.taskslist.domain.model.UserAction
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
@@ -63,7 +64,7 @@ fun MainScreen(
                 NavigationDrawerItem(
                     label = { Text(text = stringResource(R.string.delete_account)) },
                     selected = false,
-                    onClick = { scope.launch { drawerState.close() } }
+                    onClick = { uiState.onUserChange(UserAction.DELETE, uiState.user!!); scope.launch { drawerState.close() } }
                 )
             }
         }
