@@ -1,20 +1,14 @@
 package com.dgomesdev.taskslist.presentation.viewmodel
 
 import android.util.Log
+import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dgomesdev.taskslist.domain.model.Task
-import com.dgomesdev.taskslist.domain.model.TaskAction
+import com.dgomesdev.taskslist.domain.usecase.TaskUseCases
 import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.domain.model.UserAction
-import com.dgomesdev.taskslist.domain.usecase.task.DeleteTaskUseCase
-import com.dgomesdev.taskslist.domain.usecase.task.SaveTaskUseCase
-import com.dgomesdev.taskslist.domain.usecase.task.UpdateTaskUseCase
-import com.dgomesdev.taskslist.domain.usecase.token.GetUserFromTokenUseCase
-import com.dgomesdev.taskslist.domain.usecase.user.AuthUseCase
-import com.dgomesdev.taskslist.domain.usecase.user.DeleteUserUseCase
-import com.dgomesdev.taskslist.domain.usecase.user.GetUserUseCase
-import com.dgomesdev.taskslist.domain.usecase.user.UpdateUserUseCase
+import com.dgomesdev.taskslist.domain.usecase.UserUseCases
+import com.dgomesdev.taskslist.infra.SecurePreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,53 +16,69 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TasksViewModel(
-    private val saveTaskUseCase: SaveTaskUseCase,
-    private val updateTaskUseCase: UpdateTaskUseCase,
-    private val deleteTaskUseCase: DeleteTaskUseCase,
-    private val authUseCase: AuthUseCase,
-    private val getUserUseCase: GetUserUseCase,
-    private val updateUserUseCase: UpdateUserUseCase,
-    private val deleteUserUseCase: DeleteUserUseCase,
-    getUserFromTokenUseCase: GetUserFromTokenUseCase
+    private val userUseCases: UserUseCases,
+    private val taskUseCases: TaskUseCases,
+    private val securePreferences: SecurePreferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
+    val snackbarHostState = SnackbarHostState()
+    fun showSnackbar(message: String) {
+        viewModelScope.launch {
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
     init {
-        _uiState.update { currentState ->
-            currentState.copy(
-                onTaskChange = ::handleTaskAction,
-                onUserChange = ::handleUserAction,
-                onLogout = ::logout,
-                onRefreshMessage = ::refreshMessage
-            )
-        }
-        val user = getUserFromTokenUseCase()
-        if (user != null) handleUserAction(UserAction.GET, user)
+        securePreferences.getUserFromToken()?.let { handleAppUiIntent(AppUiIntent.GetUser(it)) }
     }
 
-    private fun handleTaskAction(action: TaskAction, task: Task) {
-        Log.d("ViewModel", "Task: $task, Action: $action")
-        val userId = _uiState.value.user?.userId ?: error("No user logged in")
-        when (action) {
-            TaskAction.SAVE -> execute { saveTaskUseCase(task, userId) }
-            TaskAction.UPDATE -> execute { updateTaskUseCase(task, userId) }
-            TaskAction.DELETE -> execute { deleteTaskUseCase(task.taskId!!, userId) }
+    fun handleAppUiIntent(intent: AppUiIntent) {
+        val user = intent.user
+        val task = intent.task
+        Log.d("ViewModel", "Intent: $intent")
+        when (intent) {
+            is AppUiIntent.Register -> execute { userUseCases.registerUseCase(
+                user!!
+            ) }
+            is AppUiIntent.Login -> execute { userUseCases.loginUseCase(
+                user!!
+            ) }
+            is AppUiIntent.GetUser -> execute { userUseCases.getUserUseCase(
+                user!!.userId
+            ) }
+            is AppUiIntent.UpdateUser -> execute { userUseCases.updateUserUseCase(
+                user!!
+            ) }
+            is AppUiIntent.DeleteUser -> execute { userUseCases.deleteUserUseCase(
+                user!!.userId
+            ) }
+            is AppUiIntent.RecoverPassword -> execute { userUseCases.recoverPasswordUseCase(
+                user!!
+            ) }
+            is AppUiIntent.ResetPassword -> execute { userUseCases.resetPasswordUseCase(
+                intent.recoveryCode!!,
+                user!!
+            ) }
+            is AppUiIntent.SaveTask -> execute { taskUseCases.saveTaskUseCase(
+                task!!,
+                user!!.userId
+            ) }
+            is AppUiIntent.UpdateTask -> execute { taskUseCases.updateTaskUseCase(
+                task!!,
+                user!!.userId
+            ) }
+            is AppUiIntent.DeleteTask -> execute { taskUseCases.deleteTaskUseCase(
+                task!!.taskId,
+                user!!.userId
+            ) }
+            is AppUiIntent.Logout -> logout()
         }
     }
 
-    private fun handleUserAction(action: UserAction, user: User) {
-        Log.d("ViewModel", "User: $user, Action: $action")
-        when (action) {
-            UserAction.REGISTER, UserAction.LOGIN -> execute { authUseCase(action, user) }
-            UserAction.GET -> execute { getUserUseCase(user.userId!!) }
-            UserAction.UPDATE -> execute { updateUserUseCase(user) }
-            UserAction.DELETE -> execute { deleteUserUseCase(user.userId!!) }
-        }
-    }
-
-    private fun execute(action: suspend () -> Pair<User?, String>) {
+    private fun execute(useCase: suspend () -> Pair<User?, String?>) {
         viewModelScope.launch {
             runCatching {
                 _uiState.update {
@@ -77,17 +87,16 @@ class TasksViewModel(
                         isLoading = true
                     )
                 }
-                action()
+                useCase()
             }.onSuccess { result ->
                 val (user, message) = result
                 _uiState.update {
                     it.copy(
                         user = user,
                         message = message,
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
-                Log.d("TasksViewModel", "User: ${_uiState.value.user}")
             }.onFailure { e ->
                 _uiState.update {
                     it.copy(
@@ -96,30 +105,38 @@ class TasksViewModel(
                     )
                 }
                 if (e.message.toString().contains("401") || e.message.toString().contains("403")) logout()
-                Log.e("TasksViewModel", _uiState.value.message.toString())
             }
         }
     }
 
     private fun logout() {
+        securePreferences.deleteToken()
         _uiState.update {
             it.copy(user = null)
-        }
-    }
-
-    private fun refreshMessage() {
-        _uiState.update {
-            it.copy(message = null)
         }
     }
 }
 
 data class AppUiState(
     val user: User? = null,
-    val onTaskChange: (TaskAction, Task) -> Unit = { _, _ -> },
-    val onUserChange: (UserAction, User) -> Unit = { _, _ -> },
-    val onLogout: () -> Unit = {},
-    val onRefreshMessage: () -> Unit = {},
     val message: String? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
 )
+
+sealed class AppUiIntent(
+    val user: User? = null,
+    val recoveryCode: String? = null,
+    val task: Task? = null
+) {
+    class Register(user: User): AppUiIntent(user)
+    class Login(user: User): AppUiIntent(user)
+    class GetUser(user: User): AppUiIntent(user)
+    class UpdateUser(user: User): AppUiIntent(user)
+    class DeleteUser(user: User): AppUiIntent(user)
+    class RecoverPassword(user: User): AppUiIntent(user)
+    class ResetPassword(recoveryCode: String, user: User): AppUiIntent(user, recoveryCode)
+    class SaveTask(task: Task): AppUiIntent(task = task)
+    class UpdateTask(task: Task): AppUiIntent(task = task)
+    class DeleteTask(task: Task): AppUiIntent(task = task)
+    class Logout: AppUiIntent()
+}

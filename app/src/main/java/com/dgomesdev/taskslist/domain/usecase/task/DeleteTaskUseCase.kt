@@ -9,8 +9,8 @@ class DeleteTaskUseCase(
     private val taskRepository: TaskRepository,
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(taskId: String, userId: String): Pair<User?, String> {
-        val message = taskRepository.deleteTask(taskId).single().message.toString()
+    suspend operator fun invoke(taskId: String, userId: String): Pair<User?, String?> {
+        val message = taskRepository.deleteTask(taskId).single().message
         return Pair(
             User.fromApi(userRepository.getUser(userId).single()),
             message

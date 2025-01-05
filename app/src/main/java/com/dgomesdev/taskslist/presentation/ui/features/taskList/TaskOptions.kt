@@ -11,14 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Task
-import com.dgomesdev.taskslist.domain.model.TaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
-import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
+import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 
 @Composable
 fun TaskOptions(
-    handleTaskAction: HandleTaskAction,
+    onAction: OnAction,
     task: Task,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
@@ -39,7 +39,7 @@ fun TaskOptions(
             )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete_task)) },
-                onClick = { handleTaskAction(TaskAction.DELETE, task); onOpenOptions() }
+                onClick = { onAction(AppUiIntent.DeleteTask(task)) ; onOpenOptions() }
             )
         }
     }

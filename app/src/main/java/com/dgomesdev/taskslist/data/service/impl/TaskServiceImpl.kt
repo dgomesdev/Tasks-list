@@ -48,9 +48,10 @@ class TaskServiceImpl(
                 Log.i("Save task success", "$taskResponse")
                 Result.success(taskResponse)
             } else {
-                val error = response.body<MessageDto>()
+                val error = if (response.status == HttpStatusCode.Forbidden) MessageDto(null)
+                else response.body<MessageDto>()
                 val errorMessage = when (response.status) {
-                    HttpStatusCode.Forbidden, HttpStatusCode.Unauthorized -> context.getString(R.string.closed_session)
+                    HttpStatusCode.Unauthorized -> context.getString(R.string.closed_session)
                     HttpStatusCode.BadRequest -> context.getString(R.string.fill_mandatory_fields)
                     else -> error.message
                 }
@@ -81,9 +82,10 @@ class TaskServiceImpl(
                 Log.i("Update task success", "$taskResponse")
                 Result.success(taskResponse)
             } else {
-                val error = response.body<MessageDto>()
+                val error = if (response.status == HttpStatusCode.Forbidden) MessageDto(null)
+                else response.body<MessageDto>()
                 val errorMessage = when (response.status) {
-                    HttpStatusCode.Forbidden, HttpStatusCode.Unauthorized -> context.getString(R.string.closed_session)
+                    HttpStatusCode.Unauthorized -> context.getString(R.string.closed_session)
                     HttpStatusCode.NotFound -> context.getString(R.string.task_not_found)
                     HttpStatusCode.BadRequest -> context.getString(R.string.fill_mandatory_fields)
                     else -> error.message
@@ -115,9 +117,10 @@ class TaskServiceImpl(
                 Log.i("Delete task success", "$deleteResponse")
                 Result.success(deleteResponse)
             } else {
-                val error = response.body<MessageDto>()
+                val error = if (response.status == HttpStatusCode.Forbidden) MessageDto(null)
+                else response.body<MessageDto>()
                 val errorMessage = when (response.status) {
-                    HttpStatusCode.Forbidden, HttpStatusCode.Unauthorized -> context.getString(R.string.closed_session)
+                    HttpStatusCode.Unauthorized -> context.getString(R.string.closed_session)
                     HttpStatusCode.NotFound -> context.getString(R.string.task_not_found)
                     else -> error.message
                 }

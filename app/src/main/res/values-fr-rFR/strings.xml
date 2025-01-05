@@ -5,7 +5,7 @@
     <string name="log_in">Se connecter</string>
     <string name="username">Nom d\'utilisateur</string>
     <string name="password">Mot de passe</string>
-    <string name="already_have_an_account">Vous avez déjà un compte ? Connectez-vous</string>
+    <string name="already_have_an_account">Avez-vous déjà un compte ? Connectez-vous</string>
     <string name="don_t_have_an_account">Vous n\'avez pas de compte ? Inscrivez-vous</string>
     <string name="edit_profile">Modifier le profil</string>
     <string name="hide_password">Masquer le mot de passe</string>
@@ -38,7 +38,7 @@
     <string name="too_long">La réponse peut prendre un moment, veuillez patienter.</string>
     <string name="task_saved">Tâche enregistrée avec succès</string>
     <string name="task_updated">Tâche mise à jour avec succès</string>
-    <string name="hello">Bonjour %1$s !</string>
+    <string name="welcome_back">Bonjour %1$s !</string>
     <string name="welcome">Bienvenue %1$s !</string>
     <string name="user_not_authenticated">Utilisateur non authentifié.</string>
     <string name="user_updated">Utilisateur mis à jour avec succès</string>
@@ -54,4 +54,12 @@
     <string name="user_does_not_exist">Utilisateur introuvable. Veuillez créer un compte</string>
     <string name="closed_session">Votre session est fermée. Veuillez vous connecter</string>
     <string name="task_not_found">Tâche introuvable</string>
+    <string name="email_sent">Code de réinitialisation envoyé à %1$s</string>
+    <string name="recover_password">Mot de passe oublié?</string>
+    <string name="send_recovery_link">Envoyer lien de réinitialisation</string>
+    <string name="update_password">Mettre le mot de passe à jour</string>
+    <string name="password_reset">Mot de passe mis à jours avec succès !</string>
+    <string name="recovery_code">Code de réinitialisation</string>
+    <string name="already_have_a_code">J\'ai déjà un code de réinitialisation</string>
+    <string name="confirm_password">Confirmer mot de passe</string>
 </resources>

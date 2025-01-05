@@ -1,8 +1,6 @@
 package com.dgomesdev.taskslist.data.repository
 
-import com.dgomesdev.taskslist.data.dto.request.AuthRequestDto
 import com.dgomesdev.taskslist.data.dto.request.UserRequestDto
-import com.dgomesdev.taskslist.data.dto.response.AuthResponseDto
 import com.dgomesdev.taskslist.data.dto.response.MessageDto
 import com.dgomesdev.taskslist.data.dto.response.UserResponseDto
 import com.dgomesdev.taskslist.data.service.UserService
@@ -11,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class UserRepositoryImpl(private val userService: UserService): UserRepository {
-    override suspend fun saveUser(user: AuthRequestDto): Flow<AuthResponseDto> =
+    override suspend fun registerUser(user: UserRequestDto): Flow<UserResponseDto> =
         flow { emit(userService.registerUser(user).getOrElse { error(it) }) }
 
-    override suspend fun loginUser(user: AuthRequestDto): Flow<AuthResponseDto> =
+    override suspend fun loginUser(user: UserRequestDto): Flow<UserResponseDto> =
         flow { emit(userService.loginUser(user).getOrElse { error(it) }) }
 
     override suspend fun getUser(userId: String): Flow<UserResponseDto> =
@@ -25,4 +23,10 @@ class UserRepositoryImpl(private val userService: UserService): UserRepository {
 
     override suspend fun deleteUser(userId: String): Flow<MessageDto> =
         flow { emit(userService.deleteUser(userId).getOrElse { error(it) }) }
+
+    override suspend fun recoverPassword(user: UserRequestDto): Flow<MessageDto> =
+        flow { emit(userService.recoverPassword(user).getOrElse { error(it) }) }
+
+    override suspend fun resetPassword(recoveryCode: String, user: UserRequestDto): Flow<MessageDto> =
+        flow { emit(userService.resetPassword(recoveryCode, user).getOrElse { error(it) }) }
 }

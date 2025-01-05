@@ -27,15 +27,15 @@ import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Priority
 import com.dgomesdev.taskslist.domain.model.Status
 import com.dgomesdev.taskslist.domain.model.Task
-import com.dgomesdev.taskslist.domain.model.TaskAction
-import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
+import com.dgomesdev.taskslist.presentation.ui.app.OnAction
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 import java.util.UUID
 
 @Composable
 fun TaskDetailsScreen(
     modifier: Modifier,
     task: Task?,
-    handleTaskAction: HandleTaskAction,
+    onAction: OnAction,
     backToMainScreen: () -> Unit = {}
 ) {
     var taskTitle by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -84,12 +84,16 @@ fun TaskDetailsScreen(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 PrioritySetter(
-                    Modifier.weight(0.5f).padding(horizontal = 8.dp),
+                    Modifier
+                        .weight(0.5f)
+                        .padding(horizontal = 8.dp),
                     setPriority = { taskPriority = it },
                     currentPriority = taskPriority
                 )
                 StatusSetter(
-                    Modifier.weight(0.5f).padding(horizontal = 8.dp),
+                    Modifier
+                        .weight(0.5f)
+                        .padding(horizontal = 8.dp),
                     setStatus = { taskStatus = it },
                     currentStatus = taskStatus
                 )
@@ -108,16 +112,26 @@ fun TaskDetailsScreen(
 
             Button(
                 onClick = {
-                    handleTaskAction(
-                        if (task == null) TaskAction.SAVE else TaskAction.UPDATE,
-                        Task(
-                            task?.taskId,
-                            taskTitle.text,
-                            taskDescription.text,
-                            taskPriority,
-                            taskStatus
-                        )
-                    )
+                        if (task == null) onAction(AppUiIntent.SaveTask(
+                            Task(
+                                title = taskTitle.text,
+                                description = taskDescription.text,
+                                priority = taskPriority,
+                                status = taskStatus
+                            )
+                        )) else {
+                            onAction(
+                                AppUiIntent.UpdateTask(
+                                    task.copy(
+                                        taskId = task.taskId,
+                                        title = taskTitle.text,
+                                        description = taskDescription.text,
+                                        priority = taskPriority,
+                                        status = taskStatus
+                                    )
+                                )
+                            )
+                        }
                     backToMainScreen()
                 },
                 modifier = Modifier.padding(8.dp)
@@ -133,7 +147,7 @@ fun TaskDetailsScreen(
 private fun TaskListPreview() {
     TaskDetailsScreen(
         modifier = Modifier.fillMaxSize(),
-        handleTaskAction = { _, _ -> },
+        onAction = {},
         task = Task(
             UUID.randomUUID().toString(),
             "Task title",

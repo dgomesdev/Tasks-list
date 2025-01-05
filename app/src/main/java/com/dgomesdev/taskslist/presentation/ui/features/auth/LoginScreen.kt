@@ -8,15 +8,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -28,8 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,60 +46,58 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.domain.model.UserAction
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
-import kotlinx.coroutines.launch
+import com.dgomesdev.taskslist.presentation.ui.app.OnAction
+import com.dgomesdev.taskslist.presentation.ui.app.ShowSnackbar
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 
 @Composable
-fun AuthScreen(
+fun LoginScreen(
     modifier: Modifier,
-    uiState: AppUiState
+    onAction: OnAction,
+    goToScreen: (String) -> Unit,
+    snackbarHostState: SnackbarHostState,
+    showSnackbar: ShowSnackbar,
+    message: String?
 ) {
-    var isNewUser by rememberSaveable { mutableStateOf(true) }
-    var username by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var isPasswordShown by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
-        LaunchedEffect(uiState.message) {
-            if (uiState.message != null) {
-                if (uiState.message.contains("status=406")) isNewUser = false
-                scope.launch {
-                    snackbarHostState.showSnackbar(uiState.message)
-                }
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+
+        LaunchedEffect(message) {
+            message?.let {
+                if (!it.contains("403")) showSnackbar(message)
             }
         }
 
         Column(
-            modifier = modifier.padding(16.dp),
+            modifier = modifier.padding(padding).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painterResource(R.drawable.dgomesdev_logo),
-                contentDescription = stringResource(R.string.app_name),
-                modifier = Modifier.padding(16.dp)
+                contentDescription = stringResource(R.string.app_name)
             )
             Text(
-                text = if (isNewUser) stringResource(R.string.sign_up) else stringResource(R.string.log_in),
+                stringResource(R.string.log_in),
                 modifier = Modifier.padding(16.dp),
                 style = MaterialTheme.typography.headlineMedium
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
+                value = email,
+                onValueChange = { email = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.username)) },
+                label = { Text(stringResource(R.string.email)) },
                 leadingIcon = {
                     Icon(
-                        Icons.Default.AccountCircle,
-                        contentDescription = stringResource(R.string.username)
+                        Icons.Default.Email,
+                        contentDescription = stringResource(R.string.email)
                     )
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -106,7 +105,7 @@ fun AuthScreen(
                     focusManager.moveFocus(focusDirection = FocusDirection.Down)
                 })
             )
-
+            
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
@@ -121,11 +120,15 @@ fun AuthScreen(
                     )
                 },
                 trailingIcon = {
-                    Icon(
-                        if (isPasswordShown) Icons.Default.VisibilityOff
-                        else Icons.Default.Visibility,
-                        contentDescription = stringResource(R.string.show_password)
-                    )
+                    IconButton(
+                        onClick = { isPasswordShown = !isPasswordShown }
+                    ) {
+                        Icon(
+                            if (isPasswordShown) Icons.Default.VisibilityOff
+                            else Icons.Default.Visibility,
+                            contentDescription = stringResource(R.string.show_password)
+                        )
+                    }
                 },
                 visualTransformation =
                 if (!isPasswordShown) PasswordVisualTransformation()
@@ -133,11 +136,8 @@ fun AuthScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        val user = User(username = username, password = password)
-                        uiState.onUserChange(
-                            if (isNewUser) UserAction.REGISTER else UserAction.LOGIN,
-                            user
-                        )
+                        val user = User(email = email, password = password)
+                        onAction(AppUiIntent.Login(user))
                     }
                 )
             )
@@ -146,24 +146,26 @@ fun AuthScreen(
 
             Button(
                 onClick = {
-                    val user = User(username = username, password = password)
-                    uiState.onUserChange(
-                        if (isNewUser) UserAction.REGISTER else UserAction.LOGIN,
-                        user
-                    )
+                    val user = User(email = email, password = password)
+                    onAction(AppUiIntent.Login(user))
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = email.isNotBlank() && password.isNotBlank()
             ) {
-                Text(text = if (isNewUser) stringResource(R.string.sign_up) else stringResource(R.string.log_in))
+                Text(text = stringResource(R.string.log_in))
+            }
+
+            TextButton(onClick = { goToScreen("Register") }) {
+                Text(
+                    text = stringResource(R.string.don_t_have_an_account)
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            TextButton(onClick = { isNewUser = !isNewUser }) {
+            TextButton(onClick = { goToScreen("ForgotPassword") }) {
                 Text(
-                    text = if (isNewUser) stringResource(R.string.already_have_an_account) else stringResource(
-                        R.string.don_t_have_an_account
-                    )
+                    text = stringResource(R.string.recover_password)
                 )
             }
         }
@@ -173,8 +175,12 @@ fun AuthScreen(
 @Preview(showBackground = true)
 @Composable
 private fun AuthPreview() {
-    AuthScreen(
+    LoginScreen(
         Modifier.fillMaxSize(),
-        uiState = AppUiState()
+        onAction = {},
+        goToScreen = {},
+        snackbarHostState = SnackbarHostState(),
+        showSnackbar = {},
+        message = null
     )
 }

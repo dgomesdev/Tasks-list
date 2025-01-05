@@ -39,7 +39,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,37 +55,55 @@ import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Priority
 import com.dgomesdev.taskslist.domain.model.Status
 import com.dgomesdev.taskslist.domain.model.Task
-import com.dgomesdev.taskslist.domain.model.TaskAction
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
-import com.dgomesdev.taskslist.presentation.ui.app.HandleTaskAction
 import com.dgomesdev.taskslist.presentation.ui.app.NewTaskButton
+import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import com.dgomesdev.taskslist.presentation.ui.app.TaskAppBar
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import com.dgomesdev.taskslist.utils.SortOption
 import com.dgomesdev.taskslist.utils.TaskFilter
 import com.dgomesdev.taskslist.utils.filterTasks
 import com.dgomesdev.taskslist.utils.sortTasks
-import kotlinx.coroutines.launch
 import java.util.UUID
 
 @Composable
 fun TaskList(
     modifier: Modifier,
     uiState: AppUiState,
+    onAction: OnAction,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
-    onOpenDrawer: () -> Unit
+    onOpenDrawer: () -> Unit,
+    snackbarHostState: SnackbarHostState,
+    showSnackbar: (String) -> Unit
 ) {
     val context = LocalContext.current
     val taskList = uiState.user?.tasks
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
+//    val scope = rememberCoroutineScope()
+//    val snackbarHostState = remember { SnackbarHostState() }
 
     var currentSortOption by rememberSaveable { mutableStateOf(SortOption.BY_TITLE) }
-    var selectedPriorities by rememberSaveable { mutableStateOf(listOf(Priority.LOW, Priority.MEDIUM, Priority.HIGH)) }
-    var selectedStatuses by rememberSaveable { mutableStateOf(listOf(Status.TO_BE_DONE, Status.IN_PROGRESS, Status.DONE)) }
+    var selectedPriorities by rememberSaveable {
+        mutableStateOf(
+            listOf(
+                Priority.LOW,
+                Priority.MEDIUM,
+                Priority.HIGH
+            )
+        )
+    }
+    var selectedStatuses by rememberSaveable {
+        mutableStateOf(
+            listOf(
+                Status.TO_BE_DONE,
+                Status.IN_PROGRESS,
+                Status.DONE
+            )
+        )
+    }
     val filteredAndSortedTasks = uiState.user?.tasks
         ?.filterTasks(TaskFilter(selectedPriorities.toSet(), selectedStatuses.toSet()))
         ?.sortTasks(currentSortOption)
@@ -95,20 +112,14 @@ fun TaskList(
         modifier = modifier,
         topBar = {
             TaskAppBar(onOpenDrawer = onOpenDrawer, onShowInfo = {
-                scope.launch {
-                    snackbarHostState.showSnackbar(message = context.getString(R.string.developed_by_dgomes_dev))
-                }
+                showSnackbar(context.getString(R.string.developed_by_dgomes_dev))
             })
         },
         floatingActionButton = { NewTaskButton(goToScreen = goToScreen) },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         LaunchedEffect(uiState.message) {
-            if (uiState.message != null) {
-                scope.launch {
-                    snackbarHostState.showSnackbar(uiState.message)
-                }
-            }
+            uiState.message?.let { showSnackbar(it) }
         }
         if (taskList != null) {
             Column(
@@ -149,15 +160,12 @@ fun TaskList(
                 LazyColumn(Modifier.padding(8.dp)) {
                     filteredAndSortedTasks?.let { tasks ->
                         items(items = tasks, key = { task ->
-                            task.taskId!!
+                            task.taskId
                         }) { task ->
                             val swipeToDismissState = rememberSwipeToDismissBoxState()
                             LaunchedEffect(swipeToDismissState.currentValue) {
                                 if (swipeToDismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-                                    uiState.onTaskChange(
-                                        TaskAction.DELETE,
-                                        task
-                                    )
+                                    onAction(AppUiIntent.DeleteTask(task))
                                 }
                             }
                             SwipeToDismissBox(
@@ -182,8 +190,8 @@ fun TaskList(
                             ) {
                                 TaskCard(
                                     task = task,
-                                    handleTaskAction = uiState.onTaskChange,
                                     goToScreen = goToScreen,
+                                    onAction = onAction,
                                     onChooseTask = onChooseTask
                                 )
                             }
@@ -207,7 +215,7 @@ fun TaskList(
 fun TaskCard(
     task: Task,
     goToScreen: ScreenNavigation,
-    handleTaskAction: HandleTaskAction,
+    onAction: OnAction,
     onChooseTask: ChooseTask = {}
 ) {
 
@@ -265,7 +273,7 @@ fun TaskCard(
                 text = task.title
             )
             TaskOptions(
-                handleTaskAction = handleTaskAction,
+                onAction = onAction,
                 task = task,
                 goToScreen = goToScreen,
                 onChooseTask = onChooseTask,
@@ -330,7 +338,7 @@ private fun TaskCardPreview() {
             Status.TO_BE_DONE
         ),
         goToScreen = {},
-        handleTaskAction = { _, _ -> }
+        onAction = {}
     )
 }
 
@@ -353,8 +361,11 @@ private fun ListPrev() {
                 )
             )
         ),
+        onAction = {},
         goToScreen = {},
         onChooseTask = {},
-        onOpenDrawer = {}
+        onOpenDrawer = {},
+        snackbarHostState = SnackbarHostState(),
+        showSnackbar = {}
     )
 }

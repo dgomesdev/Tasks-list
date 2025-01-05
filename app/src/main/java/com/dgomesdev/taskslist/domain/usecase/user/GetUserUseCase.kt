@@ -7,11 +7,11 @@ import com.dgomesdev.taskslist.domain.repository.UserRepository
 import kotlinx.coroutines.flow.single
 
 class GetUserUseCase(private val userRepository: UserRepository, private val context: Context) {
-    suspend operator fun invoke(userId: String): Pair<User?, String> =
+    suspend operator fun invoke(userId: String): Pair<User?, String?> =
         try {
             val user = User.fromApi(userRepository.getUser(userId).single())
-            Pair(user, context.getString(R.string.hello, user.username))
+            Pair(user, context.getString(R.string.user_updated))
         } catch (e: Exception) {
-            Pair(null, e.message ?: context.getString(R.string.user_not_authenticated))
+            Pair(null, e.message)
         }
 }

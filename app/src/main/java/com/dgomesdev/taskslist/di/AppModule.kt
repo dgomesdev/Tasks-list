@@ -12,12 +12,15 @@ import com.dgomesdev.taskslist.domain.repository.UserRepository
 import com.dgomesdev.taskslist.domain.usecase.task.DeleteTaskUseCase
 import com.dgomesdev.taskslist.domain.usecase.task.SaveTaskUseCase
 import com.dgomesdev.taskslist.domain.usecase.task.UpdateTaskUseCase
-import com.dgomesdev.taskslist.domain.usecase.token.DeleteTokenUseCase
-import com.dgomesdev.taskslist.domain.usecase.token.GetUserFromTokenUseCase
-import com.dgomesdev.taskslist.domain.usecase.user.AuthUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.DeleteUserUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.GetUserUseCase
 import com.dgomesdev.taskslist.domain.usecase.user.UpdateUserUseCase
+import com.dgomesdev.taskslist.domain.usecase.user.RegisterUseCase
+import com.dgomesdev.taskslist.domain.usecase.user.LoginUseCase
+import com.dgomesdev.taskslist.domain.usecase.user.RecoverPasswordUseCase
+import com.dgomesdev.taskslist.domain.usecase.user.ResetPasswordUseCase
+import com.dgomesdev.taskslist.domain.usecase.UserUseCases
+import com.dgomesdev.taskslist.domain.usecase.TaskUseCases
 import com.dgomesdev.taskslist.infra.SecurePreferences
 import com.dgomesdev.taskslist.presentation.viewmodel.TasksViewModel
 import org.koin.core.module.dsl.bind
@@ -40,14 +43,16 @@ val appModule = module {
     singleOf(::DeleteTaskUseCase)
 
     // Use Cases - User
-    singleOf(::AuthUseCase)
+    singleOf(::RegisterUseCase)
+    singleOf(::LoginUseCase)
     singleOf(::GetUserUseCase)
     singleOf(::UpdateUserUseCase)
     singleOf(::DeleteUserUseCase)
+    singleOf(::RecoverPasswordUseCase)
+    singleOf(::ResetPasswordUseCase)
 
-    // Use Cases - Token
-    singleOf(::GetUserFromTokenUseCase)
-    singleOf(::DeleteTokenUseCase)
+    singleOf(::UserUseCases)
+    singleOf(::TaskUseCases)
 
     singleOf(::SecurePreferences)
     singleOf(::HttpClient)

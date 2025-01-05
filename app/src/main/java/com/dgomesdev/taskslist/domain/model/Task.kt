@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Task(
-    val taskId: String?,
+    val taskId: String = "",
     val title: String,
     val description: String,
     val priority: Priority,

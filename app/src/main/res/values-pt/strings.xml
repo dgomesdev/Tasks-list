@@ -38,7 +38,7 @@
     <string name="too_long">A resposta pode levar um momento, aguarde.</string>
     <string name="task_saved">Tarefa salva com sucesso</string>
     <string name="task_updated">Tarefa atualizada com sucesso</string>
-    <string name="hello">Olá %1$s!</string>
+    <string name="welcome_back">Bem-vindo(a) de volta %1$s!</string>
     <string name="welcome">Bem-vindo(a) %1$s!</string>
     <string name="user_not_authenticated">Usuário não autenticado.</string>
     <string name="user_updated">Usuário atualizado com sucesso</string>
@@ -54,4 +54,12 @@
     <string name="user_does_not_exist">Usuário não encontrado. Por favor, crie uma conta</string>
     <string name="closed_session">Sua sessão foi encerrada. Por favor, faça login</string>
     <string name="task_not_found">Tarefa não encontrada</string>
+    <string name="email_sent">Código enviado para %1$s</string>
+    <string name="recover_password">Esqueci a senha</string>
+    <string name="send_recovery_link">Enviar código de reinicialização</string>
+    <string name="update_password">Atualizar senha</string>
+    <string name="password_reset">Senha atualizada com sucesso!</string>
+    <string name="recovery_code">Código de reinicialização</string>
+    <string name="already_have_a_code">Já tenho um código de reinicialização</string>
+    <string name="confirm_password">Confirmar senha</string>
 </resources>

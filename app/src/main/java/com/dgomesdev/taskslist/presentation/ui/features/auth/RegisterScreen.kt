@@ -1,9 +1,8 @@
-package com.dgomesdev.taskslist.presentation.ui.features.userDetails
+package com.dgomesdev.taskslist.presentation.ui.features.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,9 +15,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,40 +33,60 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
-import com.dgomesdev.taskslist.presentation.ui.app.OnAction
+import com.dgomesdev.taskslist.domain.model.User
+import com.dgomesdev.taskslist.presentation.ui.app.ShowSnackbar
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 
 @Composable
-fun UserDetailsScreen(
+fun RegisterScreen(
     modifier: Modifier,
-    uiState: AppUiState,
-    onAction: OnAction,
-    backToMainScreen: () -> Unit = {}
+    message: String?,
+    onAction: (AppUiIntent) -> Unit,
+    backToMainScreen: () -> Unit,
+    snackbarHostState: SnackbarHostState,
+    showSnackbar: ShowSnackbar,
+    goToScreen: (String) -> Unit
 ) {
-
-    var user by rememberSaveable { mutableStateOf(uiState.user!!) }
-    var username by rememberSaveable { mutableStateOf(user.username) }
-    var password by rememberSaveable { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var newPassword by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
     var isUpdating by remember { mutableStateOf(false) }
 
-    Surface(
-        modifier = modifier
-    ) {
+    val isUserValid =
+        username.isNotBlank()
+                && email.isNotBlank()
+                && newPassword.isNotBlank()
+                && newPassword == confirmPassword
+
+    Scaffold(
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+
+        val alreadyHaveAnAccountMessage = stringResource(R.string.already_have_an_account)
+
+        LaunchedEffect(message) {
+            message?.let {
+                if (it.contains("406")) showSnackbar(alreadyHaveAnAccountMessage)
+            }
+        }
+
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(padding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.edit_profile),
+                text = stringResource(R.string.sign_up),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = username,
@@ -73,11 +96,21 @@ fun UserDetailsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = email,
+                onValueChange = { email = it },
+                label = { Text(stringResource(R.string.email)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = newPassword,
+                onValueChange = { newPassword = it },
                 label = { Text(stringResource(R.string.password)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -92,6 +125,28 @@ fun UserDetailsScreen(
                         )
                     }
                 }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text(stringResource(R.string.confirm_password)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { showPassword = !showPassword }) {
+                        Icon(
+                            imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.VisibilityOff,
+                            contentDescription = if (showPassword) stringResource(R.string.hide_password) else stringResource(
+                                R.string.show_password
+                            )
+                        )
+                    }
+                },
+                isError = newPassword != confirmPassword
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -111,30 +166,27 @@ fun UserDetailsScreen(
                 }
                 Button(
                     onClick = {
-                        if (username.isNotBlank()) user = user.copy(username = username)
-                        if (password.isNotBlank()) user = user.copy(password = password)
                         isUpdating = true
-                        user = user.copy(username = username, password = password)
-                        onAction(AppUiIntent.UpdateUser(user))
+                        if (newPassword.isNotBlank() && newPassword == confirmPassword) {
+                            onAction(AppUiIntent.Register(User(password = newPassword)))
+                        }
                         isUpdating = false
                         backToMainScreen()
                     },
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    enabled = isUserValid
                 ) {
-                    Text(text = stringResource(R.string.update))
+                    Text(text = stringResource(R.string.sign_up))
                 }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(onClick = { goToScreen("Login") }) {
+                Text(
+                    text = stringResource(R.string.already_have_an_account)
+                )
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun UpdatePreview() {
-    UserDetailsScreen(
-        modifier = Modifier.fillMaxSize(),
-        uiState = AppUiState(),
-        onAction = {},
-        backToMainScreen = {},
-    )
 }

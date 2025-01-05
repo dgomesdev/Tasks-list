@@ -12,8 +12,8 @@ class UpdateUserUseCase(private val userRepository: UserRepository, private val 
         Pair(
             User.fromApi(
                 userRepository.updateUser(
-                    user.userId!!,
-                    UserRequestDto.create(user)
+                    user.userId,
+                    UserRequestDto.update(user)
                 ).single()
             ),
             context.getString(R.string.user_updated)

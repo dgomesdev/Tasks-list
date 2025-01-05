@@ -38,7 +38,7 @@
     <string name="too_long">Response may take a moment, please wait.</string>
     <string name="task_saved">Task saved successfully</string>
     <string name="task_updated">Task updated successfully</string>
-    <string name="hello">Hello %1$s!</string>
+    <string name="welcome_back">Welcome back %1$s!</string>
     <string name="welcome">Welcome %1$s!</string>
     <string name="user_not_authenticated">User not authenticated</string>
     <string name="user_updated">User updated successfully</string>
@@ -54,4 +54,13 @@
     <string name="user_does_not_exist">User not found. Please create an account</string>
     <string name="closed_session">Your session is closed. Please log in</string>
     <string name="task_not_found">Task not found</string>
+    <string name="recover_password">Forgot password</string>
+    <string name="send_recovery_link">Send reset code</string>
+    <string name="email" translatable="false">E-mail</string>
+    <string name="email_sent">Recovery code sent to %1$s</string>
+    <string name="update_password">Update password</string>
+    <string name="password_reset">Password updated successfully!</string>
+    <string name="recovery_code">Recovery code</string>
+    <string name="already_have_a_code">I already have a reinitialization code</string>
+    <string name="confirm_password">Confirm password</string>
 </resources>
