@@ -51,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Priority
 import com.dgomesdev.taskslist.domain.model.Status
@@ -81,9 +82,7 @@ fun TaskList(
     showSnackbar: (String) -> Unit
 ) {
     val context = LocalContext.current
-    val taskList = uiState.user?.tasks
-//    val scope = rememberCoroutineScope()
-//    val snackbarHostState = remember { SnackbarHostState() }
+    val taskList = uiState.user!!.tasks
 
     var currentSortOption by rememberSaveable { mutableStateOf(SortOption.BY_TITLE) }
     var selectedPriorities by rememberSaveable {
@@ -104,12 +103,11 @@ fun TaskList(
             )
         )
     }
-    val filteredAndSortedTasks = uiState.user?.tasks
-        ?.filterTasks(TaskFilter(selectedPriorities.toSet(), selectedStatuses.toSet()))
-        ?.sortTasks(currentSortOption)
+    val filteredAndSortedTasks = uiState.user.tasks
+        .filterTasks(TaskFilter(selectedPriorities.toSet(), selectedStatuses.toSet()))
+        .sortTasks(currentSortOption)
 
     Scaffold(
-        modifier = modifier,
         topBar = {
             TaskAppBar(onOpenDrawer = onOpenDrawer, onShowInfo = {
                 showSnackbar(context.getString(R.string.developed_by_dgomes_dev))
@@ -121,45 +119,55 @@ fun TaskList(
         LaunchedEffect(uiState.message) {
             uiState.message?.let { showSnackbar(it) }
         }
-        if (taskList != null) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(padding),
-                horizontalAlignment = Alignment.CenterHorizontally
+        Column (
+            modifier.padding(padding)
+        ){
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
+                Text(
+                    uiState.user.username,
+                    modifier = Modifier.padding(16.dp),
+                    fontSize = 32.sp
+                )
+            }
+            if (taskList.isNotEmpty()) {
+                Column(
+                    Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    SortingMenu(
-                        modifier = Modifier
-                            .weight(0.5f)
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
                             .padding(8.dp),
-                        onSortOptionSelected = {
-                            currentSortOption = it
-                        }
-                    )
-                    FilterMenu(
-                        modifier = Modifier
-                            .weight(0.5f)
-                            .padding(8.dp),
-                        selectedPriorities = selectedPriorities,
-                        onPrioritiesChange = {
-                            selectedPriorities = it
-                        },
-                        selectedStatuses = selectedStatuses,
-                        onStatusesChange = {
-                            selectedStatuses = it
-                        }
-                    )
-                }
-                HorizontalDivider()
-                LazyColumn(Modifier.padding(8.dp)) {
-                    filteredAndSortedTasks?.let { tasks ->
-                        items(items = tasks, key = { task ->
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        SortingMenu(
+                            modifier = Modifier
+                                .weight(0.5f)
+                                .padding(8.dp),
+                            onSortOptionSelected = {
+                                currentSortOption = it
+                            }
+                        )
+                        FilterMenu(
+                            modifier = Modifier
+                                .weight(0.5f)
+                                .padding(8.dp),
+                            selectedPriorities = selectedPriorities,
+                            onPrioritiesChange = {
+                                selectedPriorities = it
+                            },
+                            selectedStatuses = selectedStatuses,
+                            onStatusesChange = {
+                                selectedStatuses = it
+                            }
+                        )
+                    }
+                    HorizontalDivider()
+                    LazyColumn(modifier) {
+                        items(items = filteredAndSortedTasks, key = { task ->
                             task.taskId
                         }) { task ->
                             val swipeToDismissState = rememberSwipeToDismissBoxState()
@@ -198,13 +206,13 @@ fun TaskList(
                         }
                     }
                 }
-            }
-        } else {
-            Box(
-                modifier = modifier.padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("No tasks")
+            } else {
+                Box(
+                    modifier = modifier.padding(padding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(stringResource(R.string.no_tasks_for_now))
+                }
             }
         }
     }

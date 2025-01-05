@@ -45,6 +45,7 @@ import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 @Composable
 fun ResetPasswordScreen(
     modifier: Modifier,
+    code: String?,
     message: String?,
     onAction: OnAction,
     snackbarHostState: SnackbarHostState,
@@ -52,7 +53,7 @@ fun ResetPasswordScreen(
     goToScreen: (String) -> Unit,
     backToMainScreen: () -> Unit,
 ) {
-    var recoveryCode by rememberSaveable { mutableStateOf("") }
+    var recoveryCode by rememberSaveable { mutableStateOf(code ?: "") }
     var email by rememberSaveable { mutableStateOf("") }
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -65,16 +66,18 @@ fun ResetPasswordScreen(
             && newPassword == confirmPassword
 
     Scaffold(
-        modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
 
         LaunchedEffect(message) {
-            message?.let { if (!it.contains("403")) showSnackbar(message) }
+            message?.let {
+                if (!it.contains("403")) showSnackbar(message)
+                onAction(AppUiIntent.RefreshMessage())
+            }
         }
 
         Column(
-            modifier = Modifier.padding(padding),
+            modifier = modifier.padding(padding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -165,13 +168,15 @@ fun ResetPasswordScreen(
                 Button(
                     onClick = {
                         isUpdating = true
-                        if (newPassword.isNotBlank() && newPassword == confirmPassword)
-                            onAction(
-                                AppUiIntent.ResetPassword(
-                                    recoveryCode,
-                                    User(password = newPassword)
+                        if (isUserValid) onAction(
+                            AppUiIntent.ResetPassword(
+                                recoveryCode,
+                                User(
+                                    email = email,
+                                    password = newPassword
                                 )
                             )
+                        )
                         isUpdating = false
                         goToScreen("Login")
                     },
@@ -196,5 +201,6 @@ private fun UpdatePreview() {
         showSnackbar = {},
         goToScreen = {},
         backToMainScreen = {},
+        code = "123",
     )
 }

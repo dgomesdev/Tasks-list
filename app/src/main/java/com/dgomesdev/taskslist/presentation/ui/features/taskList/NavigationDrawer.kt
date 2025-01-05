@@ -2,6 +2,7 @@ package com.dgomesdev.taskslist.presentation.ui.features.taskList
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
@@ -20,7 +21,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dgomesdev.taskslist.R
+import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
@@ -45,12 +48,19 @@ fun NavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Column(modifier = Modifier.fillMaxWidth() ,horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Image(
                         painter = painterResource(R.drawable.business_card),
                         contentDescription = stringResource(R.string.app_name)
                     )
-                    Text("Task list app", modifier = Modifier.padding(16.dp))
+                    Text(
+                        uiState.user!!.username,
+                        modifier = Modifier.padding(16.dp),
+                        fontSize = 32.sp
+                    )
                 }
 
                 HorizontalDivider()
@@ -64,13 +74,13 @@ fun NavigationDrawer(
                 NavigationDrawerItem(
                     label = { Text(text = stringResource(R.string.log_out)) },
                     selected = false,
-                    onClick = { onAction(AppUiIntent.Logout()) ; scope.launch { drawerState.close() } }
+                    onClick = { onAction(AppUiIntent.Logout()); scope.launch { drawerState.close() } }
                 )
 
                 NavigationDrawerItem(
                     label = { Text(text = stringResource(R.string.delete_account)) },
                     selected = false,
-                    onClick = { onAction(AppUiIntent.DeleteUser(uiState.user!!)) ; scope.launch { drawerState.close() } }
+                    onClick = { onAction(AppUiIntent.DeleteUser(uiState.user!!)); scope.launch { drawerState.close() } }
                 )
             }
         }
@@ -92,8 +102,10 @@ fun NavigationDrawer(
 @Composable
 private fun MainPrev() {
     NavigationDrawer(
-        modifier = Modifier,
-        uiState = AppUiState(),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        uiState = AppUiState(
+            user = User(username = "Danilo")
+        ),
         onAction = {},
         goToScreen = {},
         onChooseTask = {},

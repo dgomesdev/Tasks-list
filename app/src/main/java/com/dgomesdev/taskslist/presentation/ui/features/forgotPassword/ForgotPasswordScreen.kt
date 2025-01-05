@@ -50,16 +50,17 @@ fun ForgotPasswordScreen(
     var isUpdating by remember { mutableStateOf(false) }
 
     Scaffold(
-        modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-
         LaunchedEffect(message) {
-            message?.let { if (!it.contains("403")) showSnackbar(message) }
+            message?.let {
+                if (!it.contains("403")) showSnackbar(message)
+                onAction(AppUiIntent.RefreshMessage())
+            }
         }
 
         Column(
-            modifier = Modifier.padding(padding),
+            modifier = modifier.padding(padding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

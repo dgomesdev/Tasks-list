@@ -54,8 +54,9 @@ fun TaskDetailsScreen(
         mutableStateOf(task?.status ?: Status.TO_BE_DONE)
     }
 
-    Surface(modifier) {
+    Surface {
         Column(
+            modifier,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

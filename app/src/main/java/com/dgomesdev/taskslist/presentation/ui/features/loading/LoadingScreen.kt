@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,8 +28,9 @@ import kotlinx.coroutines.delay
 @Composable
 fun LoadingScreen(modifier: Modifier) {
     var isTakingTooLong by remember { mutableStateOf(false) }
-    Surface(modifier) {
+    Surface {
         Column(
+            modifier,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -58,5 +60,5 @@ fun LoadingScreen(modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 private fun LoadingPrev() {
-    LoadingScreen(Modifier.fillMaxSize())
+    LoadingScreen(Modifier.fillMaxSize().padding(16.dp))
 }

@@ -75,6 +75,8 @@ class TasksViewModel(
                 user!!.userId
             ) }
             is AppUiIntent.Logout -> logout()
+            is AppUiIntent.RefreshMessage -> refreshMessage()
+            is AppUiIntent.SetRecoveryCode -> setRecoveryCode(intent.recoveryCode!!)
         }
     }
 
@@ -115,12 +117,25 @@ class TasksViewModel(
             it.copy(user = null)
         }
     }
+
+    private fun refreshMessage() {
+        _uiState.update {
+            it.copy(message = null)
+        }
+    }
+
+    private fun setRecoveryCode(recoveryCode: String) {
+        _uiState.update {
+            it.copy(recoveryCode = recoveryCode)
+        }
+    }
 }
 
 data class AppUiState(
     val user: User? = null,
     val message: String? = null,
     val isLoading: Boolean = false,
+    val recoveryCode: String? = null
 )
 
 sealed class AppUiIntent(
@@ -139,4 +154,6 @@ sealed class AppUiIntent(
     class UpdateTask(task: Task): AppUiIntent(task = task)
     class DeleteTask(task: Task): AppUiIntent(task = task)
     class Logout: AppUiIntent()
+    class RefreshMessage: AppUiIntent()
+    class SetRecoveryCode(recoveryCode: String): AppUiIntent(recoveryCode = recoveryCode)
 }

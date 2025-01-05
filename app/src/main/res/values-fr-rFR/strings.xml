@@ -62,4 +62,5 @@
     <string name="recovery_code">Code de réinitialisation</string>
     <string name="already_have_a_code">J\'ai déjà un code de réinitialisation</string>
     <string name="confirm_password">Confirmer mot de passe</string>
+    <string name="no_tasks_for_now">Pas de tâches pour l\'instant</string>
 </resources>

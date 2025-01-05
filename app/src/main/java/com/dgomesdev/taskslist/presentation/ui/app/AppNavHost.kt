@@ -47,12 +47,21 @@ fun AppNavHost(
     }
     LaunchedEffect(uiState.isLoading) {
         if (uiState.isLoading) navController.navigate("Loading")
-        else navController.popBackStack()
+        else {
+            if (uiState.user != null) navController.navigate("TaskList")
+            else navController.navigate("Login")
+        }
+
+    }
+    LaunchedEffect(uiState.recoveryCode) {
+        uiState.recoveryCode?.let{
+            navController.navigate("ResetPassword")
+        }
     }
 
     NavHost(
         navController = navController,
-        startDestination = "TaskList",
+        startDestination = "Login",
     ) {
         composable(
             route = "TaskList",
@@ -220,6 +229,7 @@ fun AppNavHost(
         ) {
             ResetPasswordScreen(
                 modifier,
+                uiState.recoveryCode,
                 uiState.message,
                 onAction,
                 snackbarHostState = snackbarHostState,

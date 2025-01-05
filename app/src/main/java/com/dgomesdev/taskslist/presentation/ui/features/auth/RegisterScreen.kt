@@ -54,6 +54,7 @@ fun RegisterScreen(
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
+    var showConfirmPassword by remember { mutableStateOf(false) }
     var isUpdating by remember { mutableStateOf(false) }
 
     val isUserValid =
@@ -63,7 +64,6 @@ fun RegisterScreen(
                 && newPassword == confirmPassword
 
     Scaffold(
-        modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
 
@@ -72,11 +72,12 @@ fun RegisterScreen(
         LaunchedEffect(message) {
             message?.let {
                 if (it.contains("406")) showSnackbar(alreadyHaveAnAccountMessage)
+                onAction(AppUiIntent.RefreshMessage())
             }
         }
 
         Column(
-            modifier = Modifier.padding(padding),
+            modifier = modifier.padding(padding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -135,12 +136,12 @@ fun RegisterScreen(
                 label = { Text(stringResource(R.string.confirm_password)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
-                    IconButton(onClick = { showPassword = !showPassword }) {
+                    IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
                         Icon(
-                            imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.VisibilityOff,
-                            contentDescription = if (showPassword) stringResource(R.string.hide_password) else stringResource(
+                            imageVector = if (showConfirmPassword) Icons.Default.VisibilityOff else Icons.Default.VisibilityOff,
+                            contentDescription = if (showConfirmPassword) stringResource(R.string.hide_password) else stringResource(
                                 R.string.show_password
                             )
                         )
@@ -167,9 +168,15 @@ fun RegisterScreen(
                 Button(
                     onClick = {
                         isUpdating = true
-                        if (newPassword.isNotBlank() && newPassword == confirmPassword) {
-                            onAction(AppUiIntent.Register(User(password = newPassword)))
-                        }
+                        if (isUserValid) onAction(
+                            AppUiIntent.Register(
+                                User(
+                                    username = username,
+                                    email = email,
+                                    password = confirmPassword,
+                                )
+                            )
+                        )
                         isUpdating = false
                         backToMainScreen()
                     },

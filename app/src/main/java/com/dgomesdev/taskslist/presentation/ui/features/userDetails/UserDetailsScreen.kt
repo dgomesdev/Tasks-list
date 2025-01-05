@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
+import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
@@ -44,18 +45,23 @@ fun UserDetailsScreen(
     onAction: OnAction,
     backToMainScreen: () -> Unit = {}
 ) {
-
-    var user by rememberSaveable { mutableStateOf(uiState.user!!) }
-    var username by rememberSaveable { mutableStateOf(user.username) }
-    var password by rememberSaveable { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf(uiState.user!!.username) }
+    var email by rememberSaveable { mutableStateOf(uiState.user!!.email) }
+    var newPassword by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
+    var showConfirmPassword by remember { mutableStateOf(false) }
     var isUpdating by remember { mutableStateOf(false) }
 
-    Surface(
-        modifier = modifier
-    ) {
+    val isUserValid =
+        username.isNotBlank()
+                && email.isNotBlank()
+                && newPassword.isNotBlank()
+                && newPassword == confirmPassword
+
+    Surface{
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = modifier,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -76,8 +82,18 @@ fun UserDetailsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = email,
+                onValueChange = { email = it },
+                label = { Text(stringResource(R.string.email)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = newPassword,
+                onValueChange = { newPassword = it },
                 label = { Text(stringResource(R.string.password)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -92,6 +108,28 @@ fun UserDetailsScreen(
                         )
                     }
                 }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text(stringResource(R.string.confirm_password)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
+                        Icon(
+                            imageVector = if (showConfirmPassword) Icons.Default.VisibilityOff else Icons.Default.VisibilityOff,
+                            contentDescription = if (showConfirmPassword) stringResource(R.string.hide_password) else stringResource(
+                                R.string.show_password
+                            )
+                        )
+                    }
+                },
+                isError = newPassword != confirmPassword
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -111,11 +149,18 @@ fun UserDetailsScreen(
                 }
                 Button(
                     onClick = {
-                        if (username.isNotBlank()) user = user.copy(username = username)
-                        if (password.isNotBlank()) user = user.copy(password = password)
                         isUpdating = true
-                        user = user.copy(username = username, password = password)
-                        onAction(AppUiIntent.UpdateUser(user))
+                        if (isUserValid) {
+                            onAction(
+                                AppUiIntent.UpdateUser(
+                                    User(
+                                        username = username,
+                                        email = email,
+                                        password = confirmPassword,
+                                    )
+                                )
+                            )
+                        }
                         isUpdating = false
                         backToMainScreen()
                     },
@@ -132,8 +177,13 @@ fun UserDetailsScreen(
 @Composable
 private fun UpdatePreview() {
     UserDetailsScreen(
-        modifier = Modifier.fillMaxSize(),
-        uiState = AppUiState(),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        uiState = AppUiState(
+            user = User(
+                username = "Test",
+                email = "test"
+            )
+        ),
         onAction = {},
         backToMainScreen = {},
     )

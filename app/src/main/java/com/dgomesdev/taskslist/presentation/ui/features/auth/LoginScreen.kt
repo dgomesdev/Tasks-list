@@ -71,6 +71,7 @@ fun LoginScreen(
         LaunchedEffect(message) {
             message?.let {
                 if (!it.contains("403")) showSnackbar(message)
+                onAction(AppUiIntent.RefreshMessage())
             }
         }
 
