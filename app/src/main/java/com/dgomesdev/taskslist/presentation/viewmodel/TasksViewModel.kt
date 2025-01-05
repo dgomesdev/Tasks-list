@@ -64,15 +64,15 @@ class TasksViewModel(
             ) }
             is AppUiIntent.SaveTask -> execute { taskUseCases.saveTaskUseCase(
                 task!!,
-                user!!.userId
+                uiState.value.user!!.userId
             ) }
             is AppUiIntent.UpdateTask -> execute { taskUseCases.updateTaskUseCase(
                 task!!,
-                user!!.userId
+                uiState.value.user!!.userId
             ) }
             is AppUiIntent.DeleteTask -> execute { taskUseCases.deleteTaskUseCase(
                 task!!.taskId,
-                user!!.userId
+                uiState.value.user!!.userId
             ) }
             is AppUiIntent.Logout -> logout()
             is AppUiIntent.RefreshMessage -> refreshMessage()

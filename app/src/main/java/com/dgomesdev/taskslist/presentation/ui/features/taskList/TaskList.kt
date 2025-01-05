@@ -117,11 +117,14 @@ fun TaskList(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         LaunchedEffect(uiState.message) {
-            uiState.message?.let { showSnackbar(it) }
+            uiState.message?.let {
+                showSnackbar(it)
+                onAction(AppUiIntent.RefreshMessage())
+            }
         }
-        Column (
+        Column(
             modifier.padding(padding)
-        ){
+        ) {
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center

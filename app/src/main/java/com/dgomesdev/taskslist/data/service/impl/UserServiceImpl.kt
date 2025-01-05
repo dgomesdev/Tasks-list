@@ -108,7 +108,7 @@ class UserServiceImpl(
                 bearerAuth(token)
             }
 
-            if (response.status == HttpStatusCode.Found) {
+            if (response.status == HttpStatusCode.OK) {
                 val userResponse = response.body<UserResponseDto>()
                 Log.i("Get user success", "$userResponse")
                 Result.success(userResponse)
