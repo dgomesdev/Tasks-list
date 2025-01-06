@@ -13,10 +13,11 @@ import com.dgomesdev.taskslist.R
 
 @Composable
 fun NewTaskButton(
-    goToScreen: ScreenNavigation
+    goToScreen: ScreenNavigation,
+    onChooseTask: ChooseTask
 ) {
     FloatingActionButton(
-        onClick = { goToScreen("TaskDetails") },
+        onClick = { onChooseTask(null) ; goToScreen("TaskDetails") },
         modifier = Modifier
             .padding(all = 16.dp)
     ) {

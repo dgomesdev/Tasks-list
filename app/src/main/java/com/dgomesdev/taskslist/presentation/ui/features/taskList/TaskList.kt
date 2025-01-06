@@ -113,7 +113,7 @@ fun TaskList(
                 showSnackbar(context.getString(R.string.developed_by_dgomes_dev))
             })
         },
-        floatingActionButton = { NewTaskButton(goToScreen = goToScreen) },
+        floatingActionButton = { NewTaskButton(goToScreen = goToScreen, onChooseTask) },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         LaunchedEffect(uiState.message) {
@@ -125,12 +125,9 @@ fun TaskList(
         Column(
             modifier.padding(padding)
         ) {
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
+            Row(Modifier.fillMaxWidth()) {
                 Text(
-                    uiState.user.username,
+                    stringResource(R.string.hello, uiState.user.username),
                     modifier = Modifier.padding(16.dp),
                     fontSize = 32.sp
                 )
@@ -227,7 +224,7 @@ fun TaskCard(
     task: Task,
     goToScreen: ScreenNavigation,
     onAction: OnAction,
-    onChooseTask: ChooseTask = {}
+    onChooseTask: ChooseTask
 ) {
 
     val haptics = LocalHapticFeedback.current
@@ -349,7 +346,8 @@ private fun TaskCardPreview() {
             Status.TO_BE_DONE
         ),
         goToScreen = {},
-        onAction = {}
+        onAction = {},
+        onChooseTask = {}
     )
 }
 

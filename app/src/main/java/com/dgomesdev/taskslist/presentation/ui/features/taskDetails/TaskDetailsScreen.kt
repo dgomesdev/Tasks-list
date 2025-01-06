@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
@@ -38,21 +37,13 @@ fun TaskDetailsScreen(
     onAction: OnAction,
     backToMainScreen: () -> Unit = {}
 ) {
-    var taskTitle by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(task?.title ?: ""))
-    }
+    var taskTitle by rememberSaveable { mutableStateOf(task?.title ?: "") }
 
-    var taskDescription by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(task?.description ?: ""))
-    }
+    var taskDescription by rememberSaveable { mutableStateOf(task?.description ?: "") }
 
-    var taskPriority by rememberSaveable {
-        mutableStateOf(task?.priority ?: Priority.MEDIUM)
-    }
+    var taskPriority by rememberSaveable { mutableStateOf(task?.priority ?: Priority.MEDIUM) }
 
-    var taskStatus by rememberSaveable {
-        mutableStateOf(task?.status ?: Status.TO_BE_DONE)
-    }
+    var taskStatus by rememberSaveable { mutableStateOf(task?.status ?: Status.TO_BE_DONE) }
 
     Surface {
         Column(
@@ -113,26 +104,27 @@ fun TaskDetailsScreen(
 
             Button(
                 onClick = {
-                        if (task == null) onAction(AppUiIntent.SaveTask(
+                    if (task == null) onAction(
+                        AppUiIntent.SaveTask(
                             Task(
-                                title = taskTitle.text,
-                                description = taskDescription.text,
+                                title = taskTitle,
+                                description = taskDescription,
                                 priority = taskPriority,
                                 status = taskStatus
                             )
-                        )) else {
-                            onAction(
-                                AppUiIntent.UpdateTask(
-                                    task.copy(
-                                        taskId = task.taskId,
-                                        title = taskTitle.text,
-                                        description = taskDescription.text,
-                                        priority = taskPriority,
-                                        status = taskStatus
-                                    )
+                        )
+                    ) else {
+                        onAction(
+                            AppUiIntent.UpdateTask(
+                                task.copy(
+                                    title = taskTitle,
+                                    description = taskDescription,
+                                    priority = taskPriority,
+                                    status = taskStatus
                                 )
                             )
-                        }
+                        )
+                    }
                     backToMainScreen()
                 },
                 modifier = Modifier.padding(8.dp)

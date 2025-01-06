@@ -38,7 +38,7 @@
     <string name="too_long">Response may take a moment, please wait.</string>
     <string name="task_saved">Task saved successfully</string>
     <string name="task_updated">Task updated successfully</string>
-    <string name="welcome_back">Welcome back %1$s!</string>
+    <string name="hello">Hello %1$s,</string>
     <string name="welcome">Welcome %1$s!</string>
     <string name="user_not_authenticated">User not authenticated</string>
     <string name="user_updated">User updated successfully</string>

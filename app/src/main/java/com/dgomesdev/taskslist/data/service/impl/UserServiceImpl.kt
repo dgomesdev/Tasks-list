@@ -215,7 +215,7 @@ class UserServiceImpl(
             }
 
             if (response.status == HttpStatusCode.OK) {
-                val message = MessageDto(context.getString(R.string.email_sent))
+                val message = MessageDto(context.getString(R.string.email_sent, user.email))
                 Result.success(message)
             } else {
                 val error = response.body<MessageDto>()

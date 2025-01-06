@@ -26,7 +26,7 @@ import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 
 typealias ScreenNavigation = (String) -> Unit
-typealias ChooseTask = (Task) -> Unit
+typealias ChooseTask = (Task?) -> Unit
 typealias OnAction = (AppUiIntent) -> Unit
 typealias ShowSnackbar = (String) -> Unit
 

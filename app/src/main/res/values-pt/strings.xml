@@ -38,7 +38,7 @@
     <string name="too_long">A resposta pode levar um momento, aguarde.</string>
     <string name="task_saved">Tarefa salva com sucesso</string>
     <string name="task_updated">Tarefa atualizada com sucesso</string>
-    <string name="welcome_back">Bem-vindo(a) de volta %1$s!</string>
+    <string name="hello">Olá %1$s,</string>
     <string name="welcome">Bem-vindo(a) %1$s!</string>
     <string name="user_not_authenticated">Usuário não autenticado.</string>
     <string name="user_updated">Usuário atualizado com sucesso</string>
