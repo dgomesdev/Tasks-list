@@ -11,10 +11,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,10 +24,10 @@ fun SortingMenu(
     modifier: Modifier,
     onSortOptionSelected: (SortOption) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    val (expandedMenu, setExpandedMenu) = remember { mutableStateOf(false) }
 
     Button(
-        onClick = { expanded = true },
+        onClick = { setExpandedMenu(true) },
         modifier = modifier
     ) {
         Row(
@@ -44,7 +42,7 @@ fun SortingMenu(
             )
         }
 
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        DropdownMenu(expanded = expandedMenu, onDismissRequest = { setExpandedMenu(false) }) {
             SortOption.entries.forEach { option ->
                 DropdownMenuItem(
                     text = {
@@ -56,7 +54,7 @@ fun SortingMenu(
                             }
                         )
                     },
-                    onClick = { onSortOptionSelected(option); expanded = false }
+                    onClick = { onSortOptionSelected(option); setExpandedMenu(false) }
                 )
             }
         }

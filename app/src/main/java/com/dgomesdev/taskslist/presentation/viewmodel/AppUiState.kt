@@ -9,5 +9,6 @@ data class AppUiState(
     val isLoading: Boolean = false,
     val recoveryCode: String? = null,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    val isSessionValid: Boolean? = null
+    val isSessionValid: Boolean = true,
+    val hasGoogleCredential: Boolean = false
 )

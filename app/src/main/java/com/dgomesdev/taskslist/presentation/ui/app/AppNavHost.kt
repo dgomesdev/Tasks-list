@@ -4,12 +4,10 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,8 +35,8 @@ fun AppNavHost(
     onAction: OnAction,
     activity: MainActivity
 ) {
+    val (task, setTask) = rememberSaveable { mutableStateOf<Task?>(null) }
     val navController = rememberNavController()
-    var task by rememberSaveable { mutableStateOf<Task?>(null) }
     val accountManager = remember { AccountManager(activity) }
     val scope = rememberCoroutineScope()
 
@@ -47,7 +45,9 @@ fun AppNavHost(
             uiState.isLoading -> navController.navigate("Loading")
             uiState.recoveryCode != null -> navController.navigate("ResetPassword")
             uiState.user != null -> navController.navigate("TaskList")
-            else -> navController.popBackStack("Login", false)
+            else -> if (navController.currentDestination?.route != "Login") {
+                navController.popBackStack("Login", false)
+            } else Unit
         }
     }
 
@@ -75,8 +75,9 @@ fun AppNavHost(
                 uiState = uiState,
                 onAction = onAction,
                 goToScreen = { navController.navigate(it) },
-                onChooseTask = { task = it },
-                scope = scope
+                onChooseTask = { setTask(it) },
+                scope = scope,
+                backToMainScreen = { navController.popBackStack("Login", false) }
             )
         }
         composable(
@@ -120,7 +121,9 @@ fun AppNavHost(
                 modifier = modifier,
                 uiState = uiState,
                 onAction = onAction,
-                backToMainScreen = { navController.popBackStack() }
+                backToMainScreen = { navController.popBackStack() },
+                accountManager = accountManager,
+                scope = scope
             )
         }
         composable(

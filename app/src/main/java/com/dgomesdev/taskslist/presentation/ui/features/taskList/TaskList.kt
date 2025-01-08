@@ -48,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -86,12 +85,10 @@ fun TaskList(
     scope: CoroutineScope,
     drawerState: DrawerState
 ) {
-    val context = LocalContext.current
     val taskList = uiState.user?.tasks ?: emptyList()
     val username = uiState.user?.username ?: ""
-
-    var currentSortOption by rememberSaveable { mutableStateOf(SortOption.BY_TITLE) }
-    var selectedPriorities by rememberSaveable {
+    val (currentSortOption, setCurrentSortOption) = rememberSaveable { mutableStateOf(SortOption.BY_TITLE) }
+    val (selectedPriorities, setSelectedPriorities) = rememberSaveable {
         mutableStateOf(
             listOf(
                 Priority.LOW,
@@ -100,7 +97,7 @@ fun TaskList(
             )
         )
     }
-    var selectedStatuses by rememberSaveable {
+    val (selectedStatuses, setSelectedStatuses) = rememberSaveable {
         mutableStateOf(
             listOf(
                 Status.TO_BE_DONE,
@@ -112,13 +109,14 @@ fun TaskList(
     val filteredAndSortedTasks = taskList
         .filterTasks(TaskFilter(selectedPriorities.toSet(), selectedStatuses.toSet()))
         .sortTasks(currentSortOption)
+    val developerMessage = stringResource(R.string.developed_by_dgomes_dev)
 
     Scaffold(
         topBar = {
             TaskAppBar(
                 scope = scope,
                 drawerState = drawerState,
-                onShowInfo = { onAction(ShowSnackbar(context.getString(R.string.developed_by_dgomes_dev))) }
+                onShowInfo = { onAction(ShowSnackbar(developerMessage)) }
             )
         },
         floatingActionButton = { NewTaskButton(goToScreen = goToScreen, onChooseTask) },
@@ -156,7 +154,7 @@ fun TaskList(
                                 .weight(0.5f)
                                 .padding(8.dp),
                             onSortOptionSelected = {
-                                currentSortOption = it
+                                setCurrentSortOption(it)
                             }
                         )
                         FilterMenu(
@@ -165,11 +163,11 @@ fun TaskList(
                                 .padding(8.dp),
                             selectedPriorities = selectedPriorities,
                             onPrioritiesChange = {
-                                selectedPriorities = it
+                                setSelectedPriorities(it)
                             },
                             selectedStatuses = selectedStatuses,
                             onStatusesChange = {
-                                selectedStatuses = it
+                                setSelectedStatuses(it)
                             }
                         )
                     }

@@ -12,10 +12,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,7 +25,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun LoadingScreen(modifier: Modifier) {
-    var isTakingTooLong by remember { mutableStateOf(false) }
+    val (isTakingTooLong, setIsTakingTooLong) = remember { mutableStateOf(false) }
+
     Surface {
         Column(
             modifier,
@@ -43,7 +42,7 @@ fun LoadingScreen(modifier: Modifier) {
             Text(stringResource(R.string.loading))
             LaunchedEffect(null) {
                 delay(5000)
-                isTakingTooLong = true
+                setIsTakingTooLong(true)
             }
             if (isTakingTooLong) {
                 Spacer(

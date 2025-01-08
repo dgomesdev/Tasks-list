@@ -33,10 +33,10 @@ fun FilterMenu(
     selectedStatuses: List<Status> = emptyList(),
     onStatusesChange: (List<Status>) -> Unit = {}
 ) {
-    var expandedMenu by remember { mutableStateOf(false) }
+    val (expandedMenu, setExpandedMenu) = remember { mutableStateOf(false) }
 
     Button(
-        onClick = { expandedMenu = true },
+        onClick = { setExpandedMenu(true) },
         modifier = modifier
     ) {
         Row(
@@ -53,9 +53,8 @@ fun FilterMenu(
 
         DropdownMenu(
             expanded = expandedMenu,
-            onDismissRequest = { expandedMenu = false }
+            onDismissRequest = { setExpandedMenu(false) }
         ) {
-            // Priority Filters
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Text(text = stringResource(R.string.priority))
             }
@@ -89,7 +88,6 @@ fun FilterMenu(
                 )
             }
 
-            // Status Filters
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Text(text = stringResource(R.string.status))
             }

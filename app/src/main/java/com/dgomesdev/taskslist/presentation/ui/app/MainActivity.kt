@@ -15,6 +15,7 @@ import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 import com.dgomesdev.taskslist.presentation.viewmodel.TasksViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+const val EMAIL_PATTERN = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
 class MainActivity : ComponentActivity() {
 
     private val tasksViewModel: TasksViewModel by viewModel()

@@ -7,9 +7,9 @@ import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.domain.usecase.TaskUseCases
 import com.dgomesdev.taskslist.domain.usecase.UserUseCases
 import com.dgomesdev.taskslist.infra.SecurePreferences
-import com.dgomesdev.taskslist.presentation.ui.features.auth.RegisterResult.Cancelled
-import com.dgomesdev.taskslist.presentation.ui.features.auth.RegisterResult.Failure
-import com.dgomesdev.taskslist.presentation.ui.features.auth.RegisterResult.Success
+import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Cancelled
+import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Failure
+import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Success
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.DeleteTask
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.DeleteUser
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.GetUser
@@ -45,7 +45,8 @@ class TasksViewModel(
 
     private fun initializeUser() {
         viewModelScope.launch {
-            securePreferences.getUserFromToken()?.let { tokenUser ->
+            val tokenUser = securePreferences.getUserFromToken()
+            if (tokenUser != null){
                 val result = runCatching { userUseCases.getUserUseCase(tokenUser.userId) }
                 result.onSuccess { (user, message) ->
                     setState(user = user, message = message, isSessionValid = true)
@@ -55,7 +56,7 @@ class TasksViewModel(
                         isSessionValid = false
                     )
                 }
-            }
+            } else setState(isSessionValid = false)
         }
     }
 
@@ -64,7 +65,7 @@ class TasksViewModel(
         message: String? = null,
         isLoading: Boolean = false,
         recoveryCode: String? = null,
-        isSessionValid: Boolean? = null
+        isSessionValid: Boolean = true
     ) {
         _uiState.update {
             it.copy(
@@ -72,7 +73,7 @@ class TasksViewModel(
                 message = message ?: it.message,
                 isLoading = isLoading,
                 recoveryCode = recoveryCode ?: it.recoveryCode,
-                isSessionValid = isSessionValid ?: it.isSessionValid
+                isSessionValid = isSessionValid
             )
         }
     }
@@ -82,9 +83,18 @@ class TasksViewModel(
         when (intent) {
             is Register -> {
                 when (intent.result) {
-                    is Success -> execute { userUseCases.registerUseCase(intent.result.user) }
-                    is Cancelled -> showSnackbar(intent.result.cancelledMessage)
-                    is Failure -> showSnackbar(intent.result.failureMessage)
+                    is Success -> {
+                        _uiState.update { it.copy(hasGoogleCredential = true) }
+                        execute { userUseCases.registerUseCase(intent.result.user) }
+                    }
+                    is Cancelled -> {
+                        showSnackbar(intent.result.cancelledMessage)
+                        execute { userUseCases.registerUseCase(intent.result.user) }
+                    }
+                    is Failure -> {
+                        showSnackbar(intent.result.failureMessage)
+                        execute { userUseCases.registerUseCase(intent.result.user) }
+                    }
                 }
             }
 
@@ -105,7 +115,7 @@ class TasksViewModel(
             is DeleteTask -> execute { taskUseCases.deleteTaskUseCase(intent.task.taskId) }
             is SetRecoveryCode -> setState(recoveryCode = intent.recoveryCode)
             is ShowSnackbar -> showSnackbar(intent.message)
-            is RefreshMessage -> setState(message = null)
+            is RefreshMessage -> _uiState.update { it.copy(message = null) }
             is Logout -> logout()
         }
     }
@@ -117,8 +127,8 @@ class TasksViewModel(
                 useCase()
             }.onSuccess { result ->
                 val (user, message) = result
-                if (user == null) setState(isSessionValid = null) else setState(isSessionValid = true)
-                setState(user = user, message = message)
+                if (user != null) setState(user = user, message = message)
+                else logout()
             }.onFailure { e ->
                 val message = e.message.toString()
                 setState(message = "Error: $message")
@@ -135,7 +145,7 @@ class TasksViewModel(
 
     private fun logout() {
         securePreferences.deleteToken()
-        _uiState.update { it.copy(user = null, isSessionValid = false) }
+        _uiState.update { it.copy(user = null, isSessionValid = false, message = "logout") }
     }
 
 }

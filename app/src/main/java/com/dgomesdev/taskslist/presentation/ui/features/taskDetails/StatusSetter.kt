@@ -11,17 +11,17 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Status
-import com.dgomesdev.taskslist.domain.model.Status.*
+import com.dgomesdev.taskslist.domain.model.Status.DONE
+import com.dgomesdev.taskslist.domain.model.Status.IN_PROGRESS
+import com.dgomesdev.taskslist.domain.model.Status.TO_BE_DONE
 
 @Composable
 fun StatusSetter(
@@ -29,10 +29,10 @@ fun StatusSetter(
     setStatus: (Status) -> Unit,
     currentStatus: Status
 ) {
-    var expandedMenu by remember { mutableStateOf(false) }
+    val (expandedMenu, setExpandedMenu) = remember { mutableStateOf(false) }
 
     Button(
-        onClick = { expandedMenu = true },
+        onClick = { setExpandedMenu(true) },
         modifier = modifier
     ) {
         Row(
@@ -52,7 +52,7 @@ fun StatusSetter(
                 contentDescription = stringResource(R.string.options)
             )
         }
-        DropdownMenu(expanded = expandedMenu, onDismissRequest = { expandedMenu = false }) {
+        DropdownMenu(expanded = expandedMenu, onDismissRequest = { setExpandedMenu(false) }) {
             Status.entries.forEach{ status ->
                 DropdownMenuItem(
                     text = {
@@ -64,7 +64,7 @@ fun StatusSetter(
                             }
                         )
                     },
-                    onClick = { setStatus(status); expandedMenu = false }
+                    onClick = { setStatus(status); setExpandedMenu(false) }
                 )
             }
         }

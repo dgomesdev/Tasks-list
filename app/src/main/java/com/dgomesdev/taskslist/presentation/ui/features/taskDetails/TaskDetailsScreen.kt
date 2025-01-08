@@ -6,20 +6,23 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
@@ -37,57 +40,51 @@ fun TaskDetailsScreen(
     onAction: OnAction,
     backToMainScreen: () -> Unit = {}
 ) {
-    var taskTitle by rememberSaveable { mutableStateOf(task?.title ?: "") }
-
-    var taskDescription by rememberSaveable { mutableStateOf(task?.description ?: "") }
-
-    var taskPriority by rememberSaveable { mutableStateOf(task?.priority ?: Priority.MEDIUM) }
-
-    var taskStatus by rememberSaveable { mutableStateOf(task?.status ?: Status.TO_BE_DONE) }
+    val (title, setTitle) = rememberSaveable { mutableStateOf(task?.title ?: "") }
+    val (description, setDescription) = rememberSaveable { mutableStateOf(task?.description ?: "") }
+    val (priority, setPriority) = rememberSaveable { mutableStateOf(task?.priority ?: Priority.MEDIUM) }
+    val (status, setStatus) = rememberSaveable { mutableStateOf(task?.status ?: Status.TO_BE_DONE) }
+    val focusManager = LocalFocusManager.current
 
     Surface {
         Column(
             modifier,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedTextField(
-                value = taskTitle,
-                onValueChange = { taskTitle = it },
+                value = title,
+                onValueChange = { setTitle(it) },
+                modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.title)) },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.moveFocus(focusDirection = FocusDirection.Down)
+                })
             )
 
             OutlinedTextField(
-                value = taskDescription,
-                onValueChange = { taskDescription = it },
+                value = description,
+                onValueChange = { setDescription(it) },
+                modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.description)) },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.clearFocus() })
             )
 
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 PrioritySetter(
-                    Modifier
-                        .weight(0.5f)
-                        .padding(horizontal = 8.dp),
-                    setPriority = { taskPriority = it },
-                    currentPriority = taskPriority
+                    Modifier.weight(0.5f).padding(horizontal = 8.dp),
+                    setPriority = { setPriority(it) },
+                    currentPriority = priority
                 )
                 StatusSetter(
-                    Modifier
-                        .weight(0.5f)
-                        .padding(horizontal = 8.dp),
-                    setStatus = { taskStatus = it },
-                    currentStatus = taskStatus
+                    Modifier.weight(0.5f).padding(horizontal = 8.dp),
+                    setStatus = { setStatus(it) },
+                    currentStatus = status
                 )
             }
 
@@ -107,20 +104,20 @@ fun TaskDetailsScreen(
                     if (task == null) onAction(
                         AppUiIntent.SaveTask(
                             Task(
-                                title = taskTitle,
-                                description = taskDescription,
-                                priority = taskPriority,
-                                status = taskStatus
+                                title = title,
+                                description = description,
+                                priority = priority,
+                                status = status
                             )
                         )
                     ) else {
                         onAction(
                             AppUiIntent.UpdateTask(
                                 task.copy(
-                                    title = taskTitle,
-                                    description = taskDescription,
-                                    priority = taskPriority,
-                                    status = taskStatus
+                                    title = title,
+                                    description = description,
+                                    priority = priority,
+                                    status = status
                                 )
                             )
                         )

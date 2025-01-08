@@ -12,18 +12,18 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
 import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.presentation.ui.features.auth.LoginResult
-import com.dgomesdev.taskslist.presentation.ui.features.auth.RegisterResult
-import com.dgomesdev.taskslist.presentation.ui.features.auth.RegisterResult.Cancelled
-import com.dgomesdev.taskslist.presentation.ui.features.auth.RegisterResult.Failure
-import com.dgomesdev.taskslist.presentation.ui.features.auth.RegisterResult.Success
+import com.dgomesdev.taskslist.presentation.ui.features.auth.GetCredentialResult
+import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult
+import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Cancelled
+import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Failure
+import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Success
 
 class AccountManager(
     private val activity: Activity
 ) {
     private val credentialManager = CredentialManager.create(activity)
 
-    suspend fun signUp(user: User): RegisterResult {
+    suspend fun createCredential(user: User): CreateCredentialResult {
         return try {
             credentialManager.createCredential(
                 context = activity,
@@ -34,13 +34,13 @@ class AccountManager(
             )
             Success(user)
         } catch (e: CreateCredentialCancellationException) {
-            Cancelled(e.message.toString())
+            Cancelled(user, e.message.toString())
         } catch(e: CreateCredentialException) {
-            Failure(e.message.toString())
+            Failure(user, e.message.toString())
         }
     }
 
-    suspend fun signIn(): LoginResult {
+    suspend fun getCredential(): GetCredentialResult {
         return try {
             val credentialResponse = credentialManager.getCredential(
                 context = activity,
@@ -50,15 +50,15 @@ class AccountManager(
             )
 
             val credential = credentialResponse.credential as? PasswordCredential
-                ?: return LoginResult.Failure("")
+                ?: return GetCredentialResult.Failure("")
 
-            return LoginResult.Success(User(email = credential.id, password = credential.password))
+            return GetCredentialResult.Success(User(email = credential.id, password = credential.password))
         } catch(e: GetCredentialCancellationException) {
-            LoginResult.Cancelled(e.message.toString())
+            GetCredentialResult.Cancelled(e.message.toString())
         } catch(e: NoCredentialException) {
-            LoginResult.NoCredentials(e.message.toString())
+            GetCredentialResult.NoCredentials(e.message.toString())
         } catch(e: GetCredentialException) {
-            LoginResult.Failure(e.message.toString())
+            GetCredentialResult.Failure(e.message.toString())
         }
     }
 }

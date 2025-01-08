@@ -2,16 +2,18 @@ package com.dgomesdev.taskslist.presentation.ui.features.userDetails
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,49 +21,65 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
+import com.dgomesdev.taskslist.presentation.ui.app.AccountManager
+import com.dgomesdev.taskslist.presentation.ui.app.EMAIL_PATTERN
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.UpdateUser
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserDetailsScreen(
     modifier: Modifier,
     uiState: AppUiState,
     onAction: OnAction,
-    backToMainScreen: () -> Unit = {}
+    backToMainScreen: () -> Unit = {},
+    accountManager: AccountManager,
+    scope: CoroutineScope
 ) {
-    var username by rememberSaveable { mutableStateOf(uiState.user?.username ?: "") }
-    var email by rememberSaveable { mutableStateOf(uiState.user?.email ?: "") }
-    var newPassword by rememberSaveable { mutableStateOf("") }
-    var confirmPassword by rememberSaveable { mutableStateOf("") }
-    var showPassword by remember { mutableStateOf(false) }
-    var showConfirmPassword by remember { mutableStateOf(false) }
-    var isUpdating by remember { mutableStateOf(false) }
+    val (username, setUsername) = rememberSaveable { mutableStateOf(uiState.user?.username ?: "") }
+    val (email, setEmail) = rememberSaveable { mutableStateOf(uiState.user?.email ?: "") }
+    val (newPassword, setNewPassword) = rememberSaveable { mutableStateOf("") }
+    val (confirmPassword, setConfirmPassword) = rememberSaveable { mutableStateOf("") }
+    val (isPasswordShown, setIsPasswordShown) = remember { mutableStateOf(false) }
+    val (isConfirmPasswordShown, setIsConfirmPasswordShown) = remember { mutableStateOf(false) }
+    val (isEmailValid, setIsEmailValid) = rememberSaveable { mutableStateOf(true) }
+    val focusManager = LocalFocusManager.current
 
     val isUserValid =
         username.isNotBlank()
                 && email.isNotBlank()
+                && isEmailValid
                 && newPassword == confirmPassword
 
-    Surface{
+    fun createCredential(user: User) {
+        scope.launch {
+            accountManager.createCredential(user)
+            onAction(UpdateUser(user))
+        }
+    }
+
+    Surface {
         Column(
             modifier = modifier,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -72,85 +90,111 @@ fun UserDetailsScreen(
 
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it },
-                label = { Text(stringResource(R.string.username)) },
-                singleLine = true,
+                onValueChange = { setUsername(it) },
                 modifier = Modifier.fillMaxWidth(),
-                isError = username.isBlank()
+                label = { Text(stringResource(R.string.username)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.AccountCircle,
+                        contentDescription = stringResource(R.string.username)
+                    )
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.moveFocus(focusDirection = FocusDirection.Down)
+                }),
+                singleLine = true
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
-                label = { Text(stringResource(R.string.email)) },
-                singleLine = true,
+                onValueChange = { input ->
+                    setEmail(input)
+                    setIsEmailValid(input.matches(EMAIL_PATTERN.toRegex()))
+                },
                 modifier = Modifier.fillMaxWidth(),
-                isError = email.isBlank()
+                label = { Text(stringResource(R.string.email)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Email,
+                        contentDescription = stringResource(R.string.email)
+                    )
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Email
+                ),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.moveFocus(focusDirection = FocusDirection.Down)
+                }),
+                isError = !isEmailValid,
+                singleLine = true
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = newPassword,
-                onValueChange = { newPassword = it },
+                onValueChange = { setNewPassword(it) },
+                modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.password)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Lock,
+                        contentDescription = stringResource(R.string.password)
+                    )
+                },
                 trailingIcon = {
-                    IconButton(onClick = { showPassword = !showPassword }) {
+                    IconButton(onClick = { setIsPasswordShown(!isPasswordShown) }) {
                         Icon(
-                            imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.VisibilityOff,
-                            contentDescription = if (showPassword) stringResource(R.string.hide_password) else stringResource(
-                                R.string.show_password
-                            )
-                        )
-                    }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = { Text(stringResource(R.string.confirm_password)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
-                        Icon(
-                            imageVector = if (showConfirmPassword) Icons.Default.VisibilityOff else Icons.Default.VisibilityOff,
-                            contentDescription = if (showConfirmPassword) stringResource(R.string.hide_password) else stringResource(
-                                R.string.show_password
-                            )
+                            if (isPasswordShown) Icons.Default.VisibilityOff
+                            else Icons.Default.Visibility,
+                            contentDescription = if (isPasswordShown) stringResource(R.string.hide_password)
+                            else stringResource(R.string.show_password)
                         )
                     }
                 },
-                isError = newPassword != confirmPassword
+                visualTransformation =
+                if (isPasswordShown) VisualTransformation.None
+                else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Password
+                ),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.moveFocus(focusDirection = FocusDirection.Down)
+                }),
+                singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (isUpdating) {
-                CircularProgressIndicator()
-            } else {
-                Button(
-                    onClick = { backToMainScreen() },
-                    modifier = Modifier.padding(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray,
-                        contentColor = Color.Red
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { setConfirmPassword(it) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(stringResource(R.string.confirm_password)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Lock,
+                        contentDescription = stringResource(R.string.password)
                     )
-                ) {
-                    Text(stringResource(R.string.cancel))
-                }
-                Button(
-                    onClick = {
-                        isUpdating = true
+                },
+                trailingIcon = {
+                    IconButton(onClick = { setIsConfirmPasswordShown(!isConfirmPasswordShown) }) {
+                        Icon(
+                            if (isConfirmPasswordShown) Icons.Default.VisibilityOff
+                            else Icons.Default.Visibility,
+                            contentDescription = if (isConfirmPasswordShown) stringResource(R.string.hide_password)
+                            else stringResource(R.string.show_password)
+                        )
+                    }
+                },
+                visualTransformation =
+                if (isConfirmPasswordShown) VisualTransformation.None
+                else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Password
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
                         if (isUserValid) {
                             uiState.user?.let {
                                 val updatedUser = it.copy(
@@ -158,34 +202,44 @@ fun UserDetailsScreen(
                                     email = email,
                                     password = confirmPassword,
                                 )
-                                onAction(UpdateUser(updatedUser))
+                                createCredential(updatedUser)
                             }
-                        }
-                        isUpdating = false
-                        backToMainScreen()
-                    },
-                    modifier = Modifier.padding(8.dp),
-                    enabled = isUserValid
-                ) {
-                    Text(text = stringResource(R.string.update))
-                }
+                            backToMainScreen()
+                        } else focusManager.clearFocus()
+                    }
+                ),
+                isError = newPassword != confirmPassword,
+                singleLine = true
+            )
+
+            Button(
+                onClick = { backToMainScreen() },
+                modifier = Modifier.padding(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.LightGray,
+                    contentColor = Color.Red
+                )
+            ) {
+                Text(stringResource(R.string.cancel))
             }
+            Button(
+                onClick = {
+                    uiState.user?.let {
+                        val updatedUser = it.copy(
+                            username = username,
+                            email = email,
+                            password = confirmPassword,
+                        )
+                        createCredential(updatedUser)
+                    }
+                    backToMainScreen()
+                },
+                modifier = Modifier.padding(8.dp),
+                enabled = isUserValid
+            ) {
+                Text(text = stringResource(R.string.update))
+            }
+
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun UpdatePreview() {
-    UserDetailsScreen(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        uiState = AppUiState(
-            user = User(
-                username = "Test",
-                email = "test"
-            )
-        ),
-        onAction = {},
-        backToMainScreen = {},
-    )
 }

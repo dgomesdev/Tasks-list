@@ -2,10 +2,10 @@ package com.dgomesdev.taskslist.presentation.viewmodel
 
 import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.presentation.ui.features.auth.RegisterResult
+import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult
 
 sealed interface AppUiIntent {
-    data class Register(val result: RegisterResult) : AppUiIntent
+    data class Register(val result: CreateCredentialResult) : AppUiIntent
     data class Login(val user: User) : AppUiIntent
     data class GetUser(val user: User) : AppUiIntent
     data class UpdateUser(val user: User) : AppUiIntent

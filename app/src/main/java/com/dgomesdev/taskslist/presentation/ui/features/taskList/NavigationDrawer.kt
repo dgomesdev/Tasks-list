@@ -13,6 +13,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,8 +40,14 @@ fun NavigationDrawer(
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
     scope: CoroutineScope,
+    backToMainScreen: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    LaunchedEffect(uiState.user) {
+        if (uiState.user == null) backToMainScreen()
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -104,13 +111,16 @@ fun NavigationDrawer(
 @Composable
 private fun MainPrev() {
     NavigationDrawer(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         uiState = AppUiState(
             user = User(username = "Danilo")
         ),
         onAction = {},
         goToScreen = {},
         onChooseTask = {},
-        scope = rememberCoroutineScope()
+        scope = rememberCoroutineScope(),
+        backToMainScreen = {}
     )
 }
