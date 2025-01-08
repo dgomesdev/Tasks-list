@@ -88,11 +88,9 @@ class TasksViewModel(
                         execute { userUseCases.registerUseCase(intent.result.user) }
                     }
                     is Cancelled -> {
-                        showSnackbar(intent.result.cancelledMessage)
                         execute { userUseCases.registerUseCase(intent.result.user) }
                     }
                     is Failure -> {
-                        showSnackbar(intent.result.failureMessage)
                         execute { userUseCases.registerUseCase(intent.result.user) }
                     }
                 }

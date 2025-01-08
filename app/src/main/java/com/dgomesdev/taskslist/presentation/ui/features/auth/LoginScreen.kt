@@ -47,9 +47,6 @@ import com.dgomesdev.taskslist.presentation.ui.app.AccountManager
 import com.dgomesdev.taskslist.presentation.ui.app.EMAIL_PATTERN
 import com.dgomesdev.taskslist.presentation.ui.app.MainActivity
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
-import com.dgomesdev.taskslist.presentation.ui.features.auth.GetCredentialResult.Cancelled
-import com.dgomesdev.taskslist.presentation.ui.features.auth.GetCredentialResult.Failure
-import com.dgomesdev.taskslist.presentation.ui.features.auth.GetCredentialResult.NoCredentials
 import com.dgomesdev.taskslist.presentation.ui.features.auth.GetCredentialResult.Success
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.Login
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
@@ -80,12 +77,8 @@ fun LoginScreen(
         LaunchedEffect(uiState) {
             if (!uiState.isSessionValid && !uiState.message.toString().contains("logout")) {
                 scope.launch {
-                    when (val result = accountManager.getCredential()) {
-                        is Success -> onAction(Login(result.user))
-                        is Cancelled -> ShowSnackbar(result.cancelledMessage)
-                        is Failure -> ShowSnackbar(result.failureMessage)
-                        is NoCredentials -> ShowSnackbar(result.noCredentialsMessage)
-                    }
+                    val result = accountManager.getCredential()
+                    if (result is Success) onAction(Login(result.user))
                 }
             }
             uiState.message?.let {

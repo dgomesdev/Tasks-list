@@ -70,10 +70,12 @@ fun UserDetailsScreen(
                 && newPassword == confirmPassword
 
     fun createCredential(user: User) {
-        scope.launch {
-            accountManager.createCredential(user)
-            onAction(UpdateUser(user))
+        if (user.password.isNotBlank()){
+            scope.launch {
+                accountManager.createCredential(user)
+            }
         }
+        onAction(UpdateUser(user))
     }
 
     Surface {
