@@ -65,7 +65,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("androidx.activity:activity-compose:1.9.3")
 
-    implementation(platform("androidx.compose:compose-bom:2024.11.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -73,13 +73,16 @@ dependencies {
     implementation("androidx.navigation:navigation-compose")
     implementation("androidx.compose.material:material-icons-extended")
 
+    implementation("androidx.credentials:credentials:1.5.0-beta01")
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0-beta01")
+
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
 
     implementation(platform("io.insert-koin:koin-bom:4.1.0-Beta1"))
     implementation("io.insert-koin:koin-android")
     implementation("io.insert-koin:koin-androidx-compose")
 
-    implementation("androidx.navigation:navigation-runtime-ktx:2.8.4")
+    implementation("androidx.navigation:navigation-runtime-ktx:2.8.5")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
 
     implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
@@ -102,7 +105,7 @@ dependencies {
     testImplementation("io.insert-koin:koin-android-test")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.11.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

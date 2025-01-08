@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -17,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,23 +32,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.presentation.ui.app.ShowSnackbar
+import com.dgomesdev.taskslist.presentation.ui.app.AccountManager
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier,
-    message: String?,
+    uiState: AppUiState,
     onAction: (AppUiIntent) -> Unit,
     backToMainScreen: () -> Unit,
-    snackbarHostState: SnackbarHostState,
-    showSnackbar: ShowSnackbar,
-    goToScreen: (String) -> Unit
+    accountManager: AccountManager,
+    scope: CoroutineScope
 ) {
     var username by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
@@ -63,16 +67,34 @@ fun RegisterScreen(
                 && newPassword.isNotBlank()
                 && newPassword == confirmPassword
 
+    fun signUp() {
+        isUpdating = true
+        if (isUserValid) {
+            scope.launch {
+                val result = accountManager.signUp(
+                    User(
+                        username = username,
+                        email = email,
+                        password = confirmPassword,
+                    )
+                )
+                onAction(AppUiIntent.Register(result))
+            }
+        }
+        isUpdating = false
+        backToMainScreen()
+    }
+
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(uiState.snackbarHostState) }
     ) { padding ->
 
         val alreadyHaveAnAccountMessage = stringResource(R.string.already_have_an_account)
 
-        LaunchedEffect(message) {
-            message?.let {
-                if (it.contains("406")) showSnackbar(alreadyHaveAnAccountMessage)
-                onAction(AppUiIntent.RefreshMessage())
+        LaunchedEffect(uiState.message) {
+            uiState.message?.let {
+                if (it.contains("406")) AppUiIntent.ShowSnackbar(alreadyHaveAnAccountMessage)
+                onAction(AppUiIntent.RefreshMessage)
             }
         }
 
@@ -147,6 +169,10 @@ fun RegisterScreen(
                         )
                     }
                 },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { signUp() }
+                ),
                 isError = newPassword != confirmPassword
             )
 
@@ -166,20 +192,7 @@ fun RegisterScreen(
                     Text(stringResource(R.string.cancel))
                 }
                 Button(
-                    onClick = {
-                        isUpdating = true
-                        if (isUserValid) onAction(
-                            AppUiIntent.Register(
-                                User(
-                                    username = username,
-                                    email = email,
-                                    password = confirmPassword,
-                                )
-                            )
-                        )
-                        isUpdating = false
-                        backToMainScreen()
-                    },
+                    onClick = { signUp() },
                     modifier = Modifier.padding(8.dp),
                     enabled = isUserValid
                 ) {
@@ -189,7 +202,7 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            TextButton(onClick = { goToScreen("Login") }) {
+            TextButton(onClick = { backToMainScreen() }) {
                 Text(
                     text = stringResource(R.string.already_have_an_account)
                 )

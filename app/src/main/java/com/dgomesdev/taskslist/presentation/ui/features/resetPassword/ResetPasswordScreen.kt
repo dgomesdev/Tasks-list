@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,21 +38,19 @@ import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
-import com.dgomesdev.taskslist.presentation.ui.app.ShowSnackbar
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RefreshMessage
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ResetPassword
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 
 @Composable
 fun ResetPasswordScreen(
     modifier: Modifier,
-    code: String?,
-    message: String?,
+    uiState: AppUiState,
     onAction: OnAction,
-    snackbarHostState: SnackbarHostState,
-    showSnackbar: ShowSnackbar,
-    goToScreen: (String) -> Unit,
     backToMainScreen: () -> Unit,
 ) {
-    var recoveryCode by rememberSaveable { mutableStateOf(code ?: "") }
+    var recoveryCode by rememberSaveable { mutableStateOf(uiState.recoveryCode ?: "") }
     var email by rememberSaveable { mutableStateOf("") }
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -66,13 +63,13 @@ fun ResetPasswordScreen(
             && newPassword == confirmPassword
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(uiState.snackbarHostState) }
     ) { padding ->
 
-        LaunchedEffect(message) {
-            message?.let {
-                if (!it.contains("403")) showSnackbar(message)
-                onAction(AppUiIntent.RefreshMessage())
+        LaunchedEffect(uiState.message) {
+            uiState.message?.let {
+                if (!it.contains("403")) ShowSnackbar(it)
+                onAction(RefreshMessage)
             }
         }
 
@@ -169,7 +166,7 @@ fun ResetPasswordScreen(
                     onClick = {
                         isUpdating = true
                         if (isUserValid) onAction(
-                            AppUiIntent.ResetPassword(
+                            ResetPassword(
                                 recoveryCode,
                                 User(
                                     email = email,
@@ -178,7 +175,7 @@ fun ResetPasswordScreen(
                             )
                         )
                         isUpdating = false
-                        goToScreen("Login")
+                        backToMainScreen()
                     },
                     modifier = Modifier.padding(8.dp),
                     enabled = isUserValid
@@ -195,12 +192,8 @@ fun ResetPasswordScreen(
 private fun UpdatePreview() {
     ResetPasswordScreen(
         modifier = Modifier.fillMaxSize(),
+        uiState = AppUiState(),
         onAction = {},
-        message = null,
-        snackbarHostState = SnackbarHostState(),
-        showSnackbar = {},
-        goToScreen = {},
         backToMainScreen = {},
-        code = "123",
     )
 }

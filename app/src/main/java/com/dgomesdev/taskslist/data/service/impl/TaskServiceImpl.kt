@@ -5,7 +5,7 @@ import android.util.Log
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.data.dto.request.TaskRequestDto
 import com.dgomesdev.taskslist.data.dto.response.MessageDto
-import com.dgomesdev.taskslist.data.dto.response.TaskResponseDto
+import com.dgomesdev.taskslist.data.dto.response.UserResponseDto
 import com.dgomesdev.taskslist.data.service.HttpClient
 import com.dgomesdev.taskslist.data.service.TaskService
 import com.dgomesdev.taskslist.infra.SecurePreferences
@@ -29,7 +29,7 @@ class TaskServiceImpl(
 
     private val apiUrl = context.getString(R.string.api_url)
 
-    override suspend fun saveTask(task: TaskRequestDto): Result<TaskResponseDto> {
+    override suspend fun saveTask(task: TaskRequestDto): Result<UserResponseDto> {
         return try {
             val token = securePreferences.getToken() ?: error("No valid token")
             val response = http.client.post {
@@ -44,7 +44,7 @@ class TaskServiceImpl(
             }
 
             if (response.status == HttpStatusCode.Created) {
-                val taskResponse = response.body<TaskResponseDto>()
+                val taskResponse = response.body<UserResponseDto>()
                 Log.i("Save task success", "$taskResponse")
                 Result.success(taskResponse)
             } else {
@@ -64,7 +64,7 @@ class TaskServiceImpl(
         }
     }
 
-    override suspend fun updateTask(taskId: String, task: TaskRequestDto): Result<TaskResponseDto> {
+    override suspend fun updateTask(taskId: String, task: TaskRequestDto): Result<UserResponseDto> {
         return try {
             val token = securePreferences.getToken() ?: error("No valid token")
             val response = http.client.patch {
@@ -78,7 +78,7 @@ class TaskServiceImpl(
                 setBody(task)
             }
             if (response.status == HttpStatusCode.OK) {
-                val taskResponse = response.body<TaskResponseDto>()
+                val taskResponse = response.body<UserResponseDto>()
                 Log.i("Update task success", "$taskResponse")
                 Result.success(taskResponse)
             } else {
@@ -99,7 +99,7 @@ class TaskServiceImpl(
         }
     }
 
-    override suspend fun deleteTask(taskId: String): Result<MessageDto> {
+    override suspend fun deleteTask(taskId: String): Result<UserResponseDto> {
         return try {
             val token = securePreferences.getToken() ?: error("No valid token")
             val response = http.client.delete {
@@ -111,11 +111,10 @@ class TaskServiceImpl(
                 bearerAuth(token)
             }
 
-            if (response.status == HttpStatusCode.NoContent) {
-                val deleteResponse =
-                    MessageDto(context.getString(R.string.task_deleted))
-                Log.i("Delete task success", "$deleteResponse")
-                Result.success(deleteResponse)
+            if (response.status == HttpStatusCode.OK) {
+                val taskResponse = response.body<UserResponseDto>()
+                Log.i("Delete task success", "$taskResponse")
+                Result.success(taskResponse)
             } else {
                 val error = if (response.status == HttpStatusCode.Forbidden) MessageDto(null)
                 else response.body<MessageDto>()

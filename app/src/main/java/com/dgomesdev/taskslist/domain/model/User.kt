@@ -16,6 +16,7 @@ data class User(
         fun fromApi(user: UserResponseDto) = User(
             userId = user.userId,
             username = user.username,
+            email = user.email,
             tasks = user.tasks.map { Task.fromApi(it) },
             userAuthorities = setOf(UserAuthority.USER)
         )

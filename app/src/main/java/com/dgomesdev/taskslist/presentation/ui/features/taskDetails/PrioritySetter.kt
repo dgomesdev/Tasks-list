@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Priority
+import com.dgomesdev.taskslist.domain.model.Priority.*
 
 @Composable
 fun PrioritySetter(
@@ -41,9 +42,9 @@ fun PrioritySetter(
         ) {
             Text(
                 text = when (currentPriority) {
-                    Priority.LOW -> stringResource(R.string.low)
-                    Priority.MEDIUM -> stringResource(R.string.medium)
-                    Priority.HIGH -> stringResource(R.string.high)
+                    LOW -> stringResource(R.string.low)
+                    MEDIUM -> stringResource(R.string.medium)
+                    HIGH -> stringResource(R.string.high)
                 }
             )
             Icon(
@@ -57,9 +58,9 @@ fun PrioritySetter(
                     text = {
                         Text(
                             text = when (priority) {
-                                Priority.LOW -> stringResource(R.string.low)
-                                Priority.MEDIUM -> stringResource(R.string.medium)
-                                Priority.HIGH -> stringResource(R.string.high)
+                                LOW -> stringResource(R.string.low)
+                                MEDIUM -> stringResource(R.string.medium)
+                                HIGH -> stringResource(R.string.high)
                             }
                         )
                     },
@@ -73,5 +74,5 @@ fun PrioritySetter(
 @Preview
 @Composable
 fun PrioritySetterPreview() {
-    PrioritySetter(setPriority = {}, currentPriority = Priority.LOW)
+    PrioritySetter(setPriority = {}, currentPriority = LOW)
 }

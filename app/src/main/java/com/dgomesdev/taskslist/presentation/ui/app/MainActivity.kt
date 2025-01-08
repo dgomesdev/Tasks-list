@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.presentation.ui.theme.TasksListTheme
@@ -25,7 +24,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val uiState by tasksViewModel.uiState.collectAsState()
-            val snackbarHostState = remember { tasksViewModel.snackbarHostState }
 
             intent?.data?.let { uri ->
                 Log.i("URI INTENT", "$uri")
@@ -38,8 +36,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize().padding(16.dp),
                     uiState = uiState,
                     onAction = tasksViewModel::handleAppUiIntent,
-                    snackbarHostState = snackbarHostState,
-                    showSnackbar = tasksViewModel::showSnackbar
+                    activity = this
                 )
             }
         }

@@ -14,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -33,29 +32,29 @@ import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
-import com.dgomesdev.taskslist.presentation.ui.app.ShowSnackbar
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RecoverPassword
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RefreshMessage
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 
 @Composable
 fun ForgotPasswordScreen(
     modifier: Modifier,
-    message: String?,
+    uiState: AppUiState,
     onAction: OnAction,
     backToMainScreen: () -> Unit,
-    snackbarHostState: SnackbarHostState,
-    showSnackbar: ShowSnackbar,
     goToScreen: (String) -> Unit
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var isUpdating by remember { mutableStateOf(false) }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(uiState.snackbarHostState) }
     ) { padding ->
-        LaunchedEffect(message) {
-            message?.let {
-                if (!it.contains("403")) showSnackbar(message)
-                onAction(AppUiIntent.RefreshMessage())
+        LaunchedEffect(uiState.message) {
+            uiState.message?.let {
+                if (!it.contains("403")) ShowSnackbar(it)
+                onAction(RefreshMessage)
             }
         }
 
@@ -97,7 +96,7 @@ fun ForgotPasswordScreen(
                     onClick = {
                         isUpdating = true
                         if (email.isNotBlank())
-                            onAction(AppUiIntent.RecoverPassword(User(email = email)))
+                            onAction(RecoverPassword(User(email = email)))
                         isUpdating = false
                         backToMainScreen()
                     },
@@ -124,11 +123,9 @@ fun ForgotPasswordScreen(
 private fun UpdatePreview() {
     ForgotPasswordScreen(
         modifier = Modifier.fillMaxSize(),
+        uiState = AppUiState(),
         onAction = {},
         backToMainScreen = {},
-        snackbarHostState = SnackbarHostState(),
-        showSnackbar = {},
         goToScreen = {},
-        message = null,
     )
 }

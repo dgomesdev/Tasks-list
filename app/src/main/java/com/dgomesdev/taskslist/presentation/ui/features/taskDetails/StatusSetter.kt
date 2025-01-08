@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.Status
+import com.dgomesdev.taskslist.domain.model.Status.*
 
 @Composable
 fun StatusSetter(
@@ -41,9 +42,9 @@ fun StatusSetter(
         ) {
             Text(
                 text = when (currentStatus) {
-                    Status.TO_BE_DONE -> stringResource(R.string.to_do)
-                    Status.IN_PROGRESS -> stringResource(R.string.in_progress)
-                    Status.DONE -> stringResource(R.string.done)
+                    TO_BE_DONE -> stringResource(R.string.to_do)
+                    IN_PROGRESS -> stringResource(R.string.in_progress)
+                    DONE -> stringResource(R.string.done)
                 }
             )
             Icon(
@@ -57,9 +58,9 @@ fun StatusSetter(
                     text = {
                         Text(
                             text = when (status) {
-                                Status.TO_BE_DONE -> stringResource(R.string.to_do)
-                                Status.IN_PROGRESS -> stringResource(R.string.in_progress)
-                                Status.DONE -> stringResource(R.string.done)
+                                TO_BE_DONE -> stringResource(R.string.to_do)
+                                IN_PROGRESS -> stringResource(R.string.in_progress)
+                                DONE -> stringResource(R.string.done)
                             }
                         )
                     },
@@ -73,5 +74,5 @@ fun StatusSetter(
 @Preview
 @Composable
 fun StatusSetterPreview() {
-    StatusSetter(setStatus = {}, currentStatus = Status.IN_PROGRESS)
+    StatusSetter(setStatus = {}, currentStatus = IN_PROGRESS)
 }

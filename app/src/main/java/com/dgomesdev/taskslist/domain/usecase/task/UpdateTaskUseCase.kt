@@ -6,18 +6,15 @@ import com.dgomesdev.taskslist.data.dto.request.TaskRequestDto
 import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.domain.repository.TaskRepository
-import com.dgomesdev.taskslist.domain.repository.UserRepository
 import kotlinx.coroutines.flow.single
 
-class UpdateTaskUseCase(
-    private val taskRepository: TaskRepository,
-    private val userRepository: UserRepository,
-    private val context: Context
-) {
-    suspend operator fun invoke(task: Task, userId: String): Pair<User?, String> {
-        Task.fromApi(taskRepository.updateTask(task.taskId, TaskRequestDto.create(task)).single())
+class UpdateTaskUseCase(private val taskRepository: TaskRepository, private val context: Context) {
+    suspend operator fun invoke(task: Task): Pair<User?, String> {
+        val response = User.fromApi(
+            taskRepository.updateTask(task.taskId, TaskRequestDto.create(task)).single()
+        )
         return Pair(
-            User.fromApi(userRepository.getUser(userId).single()),
+            response,
             context.getString(R.string.task_updated)
         )
     }

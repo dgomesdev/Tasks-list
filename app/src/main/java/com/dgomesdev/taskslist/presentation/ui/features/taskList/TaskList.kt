@@ -23,22 +23,25 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,12 +65,15 @@ import com.dgomesdev.taskslist.presentation.ui.app.NewTaskButton
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import com.dgomesdev.taskslist.presentation.ui.app.TaskAppBar
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.DeleteTask
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RefreshMessage
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import com.dgomesdev.taskslist.utils.SortOption
 import com.dgomesdev.taskslist.utils.TaskFilter
 import com.dgomesdev.taskslist.utils.filterTasks
 import com.dgomesdev.taskslist.utils.sortTasks
+import kotlinx.coroutines.CoroutineScope
 import java.util.UUID
 
 @Composable
@@ -77,12 +83,12 @@ fun TaskList(
     onAction: OnAction,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
-    onOpenDrawer: () -> Unit,
-    snackbarHostState: SnackbarHostState,
-    showSnackbar: (String) -> Unit
+    scope: CoroutineScope,
+    drawerState: DrawerState
 ) {
     val context = LocalContext.current
-    val taskList = uiState.user!!.tasks
+    val taskList = uiState.user?.tasks ?: emptyList()
+    val username = uiState.user?.username ?: ""
 
     var currentSortOption by rememberSaveable { mutableStateOf(SortOption.BY_TITLE) }
     var selectedPriorities by rememberSaveable {
@@ -103,23 +109,25 @@ fun TaskList(
             )
         )
     }
-    val filteredAndSortedTasks = uiState.user.tasks
+    val filteredAndSortedTasks = taskList
         .filterTasks(TaskFilter(selectedPriorities.toSet(), selectedStatuses.toSet()))
         .sortTasks(currentSortOption)
 
     Scaffold(
         topBar = {
-            TaskAppBar(onOpenDrawer = onOpenDrawer, onShowInfo = {
-                showSnackbar(context.getString(R.string.developed_by_dgomes_dev))
-            })
+            TaskAppBar(
+                scope = scope,
+                drawerState = drawerState,
+                onShowInfo = { onAction(ShowSnackbar(context.getString(R.string.developed_by_dgomes_dev))) }
+            )
         },
         floatingActionButton = { NewTaskButton(goToScreen = goToScreen, onChooseTask) },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(uiState.snackbarHostState) }
     ) { padding ->
         LaunchedEffect(uiState.message) {
             uiState.message?.let {
-                showSnackbar(it)
-                onAction(AppUiIntent.RefreshMessage())
+                ShowSnackbar(it)
+                onAction(RefreshMessage)
             }
         }
         Column(
@@ -127,7 +135,7 @@ fun TaskList(
         ) {
             Row(Modifier.fillMaxWidth()) {
                 Text(
-                    stringResource(R.string.hello, uiState.user.username),
+                    stringResource(R.string.hello, username),
                     modifier = Modifier.padding(16.dp),
                     fontSize = 32.sp
                 )
@@ -173,7 +181,7 @@ fun TaskList(
                             val swipeToDismissState = rememberSwipeToDismissBoxState()
                             LaunchedEffect(swipeToDismissState.currentValue) {
                                 if (swipeToDismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
-                                    onAction(AppUiIntent.DeleteTask(task))
+                                    onAction(DeleteTask(task))
                                 }
                             }
                             SwipeToDismissBox(
@@ -373,8 +381,7 @@ private fun ListPrev() {
         onAction = {},
         goToScreen = {},
         onChooseTask = {},
-        onOpenDrawer = {},
-        snackbarHostState = SnackbarHostState(),
-        showSnackbar = {}
+        scope = rememberCoroutineScope(),
+        drawerState = rememberDrawerState(DrawerValue.Closed)
     )
 }

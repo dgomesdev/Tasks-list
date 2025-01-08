@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.UpdateUser
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 
 @Composable
@@ -45,8 +45,8 @@ fun UserDetailsScreen(
     onAction: OnAction,
     backToMainScreen: () -> Unit = {}
 ) {
-    var username by rememberSaveable { mutableStateOf(uiState.user!!.username) }
-    var email by rememberSaveable { mutableStateOf(uiState.user!!.email) }
+    var username by rememberSaveable { mutableStateOf(uiState.user?.username ?: "") }
+    var email by rememberSaveable { mutableStateOf(uiState.user?.email ?: "") }
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
@@ -56,7 +56,6 @@ fun UserDetailsScreen(
     val isUserValid =
         username.isNotBlank()
                 && email.isNotBlank()
-                && newPassword.isNotBlank()
                 && newPassword == confirmPassword
 
     Surface{
@@ -76,7 +75,8 @@ fun UserDetailsScreen(
                 onValueChange = { username = it },
                 label = { Text(stringResource(R.string.username)) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = username.isBlank()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -86,7 +86,8 @@ fun UserDetailsScreen(
                 onValueChange = { email = it },
                 label = { Text(stringResource(R.string.email)) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = email.isBlank()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -151,20 +152,20 @@ fun UserDetailsScreen(
                     onClick = {
                         isUpdating = true
                         if (isUserValid) {
-                            onAction(
-                                AppUiIntent.UpdateUser(
-                                    User(
-                                        username = username,
-                                        email = email,
-                                        password = confirmPassword,
-                                    )
+                            uiState.user?.let {
+                                val updatedUser = it.copy(
+                                    username = username,
+                                    email = email,
+                                    password = confirmPassword,
                                 )
-                            )
+                                onAction(UpdateUser(updatedUser))
+                            }
                         }
                         isUpdating = false
                         backToMainScreen()
                     },
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    enabled = isUserValid
                 ) {
                     Text(text = stringResource(R.string.update))
                 }

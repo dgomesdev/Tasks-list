@@ -24,13 +24,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,18 +46,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
+import com.dgomesdev.taskslist.presentation.ui.app.AccountManager
+import com.dgomesdev.taskslist.presentation.ui.app.MainActivity
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
-import com.dgomesdev.taskslist.presentation.ui.app.ShowSnackbar
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
+import com.dgomesdev.taskslist.presentation.ui.features.auth.LoginResult.*
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.Login
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RefreshMessage
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     modifier: Modifier,
+    uiState: AppUiState,
     onAction: OnAction,
     goToScreen: (String) -> Unit,
-    snackbarHostState: SnackbarHostState,
-    showSnackbar: ShowSnackbar,
-    message: String?
+    accountManager: AccountManager,
+    scope: CoroutineScope
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -65,19 +72,41 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(uiState.snackbarHostState) }
     ) { padding ->
 
-        LaunchedEffect(message) {
-            message?.let {
-                if (!it.contains("403")) showSnackbar(message)
-                onAction(AppUiIntent.RefreshMessage())
+        LaunchedEffect(uiState.user) {
+            if (uiState.isSessionValid == false) {
+                scope.launch {
+                    when (val result = accountManager.signIn()) {
+                        is Success -> onAction(Login(result.user))
+                        is Cancelled -> ShowSnackbar(result.cancelledMessage)
+                        is Failure -> ShowSnackbar(result.failureMessage)
+                        is NoCredentials -> ShowSnackbar(result.noCredentialsMessage)
+                    }
+                }
+            } else {
+                goToScreen("TaskList")
             }
         }
 
+        LaunchedEffect(uiState.message) {
+            uiState.message?.let {
+                if (!it.contains("403")) ShowSnackbar(it)
+                if (it.contains("406")) goToScreen("Register")
+                onAction(RefreshMessage)
+            }
+        }
+
+        LaunchedEffect(uiState.user) {
+            uiState.user?.let { goToScreen("TaskList") }
+        }
+
         Column(
-            modifier = modifier.padding(padding).verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Center,
+            modifier = modifier
+                .padding(padding)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -106,7 +135,7 @@ fun LoginScreen(
                     focusManager.moveFocus(focusDirection = FocusDirection.Down)
                 })
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
@@ -138,17 +167,15 @@ fun LoginScreen(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         val user = User(email = email, password = password)
-                        onAction(AppUiIntent.Login(user))
+                        onAction(Login(user))
                     }
                 )
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             Button(
                 onClick = {
                     val user = User(email = email, password = password)
-                    onAction(AppUiIntent.Login(user))
+                    onAction(Login(user))
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = email.isNotBlank() && password.isNotBlank()
@@ -178,10 +205,10 @@ fun LoginScreen(
 private fun AuthPreview() {
     LoginScreen(
         Modifier.fillMaxSize(),
+        uiState = AppUiState(),
         onAction = {},
         goToScreen = {},
-        snackbarHostState = SnackbarHostState(),
-        showSnackbar = {},
-        message = null
+        accountManager = AccountManager(MainActivity()),
+        scope = rememberCoroutineScope(),
     )
 }

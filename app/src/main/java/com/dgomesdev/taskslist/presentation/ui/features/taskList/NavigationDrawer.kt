@@ -10,7 +10,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -27,9 +26,9 @@ import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
-import com.dgomesdev.taskslist.presentation.ui.app.ShowSnackbar
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.*
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -39,11 +38,9 @@ fun NavigationDrawer(
     onAction: OnAction,
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
-    snackbarHostState: SnackbarHostState,
-    showSnackbar: ShowSnackbar
+    scope: CoroutineScope,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -57,7 +54,7 @@ fun NavigationDrawer(
                         contentDescription = stringResource(R.string.app_name)
                     )
                     Text(
-                        uiState.user!!.username,
+                        uiState.user?.username ?: "",
                         modifier = Modifier.padding(16.dp),
                         fontSize = 32.sp
                     )
@@ -74,13 +71,19 @@ fun NavigationDrawer(
                 NavigationDrawerItem(
                     label = { Text(text = stringResource(R.string.log_out)) },
                     selected = false,
-                    onClick = { onAction(AppUiIntent.Logout()); scope.launch { drawerState.close() } }
+                    onClick = {
+                        onAction(Logout)
+                        scope.launch { drawerState.close() }
+                    }
                 )
 
                 NavigationDrawerItem(
                     label = { Text(text = stringResource(R.string.delete_account)) },
                     selected = false,
-                    onClick = { onAction(AppUiIntent.DeleteUser(uiState.user!!)); scope.launch { drawerState.close() } }
+                    onClick = {
+                        onAction(DeleteUser(uiState.user!!))
+                        scope.launch { drawerState.close() }
+                    }
                 )
             }
         }
@@ -90,10 +93,9 @@ fun NavigationDrawer(
             uiState = uiState,
             goToScreen = goToScreen,
             onChooseTask = onChooseTask,
-            onOpenDrawer = { scope.launch { drawerState.open() } },
-            onAction = onAction,
-            snackbarHostState = snackbarHostState,
-            showSnackbar = showSnackbar
+            scope = scope,
+            drawerState = drawerState,
+            onAction = onAction
         )
     }
 }
@@ -109,7 +111,6 @@ private fun MainPrev() {
         onAction = {},
         goToScreen = {},
         onChooseTask = {},
-        snackbarHostState = SnackbarHostState(),
-        showSnackbar = {}
+        scope = rememberCoroutineScope()
     )
 }

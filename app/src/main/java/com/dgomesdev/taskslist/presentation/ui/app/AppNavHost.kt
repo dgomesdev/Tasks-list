@@ -2,11 +2,12 @@ package com.dgomesdev.taskslist.presentation.ui.app
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -28,34 +29,25 @@ import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 typealias ScreenNavigation = (String) -> Unit
 typealias ChooseTask = (Task?) -> Unit
 typealias OnAction = (AppUiIntent) -> Unit
-typealias ShowSnackbar = (String) -> Unit
 
 @Composable
 fun AppNavHost(
     modifier: Modifier,
     uiState: AppUiState,
     onAction: OnAction,
-    snackbarHostState: SnackbarHostState,
-    showSnackbar: ShowSnackbar
+    activity: MainActivity
 ) {
     val navController = rememberNavController()
     var task by rememberSaveable { mutableStateOf<Task?>(null) }
+    val accountManager = remember { AccountManager(activity) }
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(uiState.user) {
-        if (uiState.user == null) navController.navigate("Login")
-        else navController.navigate("TaskList")
-    }
-    LaunchedEffect(uiState.isLoading) {
-        if (uiState.isLoading) navController.navigate("Loading")
-        else {
-            if (uiState.user != null) navController.navigate("TaskList")
-            else navController.navigate("Login")
-        }
-
-    }
-    LaunchedEffect(uiState.recoveryCode) {
-        uiState.recoveryCode?.let{
-            navController.navigate("ResetPassword")
+    LaunchedEffect(uiState) {
+        when {
+            uiState.isLoading -> navController.navigate("Loading")
+            uiState.recoveryCode != null -> navController.navigate("ResetPassword")
+            uiState.user != null -> navController.navigate("TaskList")
+            else -> navController.popBackStack("Login", false)
         }
     }
 
@@ -82,12 +74,9 @@ fun AppNavHost(
                 modifier = modifier,
                 uiState = uiState,
                 onAction = onAction,
-                goToScreen = {
-                    navController.navigate(it)
-                },
+                goToScreen = { navController.navigate(it) },
                 onChooseTask = { task = it },
-                snackbarHostState = snackbarHostState,
-                showSnackbar = showSnackbar
+                scope = scope
             )
         }
         composable(
@@ -109,9 +98,7 @@ fun AppNavHost(
                 modifier = modifier,
                 onAction = onAction,
                 task = task,
-                backToMainScreen = {
-                    navController.popBackStack()
-                }
+                backToMainScreen = { navController.popBackStack() }
             )
         }
         composable(
@@ -133,9 +120,7 @@ fun AppNavHost(
                 modifier = modifier,
                 uiState = uiState,
                 onAction = onAction,
-                backToMainScreen = {
-                    navController.popBackStack()
-                }
+                backToMainScreen = { navController.popBackStack() }
             )
         }
         composable(
@@ -155,11 +140,11 @@ fun AppNavHost(
         ) {
             LoginScreen(
                 modifier,
+                uiState,
                 onAction,
                 goToScreen = { navController.navigate(it) },
-                snackbarHostState = snackbarHostState,
-                showSnackbar = showSnackbar,
-                message = uiState.message
+                accountManager,
+                scope
             )
         }
         composable(
@@ -179,12 +164,11 @@ fun AppNavHost(
         ) {
             RegisterScreen(
                 modifier,
-                uiState.message,
+                uiState,
                 onAction,
-                snackbarHostState = snackbarHostState,
-                showSnackbar = showSnackbar,
-                goToScreen = { navController.navigate(it) },
-                backToMainScreen = { navController.popBackStack() }
+                backToMainScreen = { navController.popBackStack() },
+                accountManager = accountManager,
+                scope = scope
             )
         }
         composable(
@@ -204,10 +188,8 @@ fun AppNavHost(
         ) {
             ForgotPasswordScreen(
                 modifier,
-                uiState.message,
+                uiState,
                 onAction,
-                snackbarHostState = snackbarHostState,
-                showSnackbar = showSnackbar,
                 goToScreen = { navController.navigate(it) },
                 backToMainScreen = { navController.popBackStack() }
             )
@@ -229,18 +211,12 @@ fun AppNavHost(
         ) {
             ResetPasswordScreen(
                 modifier,
-                uiState.recoveryCode,
-                uiState.message,
+                uiState,
                 onAction,
-                snackbarHostState = snackbarHostState,
-                showSnackbar = showSnackbar,
-                goToScreen = { navController.navigate(it) },
                 backToMainScreen = { navController.popBackStack("Login", false) }
             )
         }
-        composable(
-            "Loading"
-        ) {
+        composable("Loading") {
             LoadingScreen(modifier)
         }
     }
