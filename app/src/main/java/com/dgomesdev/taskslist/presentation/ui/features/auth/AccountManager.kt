@@ -1,6 +1,7 @@
-package com.dgomesdev.taskslist.presentation.ui.app
+package com.dgomesdev.taskslist.presentation.ui.features.auth
 
 import android.app.Activity
+import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CreatePasswordRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
@@ -12,8 +13,6 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
 import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.presentation.ui.features.auth.GetCredentialResult
-import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult
 import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Cancelled
 import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Failure
 import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Success
@@ -60,5 +59,11 @@ class AccountManager(
         } catch(e: GetCredentialException) {
             GetCredentialResult.Failure(e.message.toString())
         }
+    }
+
+    suspend fun deleteCredential() {
+        credentialManager.clearCredentialState(
+            ClearCredentialStateRequest()
+        )
     }
 }

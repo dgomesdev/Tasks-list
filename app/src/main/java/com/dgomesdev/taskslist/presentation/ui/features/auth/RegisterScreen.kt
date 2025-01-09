@@ -40,7 +40,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.presentation.ui.app.AccountManager
 import com.dgomesdev.taskslist.presentation.ui.app.EMAIL_PATTERN
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.*
@@ -223,7 +222,7 @@ fun RegisterScreen(
             )
 
                 Button(
-                    onClick = { onAction(RefreshMessage) ; backToMainScreen()},
+                    onClick = { backToMainScreen() },
                     modifier = Modifier.padding(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.LightGray,

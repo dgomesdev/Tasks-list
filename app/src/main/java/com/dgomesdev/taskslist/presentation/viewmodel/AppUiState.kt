@@ -5,6 +5,8 @@ import com.dgomesdev.taskslist.domain.model.User
 
 data class AppUiState(
     val user: User? = null,
+    val email: String = "",
+    val password: String = "",
     val message: String? = null,
     val isLoading: Boolean = false,
     val recoveryCode: String? = null,

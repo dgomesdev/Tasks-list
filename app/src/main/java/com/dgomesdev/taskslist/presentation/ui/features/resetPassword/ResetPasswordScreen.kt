@@ -43,7 +43,6 @@ import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.EMAIL_PATTERN
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RefreshMessage
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ResetPassword
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
@@ -76,8 +75,8 @@ fun ResetPasswordScreen(
 
         LaunchedEffect(uiState.message) {
             uiState.message?.let {
-                if (!it.contains("403")) ShowSnackbar(it)
-                onAction(RefreshMessage)
+                ShowSnackbar(it)
+                //onAction(RefreshMessage)
             }
         }
 

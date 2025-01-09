@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 data class UserResponseDto(
     val userId: String,
     val username: String,
-    val email: String,
     val tasks: List<TaskResponseDto>,
     val token: String?
 )

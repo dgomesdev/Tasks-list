@@ -35,7 +35,6 @@ import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.EMAIL_PATTERN
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RecoverPassword
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RefreshMessage
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 
@@ -56,7 +55,7 @@ fun ForgotPasswordScreen(
         LaunchedEffect(uiState.message) {
             uiState.message?.let {
                 if (!it.contains("403")) ShowSnackbar(it)
-                onAction(RefreshMessage)
+                //onAction(RefreshMessage)
             }
         }
 

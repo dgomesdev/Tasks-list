@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,7 +23,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,14 +32,12 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -64,8 +60,9 @@ import com.dgomesdev.taskslist.presentation.ui.app.NewTaskButton
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
 import com.dgomesdev.taskslist.presentation.ui.app.TaskAppBar
+import com.dgomesdev.taskslist.presentation.ui.features.auth.AccountManager
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.DeleteTask
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RefreshMessage
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.SetHasGoogleCredential
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import com.dgomesdev.taskslist.utils.SortOption
@@ -73,6 +70,7 @@ import com.dgomesdev.taskslist.utils.TaskFilter
 import com.dgomesdev.taskslist.utils.filterTasks
 import com.dgomesdev.taskslist.utils.sortTasks
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 @Composable
@@ -83,7 +81,8 @@ fun TaskList(
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
     scope: CoroutineScope,
-    drawerState: DrawerState
+    drawerState: DrawerState,
+    accountManager: AccountManager
 ) {
     val taskList = uiState.user?.tasks ?: emptyList()
     val username = uiState.user?.username ?: ""
@@ -125,7 +124,15 @@ fun TaskList(
         LaunchedEffect(uiState.message) {
             uiState.message?.let {
                 ShowSnackbar(it)
-                onAction(RefreshMessage)
+            }
+            if (!uiState.hasGoogleCredential && uiState.email.isNotBlank() && uiState.password.isNotBlank()) {
+                scope.launch {
+                        uiState.user?.let { accountManager.createCredential(User(
+                            uiState.email,
+                            uiState.password
+                        )) }
+                        SetHasGoogleCredential(true)
+                }
             }
         }
         Column(
@@ -354,32 +361,5 @@ private fun TaskCardPreview() {
         goToScreen = {},
         onAction = {},
         onChooseTask = {}
-    )
-}
-
-@Preview
-@Composable
-private fun ListPrev() {
-    TaskList(
-        modifier = Modifier.fillMaxSize(),
-        uiState = AppUiState(
-            user = User(
-                username = "Danilo",
-                tasks = listOf(
-                    Task(
-                        UUID.randomUUID().toString(),
-                        "title",
-                        "description",
-                        Priority.LOW,
-                        Status.TO_BE_DONE
-                    )
-                )
-            )
-        ),
-        onAction = {},
-        goToScreen = {},
-        onChooseTask = {},
-        scope = rememberCoroutineScope(),
-        drawerState = rememberDrawerState(DrawerValue.Closed)
     )
 }

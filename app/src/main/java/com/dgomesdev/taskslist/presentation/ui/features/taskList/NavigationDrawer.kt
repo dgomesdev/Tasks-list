@@ -2,7 +2,6 @@ package com.dgomesdev.taskslist.presentation.ui.features.taskList
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
@@ -14,20 +13,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dgomesdev.taskslist.R
-import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.ui.app.ScreenNavigation
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.*
+import com.dgomesdev.taskslist.presentation.ui.features.auth.AccountManager
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.DeleteUser
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.Logout
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -40,7 +38,8 @@ fun NavigationDrawer(
     goToScreen: ScreenNavigation,
     onChooseTask: ChooseTask,
     scope: CoroutineScope,
-    backToMainScreen: () -> Unit
+    backToMainScreen: () -> Unit,
+    accountManager: AccountManager
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -89,7 +88,10 @@ fun NavigationDrawer(
                     selected = false,
                     onClick = {
                         onAction(DeleteUser(uiState.user!!))
-                        scope.launch { drawerState.close() }
+                        scope.launch {
+                            accountManager.deleteCredential()
+                            drawerState.close()
+                        }
                     }
                 )
             }
@@ -102,25 +104,8 @@ fun NavigationDrawer(
             onChooseTask = onChooseTask,
             scope = scope,
             drawerState = drawerState,
-            onAction = onAction
+            onAction = onAction,
+            accountManager = accountManager
         )
     }
-}
-
-@Preview
-@Composable
-private fun MainPrev() {
-    NavigationDrawer(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        uiState = AppUiState(
-            user = User(username = "Danilo")
-        ),
-        onAction = {},
-        goToScreen = {},
-        onChooseTask = {},
-        scope = rememberCoroutineScope(),
-        backToMainScreen = {}
-    )
 }

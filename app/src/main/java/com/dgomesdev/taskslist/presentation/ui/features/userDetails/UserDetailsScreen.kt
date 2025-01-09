@@ -37,7 +37,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.presentation.ui.app.AccountManager
+import com.dgomesdev.taskslist.presentation.ui.features.auth.AccountManager
 import com.dgomesdev.taskslist.presentation.ui.app.EMAIL_PATTERN
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.UpdateUser
@@ -55,9 +55,9 @@ fun UserDetailsScreen(
     scope: CoroutineScope
 ) {
     val (username, setUsername) = rememberSaveable { mutableStateOf(uiState.user?.username ?: "") }
-    val (email, setEmail) = rememberSaveable { mutableStateOf(uiState.user?.email ?: "") }
-    val (newPassword, setNewPassword) = rememberSaveable { mutableStateOf("") }
-    val (confirmPassword, setConfirmPassword) = rememberSaveable { mutableStateOf("") }
+    val (email, setEmail) = rememberSaveable { mutableStateOf(uiState.email) }
+    val (newPassword, setNewPassword) = rememberSaveable { mutableStateOf(uiState.password) }
+    val (confirmPassword, setConfirmPassword) = rememberSaveable { mutableStateOf(uiState.password) }
     val (isPasswordShown, setIsPasswordShown) = remember { mutableStateOf(false) }
     val (isConfirmPasswordShown, setIsConfirmPasswordShown) = remember { mutableStateOf(false) }
     val (isEmailValid, setIsEmailValid) = rememberSaveable { mutableStateOf(true) }

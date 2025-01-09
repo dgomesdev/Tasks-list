@@ -43,11 +43,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
-import com.dgomesdev.taskslist.presentation.ui.app.AccountManager
 import com.dgomesdev.taskslist.presentation.ui.app.EMAIL_PATTERN
 import com.dgomesdev.taskslist.presentation.ui.app.MainActivity
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.ui.features.auth.GetCredentialResult.Success
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.Login
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
@@ -75,14 +75,22 @@ fun LoginScreen(
     ) { padding ->
 
         LaunchedEffect(uiState) {
-            if (!uiState.isSessionValid && !uiState.message.toString().contains("logout")) {
+            if (!uiState.isSessionValid) {
                 scope.launch {
-                    val result = accountManager.getCredential()
-                    if (result is Success) onAction(Login(result.user))
+                    when (val result = accountManager.getCredential()) {
+                        is Success -> {
+                            onAction(AppUiIntent.SetEmail(result.user.email))
+                            onAction(AppUiIntent.SetPassword(result.user.password))
+                            onAction(AppUiIntent.SetHasGoogleCredential(true))
+                            onAction(Login(result.user))
+                        }
+                        is GetCredentialResult.Cancelled -> onAction(AppUiIntent.SetHasGoogleCredential(true))
+                        else -> onAction(AppUiIntent.SetHasGoogleCredential(false))
+                    }
                 }
             }
             uiState.message?.let {
-                if (!it.contains("403")) ShowSnackbar(it)
+                ShowSnackbar(it)
                 if (it.contains("406")) goToScreen("Register")
             }
             if (uiState.user != null) goToScreen("TaskList")

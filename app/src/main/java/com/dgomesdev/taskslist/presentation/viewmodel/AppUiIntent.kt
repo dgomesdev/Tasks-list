@@ -17,6 +17,9 @@ sealed interface AppUiIntent {
     data class DeleteTask(val task: Task) : AppUiIntent
     data class SetRecoveryCode(val recoveryCode: String) : AppUiIntent
     data class ShowSnackbar(val message: String): AppUiIntent
+    data class SetEmail(val email: String): AppUiIntent
+    data class SetPassword(val password: String): AppUiIntent
+    data class SetHasGoogleCredential(val hasGoogleCredential: Boolean): AppUiIntent
     data object Logout : AppUiIntent
-    data object RefreshMessage : AppUiIntent
+    //data object RefreshMessage : AppUiIntent
 }

@@ -10,20 +10,7 @@ import com.dgomesdev.taskslist.infra.SecurePreferences
 import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Cancelled
 import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Failure
 import com.dgomesdev.taskslist.presentation.ui.features.auth.CreateCredentialResult.Success
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.DeleteTask
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.DeleteUser
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.GetUser
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.Login
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.Logout
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RecoverPassword
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.RefreshMessage
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.Register
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ResetPassword
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.SaveTask
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.SetRecoveryCode
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.UpdateTask
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.UpdateUser
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,30 +37,31 @@ class TasksViewModel(
                 val result = runCatching { userUseCases.getUserUseCase(tokenUser.userId) }
                 result.onSuccess { (user, message) ->
                     setState(user = user, message = message, isSessionValid = true)
-                }.onFailure { e ->
-                    setState(
-                        message = "Failed to load user: ${e.message}",
-                        isSessionValid = false
-                    )
-                }
+                }.onFailure { logout() }
             } else setState(isSessionValid = false)
         }
     }
 
     private fun setState(
-        user: User? = null,
-        message: String? = null,
-        isLoading: Boolean = false,
-        recoveryCode: String? = null,
-        isSessionValid: Boolean = true
+        user: User? = uiState.value.user,
+        email: String = uiState.value.email,
+        password: String = uiState.value.password,
+        message: String? = uiState.value.message,
+        isLoading: Boolean = uiState.value.isLoading,
+        recoveryCode: String? = uiState.value.recoveryCode,
+        isSessionValid: Boolean = uiState.value.isSessionValid,
+        hasGoogleCredential: Boolean = uiState.value.hasGoogleCredential
     ) {
         _uiState.update {
             it.copy(
-                user = user ?: it.user,
-                message = message ?: it.message,
+                user = user,
+                email = email,
+                password = password,
+                message = message,
                 isLoading = isLoading,
-                recoveryCode = recoveryCode ?: it.recoveryCode,
-                isSessionValid = isSessionValid
+                recoveryCode = recoveryCode,
+                isSessionValid = isSessionValid,
+                hasGoogleCredential = hasGoogleCredential
             )
         }
     }
@@ -82,38 +70,42 @@ class TasksViewModel(
         Log.d("ViewModel", "Intent: $intent")
         when (intent) {
             is Register -> {
-                when (intent.result) {
+                when (val result = intent.result) {
                     is Success -> {
-                        _uiState.update { it.copy(hasGoogleCredential = true) }
-                        execute { userUseCases.registerUseCase(intent.result.user) }
+                        setState(hasGoogleCredential = true)
+                        execute { userUseCases.registerUseCase(result.user) }
                     }
                     is Cancelled -> {
-                        execute { userUseCases.registerUseCase(intent.result.user) }
+                        setState(hasGoogleCredential = false)
+                        execute { userUseCases.registerUseCase(result.user) }
                     }
                     is Failure -> {
-                        execute { userUseCases.registerUseCase(intent.result.user) }
+                        setState(hasGoogleCredential = false)
+                        execute { userUseCases.registerUseCase(result.user) }
                     }
                 }
             }
-
-            is Login -> execute { userUseCases.loginUseCase(intent.user) }
+            is Login -> execute {
+                setState(isSessionValid = true)
+                userUseCases.loginUseCase(intent.user)
+            }
             is GetUser -> execute { userUseCases.getUserUseCase(intent.user.userId) }
             is UpdateUser -> execute { userUseCases.updateUserUseCase(intent.user) }
             is DeleteUser -> execute { userUseCases.deleteUserUseCase(intent.user.userId) }
             is RecoverPassword -> execute { userUseCases.recoverPasswordUseCase(intent.user) }
-            is ResetPassword -> execute {
-                userUseCases.resetPasswordUseCase(
-                    intent.recoveryCode,
-                    intent.user
-                )
+            is ResetPassword -> {
+                execute { userUseCases.resetPasswordUseCase(intent.recoveryCode, intent.user) }
+                setState(recoveryCode = null)
             }
-
             is SaveTask -> execute { taskUseCases.saveTaskUseCase(intent.task) }
             is UpdateTask -> execute { taskUseCases.updateTaskUseCase(intent.task) }
             is DeleteTask -> execute { taskUseCases.deleteTaskUseCase(intent.task.taskId) }
             is SetRecoveryCode -> setState(recoveryCode = intent.recoveryCode)
             is ShowSnackbar -> showSnackbar(intent.message)
-            is RefreshMessage -> _uiState.update { it.copy(message = null) }
+            is SetEmail -> setState(email = intent.email)
+            is SetPassword -> setState(password = intent.password)
+            is SetHasGoogleCredential -> setState(hasGoogleCredential = intent.hasGoogleCredential)
+            //is RefreshMessage -> setState(message = null)
             is Logout -> logout()
         }
     }
@@ -121,15 +113,15 @@ class TasksViewModel(
     private fun execute(useCase: suspend () -> Pair<User?, String?>) {
         viewModelScope.launch {
             runCatching {
-                setState(message = null, isLoading = true)
+                setState(isLoading = true)
                 useCase()
             }.onSuccess { result ->
                 val (user, message) = result
-                if (user != null) setState(user = user, message = message)
-                else logout()
+                if (user == null) logout()
+                else setState(user = user, message = message, isLoading = false, isSessionValid = true)
             }.onFailure { e ->
                 val message = e.message.toString()
-                setState(message = "Error: $message")
+                setState(message = "Error: $message", isLoading = false)
                 if (message.contains("401") || message.contains("403")) logout()
             }
         }
@@ -138,12 +130,13 @@ class TasksViewModel(
     private fun showSnackbar(message: String) {
         viewModelScope.launch {
             uiState.value.snackbarHostState.showSnackbar(message)
+            setState(message = null)
         }
     }
 
     private fun logout() {
         securePreferences.deleteToken()
-        _uiState.update { it.copy(user = null, isSessionValid = false, message = "logout") }
+        setState(user = null, isSessionValid = false, message = "logout", isLoading = false)
     }
 
 }

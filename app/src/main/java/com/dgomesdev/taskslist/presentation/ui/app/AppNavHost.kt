@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dgomesdev.taskslist.domain.model.Task
+import com.dgomesdev.taskslist.presentation.ui.features.auth.AccountManager
 import com.dgomesdev.taskslist.presentation.ui.features.auth.LoginScreen
 import com.dgomesdev.taskslist.presentation.ui.features.auth.RegisterScreen
 import com.dgomesdev.taskslist.presentation.ui.features.forgotPassword.ForgotPasswordScreen
@@ -77,7 +78,8 @@ fun AppNavHost(
                 goToScreen = { navController.navigate(it) },
                 onChooseTask = { setTask(it) },
                 scope = scope,
-                backToMainScreen = { navController.popBackStack("Login", false) }
+                backToMainScreen = { navController.popBackStack("Login", false) },
+                accountManager = accountManager
             )
         }
         composable(
