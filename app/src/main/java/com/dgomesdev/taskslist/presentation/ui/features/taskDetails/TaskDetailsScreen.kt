@@ -76,6 +76,14 @@ fun TaskDetailsScreen(
                 Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
+                Text(stringResource(R.string.priority_level))
+                Text(stringResource(R.string.status))
+            }
+
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
                 PrioritySetter(
                     Modifier.weight(0.5f).padding(horizontal = 8.dp),
                     setPriority = { setPriority(it) },

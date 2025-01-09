@@ -74,10 +74,7 @@ fun ResetPasswordScreen(
     ) { padding ->
 
         LaunchedEffect(uiState.message) {
-            uiState.message?.let {
-                ShowSnackbar(it)
-                //onAction(RefreshMessage)
-            }
+            uiState.message?.let { ShowSnackbar(it) }
         }
 
         Column(

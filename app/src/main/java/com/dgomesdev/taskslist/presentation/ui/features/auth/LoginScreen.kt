@@ -47,8 +47,11 @@ import com.dgomesdev.taskslist.presentation.ui.app.EMAIL_PATTERN
 import com.dgomesdev.taskslist.presentation.ui.app.MainActivity
 import com.dgomesdev.taskslist.presentation.ui.app.OnAction
 import com.dgomesdev.taskslist.presentation.ui.features.auth.GetCredentialResult.Success
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.Login
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.SetEmail
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.SetHasGoogleCredential
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.SetIsSessionValid
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.SetPassword
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.ShowSnackbar
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import kotlinx.coroutines.CoroutineScope
@@ -69,6 +72,7 @@ fun LoginScreen(
     val (isPasswordShown, setIsPasswordShown) = rememberSaveable { mutableStateOf(false) }
     val (isEmailValid, setIsEmailValid) = rememberSaveable { mutableStateOf(true) }
     val focusManager = LocalFocusManager.current
+    val alreadyHaveAnAccountMessage = stringResource(R.string.already_have_an_account)
 
     Scaffold(
         snackbarHost = { SnackbarHost(uiState.snackbarHostState) }
@@ -79,19 +83,26 @@ fun LoginScreen(
                 scope.launch {
                     when (val result = accountManager.getCredential()) {
                         is Success -> {
-                            onAction(AppUiIntent.SetEmail(result.user.email))
-                            onAction(AppUiIntent.SetPassword(result.user.password))
-                            onAction(AppUiIntent.SetHasGoogleCredential(true))
+                            onAction(SetEmail(result.user.email))
+                            onAction(SetPassword(result.user.password))
+                            onAction(SetHasGoogleCredential(true))
                             onAction(Login(result.user))
                         }
-                        is GetCredentialResult.Cancelled -> onAction(AppUiIntent.SetHasGoogleCredential(true))
-                        else -> onAction(AppUiIntent.SetHasGoogleCredential(false))
+
+                        is GetCredentialResult.Cancelled -> {
+                            onAction(SetHasGoogleCredential(true))
+                            onAction(SetIsSessionValid(true))
+                        }
+
+                        else -> onAction(SetHasGoogleCredential(false))
                     }
                 }
             }
             uiState.message?.let {
-                ShowSnackbar(it)
-                if (it.contains("406")) goToScreen("Register")
+                when {
+                    it.contains("409") -> onAction(ShowSnackbar(alreadyHaveAnAccountMessage))
+                    else -> onAction(ShowSnackbar(it))
+                }
             }
             if (uiState.user != null) goToScreen("TaskList")
         }

@@ -53,10 +53,7 @@ fun ForgotPasswordScreen(
         snackbarHost = { SnackbarHost(uiState.snackbarHostState) }
     ) { padding ->
         LaunchedEffect(uiState.message) {
-            uiState.message?.let {
-                if (!it.contains("403")) ShowSnackbar(it)
-                //onAction(RefreshMessage)
-            }
+            uiState.message?.let { if (!it.contains("403")) ShowSnackbar(it) }
         }
 
         Column(

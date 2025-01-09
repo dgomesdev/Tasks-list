@@ -43,9 +43,7 @@ fun NavigationDrawer(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    LaunchedEffect(uiState.user) {
-        if (uiState.user == null) backToMainScreen()
-    }
+    LaunchedEffect(uiState.user) { if (uiState.user == null) backToMainScreen() }
 
     ModalNavigationDrawer(
         drawerState = drawerState,

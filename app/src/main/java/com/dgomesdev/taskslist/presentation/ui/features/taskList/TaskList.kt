@@ -35,11 +35,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,8 +49,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dgomesdev.taskslist.R
-import com.dgomesdev.taskslist.domain.model.Priority
-import com.dgomesdev.taskslist.domain.model.Status
+import com.dgomesdev.taskslist.domain.model.Priority.HIGH
+import com.dgomesdev.taskslist.domain.model.Priority.LOW
+import com.dgomesdev.taskslist.domain.model.Priority.MEDIUM
+import com.dgomesdev.taskslist.domain.model.Status.DONE
+import com.dgomesdev.taskslist.domain.model.Status.IN_PROGRESS
+import com.dgomesdev.taskslist.domain.model.Status.TO_BE_DONE
 import com.dgomesdev.taskslist.domain.model.Task
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.ChooseTask
@@ -90,18 +92,18 @@ fun TaskList(
     val (selectedPriorities, setSelectedPriorities) = rememberSaveable {
         mutableStateOf(
             listOf(
-                Priority.LOW,
-                Priority.MEDIUM,
-                Priority.HIGH
+                LOW,
+                MEDIUM,
+                HIGH
             )
         )
     }
     val (selectedStatuses, setSelectedStatuses) = rememberSaveable {
         mutableStateOf(
             listOf(
-                Status.TO_BE_DONE,
-                Status.IN_PROGRESS,
-                Status.DONE
+                TO_BE_DONE,
+                IN_PROGRESS,
+                DONE
             )
         )
     }
@@ -241,25 +243,19 @@ fun TaskCard(
 ) {
 
     val haptics = LocalHapticFeedback.current
-
-    var expanded by remember {
-        mutableStateOf(false)
-    }
-
-    var areOptionsExpanded by remember {
-        mutableStateOf(false)
-    }
+    val (isCardExpanded, setCardExpanded) = remember { mutableStateOf(false) }
+    val (areOptionsExpanded, setAreOptionsExpanded) = remember { mutableStateOf(false) }
 
     val status = when (task.status) {
-        Status.TO_BE_DONE -> stringResource(R.string.to_do)
-        Status.DONE -> stringResource(R.string.done)
-        Status.IN_PROGRESS -> stringResource(R.string.in_progress)
+        TO_BE_DONE -> stringResource(R.string.to_do)
+        DONE -> stringResource(R.string.done)
+        IN_PROGRESS -> stringResource(R.string.in_progress)
     }
 
     val priority = when (task.priority) {
-        Priority.LOW -> stringResource(R.string.low)
-        Priority.MEDIUM -> stringResource(R.string.medium)
-        Priority.HIGH -> stringResource(R.string.high)
+        LOW -> stringResource(R.string.low)
+        MEDIUM -> stringResource(R.string.medium)
+        HIGH -> stringResource(R.string.high)
     }
 
     Card(
@@ -272,10 +268,10 @@ fun TaskCard(
                 )
             )
             .combinedClickable(
-                onClick = { expanded = !expanded },
+                onClick = { setCardExpanded(isCardExpanded) },
                 onLongClick = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    areOptionsExpanded = true
+                    setAreOptionsExpanded(true)
                 },
                 onClickLabel = stringResource(R.string.options)
             ),
@@ -298,7 +294,7 @@ fun TaskCard(
                 task = task,
                 goToScreen = goToScreen,
                 onChooseTask = onChooseTask,
-                onOpenOptions = { areOptionsExpanded = !areOptionsExpanded },
+                onOpenOptions = { setAreOptionsExpanded(!areOptionsExpanded) },
                 areOptionsExpanded = areOptionsExpanded
             )
         }
@@ -309,15 +305,16 @@ fun TaskCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                "Status: $status"
-            )
-            Text(
-                stringResource(R.string.priority_level) + ": $priority",
-                textAlign = TextAlign.End
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(stringResource(R.string.status) + ":")
+                Text(status)
+            }
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(stringResource(R.string.priority_level) + ":")
+                Text(priority)
+            }
         }
-        if (expanded) {
+        if (isCardExpanded) {
             Row(
                 Modifier
                     .padding(16.dp)
@@ -334,12 +331,12 @@ fun TaskCard(
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             IconButton(
-                onClick = { expanded = !expanded }
+                onClick = { setCardExpanded(!isCardExpanded) }
             ) {
                 Icon(
-                    imageVector = if (expanded) Icons.Filled.KeyboardArrowUp
+                    imageVector = if (isCardExpanded) Icons.Filled.KeyboardArrowUp
                     else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = if (expanded) stringResource(R.string.show_less)
+                    contentDescription = if (isCardExpanded) stringResource(R.string.show_less)
                     else stringResource(R.string.show_more)
                 )
             }
@@ -355,8 +352,8 @@ private fun TaskCardPreview() {
             UUID.randomUUID().toString(),
             "title",
             "description",
-            Priority.LOW,
-            Status.TO_BE_DONE
+            MEDIUM,
+            TO_BE_DONE
         ),
         goToScreen = {},
         onAction = {},

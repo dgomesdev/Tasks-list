@@ -1,6 +1,7 @@
 package com.dgomesdev.taskslist.presentation.ui.features.taskDetails
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -35,37 +36,40 @@ fun PrioritySetter(
         onClick = { setExpandedMenu(true) },
         modifier = modifier
     ) {
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = when (currentPriority) {
-                    LOW -> stringResource(R.string.low)
-                    MEDIUM -> stringResource(R.string.medium)
-                    HIGH -> stringResource(R.string.high)
-                }
-            )
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = stringResource(R.string.options)
-            )
-        }
-        DropdownMenu(expanded = expandedMenu, onDismissRequest = { setExpandedMenu(false) }) {
-            Priority.entries.forEach { priority ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = when (priority) {
-                                LOW -> stringResource(R.string.low)
-                                MEDIUM -> stringResource(R.string.medium)
-                                HIGH -> stringResource(R.string.high)
-                            }
-                        )
-                    },
-                    onClick = { setPriority(priority); setExpandedMenu(false) }
+        Column {
+
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = when (currentPriority) {
+                        LOW -> stringResource(R.string.low)
+                        MEDIUM -> stringResource(R.string.medium)
+                        HIGH -> stringResource(R.string.high)
+                    }
                 )
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.options)
+                )
+            }
+            DropdownMenu(expanded = expandedMenu, onDismissRequest = { setExpandedMenu(false) }) {
+                Priority.entries.forEach { priority ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = when (priority) {
+                                    LOW -> stringResource(R.string.low)
+                                    MEDIUM -> stringResource(R.string.medium)
+                                    HIGH -> stringResource(R.string.high)
+                                }
+                            )
+                        },
+                        onClick = { setPriority(priority); setExpandedMenu(false) }
+                    )
+                }
             }
         }
     }

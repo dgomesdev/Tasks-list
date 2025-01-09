@@ -25,7 +25,7 @@
     <string name="done">Done</string>
     <string name="show_less">Show Less</string>
     <string name="show_more">Show More</string>
-    <string name="priority_level">Priority level</string>
+    <string name="priority_level">Priority</string>
     <string name="edit_task">Edit task</string>
     <string name="delete_task">Delete task</string>
     <string name="add_new_task">Add New task</string>
@@ -38,7 +38,7 @@
     <string name="too_long">Response may take a moment, please wait.</string>
     <string name="task_saved">Task saved successfully</string>
     <string name="task_updated">Task updated successfully</string>
-    <string name="hello">Hello %1$s,</string>
+    <string name="hello">Hello %1$s</string>
     <string name="welcome">Welcome %1$s!</string>
     <string name="user_not_authenticated">User not authenticated</string>
     <string name="user_updated">User updated successfully</string>

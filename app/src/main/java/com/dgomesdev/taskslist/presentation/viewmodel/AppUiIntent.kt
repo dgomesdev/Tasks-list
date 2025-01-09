@@ -20,6 +20,6 @@ sealed interface AppUiIntent {
     data class SetEmail(val email: String): AppUiIntent
     data class SetPassword(val password: String): AppUiIntent
     data class SetHasGoogleCredential(val hasGoogleCredential: Boolean): AppUiIntent
+    data class SetIsSessionValid(val isSessionValid: Boolean): AppUiIntent
     data object Logout : AppUiIntent
-    //data object RefreshMessage : AppUiIntent
 }

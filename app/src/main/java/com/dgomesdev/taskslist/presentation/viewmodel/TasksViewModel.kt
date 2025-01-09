@@ -105,7 +105,7 @@ class TasksViewModel(
             is SetEmail -> setState(email = intent.email)
             is SetPassword -> setState(password = intent.password)
             is SetHasGoogleCredential -> setState(hasGoogleCredential = intent.hasGoogleCredential)
-            //is RefreshMessage -> setState(message = null)
+            is SetIsSessionValid -> setState(isSessionValid = intent.isSessionValid)
             is Logout -> logout()
         }
     }
@@ -120,9 +120,12 @@ class TasksViewModel(
                 if (user == null) logout()
                 else setState(user = user, message = message, isLoading = false, isSessionValid = true)
             }.onFailure { e ->
-                val message = e.message.toString()
+                val message = e.message.toString().replace("java.lang.Exception: ", "")
                 setState(message = "Error: $message", isLoading = false)
-                if (message.contains("401") || message.contains("403")) logout()
+                if (message.contains("401") || message.contains("403")) {
+                    setState(message = null)
+                    logout()
+                }
             }
         }
     }
@@ -136,7 +139,7 @@ class TasksViewModel(
 
     private fun logout() {
         securePreferences.deleteToken()
-        setState(user = null, isSessionValid = false, message = "logout", isLoading = false)
+        setState(user = null, isSessionValid = false, isLoading = false)
     }
 
 }

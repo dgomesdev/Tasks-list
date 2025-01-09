@@ -23,7 +23,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -42,7 +41,7 @@ import com.dgomesdev.taskslist.R
 import com.dgomesdev.taskslist.domain.model.User
 import com.dgomesdev.taskslist.presentation.ui.app.EMAIL_PATTERN
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent
-import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.*
+import com.dgomesdev.taskslist.presentation.viewmodel.AppUiIntent.Register
 import com.dgomesdev.taskslist.presentation.viewmodel.AppUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -89,14 +88,6 @@ fun RegisterScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(uiState.snackbarHostState) }
     ) { padding ->
-
-        val alreadyHaveAnAccountMessage = stringResource(R.string.already_have_an_account)
-
-        LaunchedEffect(uiState.message) {
-            uiState.message?.let {
-                if (it.contains("406")) ShowSnackbar(alreadyHaveAnAccountMessage)
-            }
-        }
 
         Column(
             modifier = modifier.padding(padding),

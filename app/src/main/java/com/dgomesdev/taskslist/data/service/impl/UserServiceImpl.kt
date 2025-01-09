@@ -54,8 +54,8 @@ class UserServiceImpl(
                     HttpStatusCode.BadRequest -> context.getString(R.string.fill_mandatory_fields)
                     else -> error.message
                 }
-                Log.e("Register user error", "Error: $errorMessage, Status: ${response.status}")
-                Result.failure(Exception("Error: $errorMessage, Status: ${response.status}"))
+                Log.e("Register user error", "$errorMessage, Status: ${response.status}")
+                Result.failure(Exception("$errorMessage, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Log.e("Register user error", "Unexpected error: ${exception.message}")
@@ -87,8 +87,8 @@ class UserServiceImpl(
                     HttpStatusCode.BadRequest -> context.getString(R.string.fill_mandatory_fields)
                     else -> error.message
                 }
-                Log.e("Register user error", "Error: $errorMessage, Status: ${response.status}")
-                Result.failure(Exception("Error: $errorMessage, Status: ${response.status}"))
+                Log.e("Register user error", "$errorMessage, Status: ${response.status}")
+                Result.failure(Exception("$errorMessage, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Log.e("Login user error", "Unexpected error: ${exception.message}")
@@ -120,8 +120,8 @@ class UserServiceImpl(
                     HttpStatusCode.NotFound -> context.getString(R.string.user_does_not_exist)
                     else -> error.message
                 }
-                Log.e("Get user error", "Error: $errorMessage, Status: ${response.status}")
-                Result.failure(Exception("Error: $errorMessage, Status: ${response.status}"))
+                Log.e("Get user error", "$errorMessage, Status: ${response.status}")
+                Result.failure(Exception("$errorMessage, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Log.e("Get user error", "Unexpected error: ${exception.message}")
@@ -158,8 +158,8 @@ class UserServiceImpl(
                     HttpStatusCode.BadRequest -> context.getString(R.string.fill_mandatory_fields)
                     else -> error.message
                 }
-                Log.e("Update user error", "Error: ${response.body<String>()}")
-                Result.failure(Exception("Error: $errorMessage, Status: ${response.status}"))
+                Log.e("Update user error", response.body<String>())
+                Result.failure(Exception("$errorMessage, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Log.e("Update user error", "Unexpected error: ${exception.message}")
@@ -193,8 +193,8 @@ class UserServiceImpl(
                     HttpStatusCode.NotFound -> context.getString(R.string.user_does_not_exist)
                     else -> error.message
                 }
-                Log.e("Delete user error", "Error: $errorMessage, Status: ${response.status}")
-                Result.failure(Exception("Error: $errorMessage, Status: ${response.status}"))
+                Log.e("Delete user error", "$errorMessage, Status: ${response.status}")
+                Result.failure(Exception("$errorMessage, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Log.e("Delete user error", "Unexpected error: ${exception.message}")
@@ -219,7 +219,7 @@ class UserServiceImpl(
                 Result.success(message)
             } else {
                 val error = response.body<MessageDto>()
-                Result.failure(Exception("Error: ${error.message}, Status: ${response.status}"))
+                Result.failure(Exception("${error.message}, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Result.failure(exception)
@@ -243,7 +243,7 @@ class UserServiceImpl(
                 Result.success(message)
             } else {
                 val error = response.body<MessageDto>()
-                Result.failure(Exception("Error: ${error.message}, Status: ${response.status}"))
+                Result.failure(Exception("${error.message}, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Result.failure(exception)

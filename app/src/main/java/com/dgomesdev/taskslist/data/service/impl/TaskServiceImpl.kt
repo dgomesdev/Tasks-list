@@ -55,8 +55,8 @@ class TaskServiceImpl(
                     HttpStatusCode.BadRequest -> context.getString(R.string.fill_mandatory_fields)
                     else -> error.message
                 }
-                Log.e("Save task error", "Error: ${errorMessage}, Status: ${response.status}")
-                Result.failure(Exception("Error: ${errorMessage}, Status: ${response.status}"))
+                Log.e("Save task error", "${errorMessage}, Status: ${response.status}")
+                Result.failure(Exception("${errorMessage}, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Log.e("Save task error", "Unexpected error: ${exception.message}")
@@ -90,8 +90,8 @@ class TaskServiceImpl(
                     HttpStatusCode.BadRequest -> context.getString(R.string.fill_mandatory_fields)
                     else -> error.message
                 }
-                Log.e("Update task error", "Error: ${errorMessage}, Status: ${response.status}")
-                Result.failure(Exception("Error: ${errorMessage}, Status: ${response.status}"))
+                Log.e("Update task error", "${errorMessage}, Status: ${response.status}")
+                Result.failure(Exception("${errorMessage}, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Log.e("Register user error", "Unexpected error: ${exception.message}")
@@ -123,8 +123,8 @@ class TaskServiceImpl(
                     HttpStatusCode.NotFound -> context.getString(R.string.task_not_found)
                     else -> error.message
                 }
-                Log.e("Delete task error", "Error: ${errorMessage}, Status: ${response.status}")
-                Result.failure(Exception("Error: ${errorMessage}, Status: ${response.status}"))
+                Log.e("Delete task error", "${errorMessage}, Status: ${response.status}")
+                Result.failure(Exception("${errorMessage}, Status: ${response.status}"))
             }
         } catch (exception: Exception) {
             Log.e("Register user error", "Unexpected error: ${exception.message}")

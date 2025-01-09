@@ -46,6 +46,7 @@ fun AppNavHost(
             uiState.isLoading -> navController.navigate("Loading")
             uiState.recoveryCode != null -> navController.navigate("ResetPassword")
             uiState.user != null -> navController.navigate("TaskList")
+            uiState.message?.contains("406") == true -> navController.navigate("Register")
             else -> if (navController.currentDestination?.route != "Login") {
                 navController.popBackStack("Login", false)
             } else Unit

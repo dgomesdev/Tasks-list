@@ -25,7 +25,7 @@
     <string name="done">Terminé</string>
     <string name="show_less">Afficher moins</string>
     <string name="show_more">Afficher plus</string>
-    <string name="priority_level">Niveau de priorité</string>
+    <string name="priority_level">Priorité</string>
     <string name="edit_task">Modifier la tâche</string>
     <string name="delete_task">Supprimer la tâche</string>
     <string name="add_new_task">Nouvelle tâche</string>
@@ -38,14 +38,14 @@
     <string name="too_long">La réponse peut prendre un moment, veuillez patienter.</string>
     <string name="task_saved">Tâche enregistrée avec succès</string>
     <string name="task_updated">Tâche mise à jour avec succès</string>
-    <string name="hello">Bonjour %1$s,</string>
+    <string name="hello">Bonjour %1$s</string>
     <string name="welcome">Bienvenue %1$s !</string>
     <string name="user_not_authenticated">Utilisateur non authentifié.</string>
     <string name="user_updated">Utilisateur mis à jour avec succès</string>
     <string name="task_deleted">Tâche supprimée avec succès !</string>
     <string name="account_deleted">Compte supprimé avec succès !</string>
     <string name="sort_by">Trier par</string>
-    <string name="status">Etat actuel</string>
+    <string name="status">Etat</string>
     <string name="filter_by">Filter par</string>
     <string name="selected">Selectionné</string>
     <string name="priority">Priorité</string>
